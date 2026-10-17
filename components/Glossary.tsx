@@ -33,7 +33,7 @@ export function GlossaryTerm({ termKey, children }: { termKey: string; children:
         type="button"
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
-        aria-label={t("glossary.open", { term: typeof children === "string" ? children : termKey })}
+        aria-label={t("glossary.open", { term: typeof children === "string" ? children : entry.term[lang] })}
         onClick={() => setPinned((p) => !p)}
         className="cursor-help font-semibold underline decoration-dotted decoration-2 underline-offset-4"
       >
@@ -45,7 +45,7 @@ export function GlossaryTerm({ termKey, children }: { termKey: string; children:
           role="tooltip"
           className="absolute left-0 top-full z-20 mt-1 w-[min(18rem,80vw)] rounded-lg border-2 border-line-strong bg-surface p-3 text-base font-normal text-ink shadow-lg"
         >
-          {entry[lang]}
+          {entry.definition[lang]}
         </span>
       )}
     </span>
