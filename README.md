@@ -32,9 +32,9 @@ Deploy: push to GitHub, import the repo in Vercel. No environment variables yet.
 
 ## Things to do before the demo
 
-1. **Replace the seeded wait times** in `lib/journey.ts` with the official State
-   Department numbers and update `WAIT_TIMES_AS_OF`. Chennai and Kolkata are
-   flagged `needsCheck` because they came from a different source.
+1. ~~**Replace the seeded wait times**~~ Done. `WAIT_TIMES` in `lib/journey.ts`
+   is verified against the official State Department Global Visa Wait Times
+   table as of 2026-09-17 (`WAIT_TIMES_AS_OF`).
 2. **Have a Hindi reader check** `lib/i18n.ts` and `content/steps.ts`. It is a
    first draft.
 3. **Verify the India booking steps** (VAC plus interview, which portal) on the
@@ -54,6 +54,11 @@ Deploy: push to GitHub, import the repo in Vercel. No environment variables yet.
 - **Privacy claim**: the app currently sends nothing anywhere, so "your answers
   stay in this browser" is true. Re-word it as soon as any answer is sent to an
   API, and redact personal details before they reach Gemini.
+
+## Future work
+
+- **Auto-sync wait times** from travel.state.gov through a cached API route,
+  with the static `WAIT_TIMES` in `lib/journey.ts` as the fallback.
 
 ## Notes
 

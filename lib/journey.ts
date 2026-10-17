@@ -27,8 +27,11 @@ export const STEP_ORDER: StepId[] = [
 
 // ---------------------------------------------------------------------------
 // SEED DATA: interview wait times for B-1/B-2 visas, in months.
-// TODO(team): replace with the official State Department "Global Visa Wait
-// Times" table and update WAIT_TIMES_AS_OF. Waits change week to week.
+// Values are the B1/B2 "Next Available Appointment" figures from the State
+// Department's Global Visa Wait Times table:
+// https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/global-visa-wait-times.html
+// The State Department updates it roughly monthly. To refresh, update the five
+// numbers below and WAIT_TIMES_AS_OF from that page.
 // needsCheck = this number came from a different or unconfirmed source.
 // ---------------------------------------------------------------------------
 export const WAIT_TIMES_AS_OF = "2026-09-17";
@@ -43,8 +46,8 @@ export const WAIT_TIMES: PostSeed[] = [
   { id: "delhi", waitMonths: 10, needsCheck: false },
   { id: "mumbai", waitMonths: 11.5, needsCheck: false },
   { id: "hyderabad", waitMonths: 12, needsCheck: false },
-  { id: "chennai", waitMonths: 7.5, needsCheck: true },
-  { id: "kolkata", waitMonths: 6.5, needsCheck: true },
+  { id: "chennai", waitMonths: 7.5, needsCheck: false },
+  { id: "kolkata", waitMonths: 6.5, needsCheck: false },
 ];
 
 // ---------------------------------------------------------------------------
