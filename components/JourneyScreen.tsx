@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { getUserJourney, updateJourneyProgress } from "@/app/actions/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { CONTENT_LAST_CHECKED } from "@/lib/config";
 import { useToday } from "@/lib/clock";
@@ -21,6 +23,9 @@ export function JourneyScreen() {
   const [settings] = useSettings();
   const today = useToday();
   const [openStep, setOpenStep] = useState<OpenStep | null>(null);
+  
+  // Auth0 User Session
+  const { user } = useUser();
 
   const ready = Boolean(today && trip.arrival && trip.from === "IN" && trip.to === "US");
 
@@ -28,6 +33,37 @@ export function JourneyScreen() {
     () => (ready ? buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths }) : null),
     [ready, today, trip.arrival, trip.stayMonths],
   );
+
+  // 1. Fetch from Tiger Data when they log in
+  useEffect(() => {
+    if (user) {
+      getUserJourney().then((data) => {
+        if (data && data.stop_status) {
+          // Merge database state into the local UI state
+          tripStore.set({ done: { ...trip.done, ...data.stop_status } });
+        }
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // 2. Save to Tiger Data when they click a step
+  const handleToggleDone = async (id: StepId) => {
+    const isNowDone = !trip.done[id];
+    
+    // Optimistic UI Update (instant feedback)
+    tripStore.set({ done: { ...trip.done, [id]: isNowDone } });
+
+    // Background Database Save
+    if (user) {
+      const stepIndex = STEP_ORDER.findIndex(step => step === id);
+      await updateJourneyProgress(
+        stepIndex + 1, 
+        id, 
+        isNowDone ? "completed" : "pending" // Or simply delete the key if unchecking
+      );
+    }
+  };
 
   if (!journey) {
     return (
@@ -80,7 +116,6 @@ export function JourneyScreen() {
         </p>
       </div>
 
-      {/* One sentence, one big button: always a way forward. */}
       <section
         aria-labelledby="next-title"
         className="flex flex-col gap-4 rounded-2xl border-2 border-accent bg-accent-soft p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
@@ -122,7 +157,7 @@ export function JourneyScreen() {
           statusOf={statusOf}
           open={openStep}
           onOpen={setOpenStep}
-          onToggleDone={(id) => tripStore.set({ done: { ...trip.done, [id]: !trip.done[id] } })}
+          onToggleDone={handleToggleDone} // <-- Replaced with database function
         />
       </section>
     </div>
