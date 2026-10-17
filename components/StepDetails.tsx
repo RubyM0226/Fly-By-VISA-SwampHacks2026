@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { DOCUMENTS } from "@/content/documents";
 import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
 import { plainText, RichText } from "./Glossary";
-import { ArrowIcon, CheckIcon, ExternalIcon, PinIcon } from "./Icons";
+import { ArrowIcon, CheckIcon, DocumentIcon, ExternalIcon, PinIcon } from "./Icons";
 import { SpeakButton } from "./SpeakButton";
 
 export type StepStatus = "done" | "current" | "upcoming";
@@ -25,6 +26,8 @@ interface Props {
 export function StepDetails({ step, plan, status, interviewDate, onToggleDone, autoFocus }: Props) {
   const { t, lang } = useT();
   const text = step.text[lang];
+  const documents = step.documents.map((id) => DOCUMENTS[id]);
+  const hasUploads = documents.some((d) => d.upload);
   const headingRef = useRef<HTMLHeadingElement>(null);
   // Set only by pressing "Mark as done" here, so the stamp thumps down once
   // then, and not when an already-done step is opened.
@@ -53,7 +56,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
   const readText = [
     `${text.title}.`,
     ...text.what.map(plainText),
-    `${t("journey.documents")}: ${text.documents.map(plainText).join(", ")}.`,
+    `${t("journey.documents")}: ${documents.map((d) => plainText(d.name[lang])).join(", ")}.`,
     text.cost && `${t("journey.cost")}: ${plainText(text.cost)}`,
     text.time && `${t("journey.time")}: ${plainText(text.time)}.`,
   ]
@@ -95,14 +98,27 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
             {t("journey.interviewSlot", { date: formatDate(interviewDate, lang) })}
           </p>
         )}
-        {step.action && (
-          <Link
-            href={step.action.href}
-            className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
-          >
-            {step.action.label[lang]}
-            <ArrowIcon className="h-6 w-6" />
-          </Link>
+        {(step.action || hasUploads) && (
+          <div className="flex flex-wrap gap-3">
+            {step.action && (
+              <Link
+                href={step.action.href}
+                className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
+              >
+                {step.action.label[lang]}
+                <ArrowIcon className="h-6 w-6" />
+              </Link>
+            )}
+            {hasUploads && (
+              <Link
+                href={`/documents#docs-${step.id}`}
+                className="inline-flex min-h-14 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-xl font-bold hover:bg-accent-soft"
+              >
+                <DocumentIcon className="h-6 w-6 shrink-0" />
+                {t("journey.goToDocuments")}
+              </Link>
+            )}
+          </div>
         )}
 
         <div>
@@ -119,9 +135,9 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
         <div>
           <h4 className="mb-1 text-lg font-bold">{t("journey.documents")}</h4>
           <ul className="list-disc space-y-1 pl-6 text-lg">
-            {text.documents.map((d) => (
-              <li key={d}>
-                <RichText text={d} />
+            {step.documents.map((id) => (
+              <li key={id}>
+                <RichText text={DOCUMENTS[id].name[lang]} />
               </li>
             ))}
           </ul>
