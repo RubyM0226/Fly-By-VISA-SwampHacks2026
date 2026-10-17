@@ -270,55 +270,94 @@ html[data-motion="paused"]::view-transition-group(*) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Roadmap: a winding trail of pills, with details sliding in beside it */
+/* Roadmap: a horizontal carousel of pills joined by a line             */
 /* ------------------------------------------------------------------ */
-.roadmap-stage {
-  container-type: inline-size;
+.roadmap-carousel {
+  position: relative;
+  --stop-w: 15rem; /* one step, including the space around its pill */
+}
+/* The scrolling strip. Padding lets the first and last step reach the middle;
+   the mask fades pills out at both edges. */
+.roadmap-track {
   display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  --path-w: 24rem;
-  --amp: 4rem; /* how far the trail sways left and right */
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding: 0.75rem calc(50% - var(--stop-w) / 2) 1.25rem;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
 }
-/* Centred on its own; slides to the left when a step is open. */
-.roadmap-path {
-  flex: none;
-  width: var(--path-w);
-  padding: 0.75rem 0 1.5rem;
-  transform: translateX(calc((100cqw - var(--path-w)) / 2));
-  transition: transform 500ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-.roadmap-stage[data-open] .roadmap-path { transform: none; }
+.roadmap-track::-webkit-scrollbar { display: none; }
+html[data-motion="paused"] .roadmap-track { scroll-behavior: auto; }
+@media (prefers-reduced-motion: reduce) { .roadmap-track { scroll-behavior: auto; } }
 
 .roadmap-stop {
+  flex: none;
+  width: var(--stop-w);
+  scroll-snap-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateX(calc(var(--wind) * var(--amp)));
 }
-.roadmap-dots {
+/* Room for the "You are here" tag on every step keeps the pills in one line. */
+.roadmap-tag-slot { min-height: 2.25rem; display: flex; align-items: flex-end; }
+/* Every row stretches to the tallest pill and centres its own, so pills with
+   one- and two-line titles line up and the joining line stays straight. */
+.roadmap-pill-row {
+  position: relative;
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.85rem 0 0.6rem;
+  justify-content: center;
+  width: 100%;
+  padding: 0 0.75rem;
 }
-.roadmap-dots > span {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 999px;
+/* The line to the next step, behind the pills. Green once this step is done. */
+.roadmap-stop:not(:last-child) .roadmap-pill-row::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 100%;
+  top: calc(50% - 1.5px);
+  height: 3px;
+  border-radius: 3px;
   background: var(--line-strong);
-  opacity: 0.6;
-  transform: translateX(calc(var(--shift) * var(--amp)));
+  z-index: 0;
 }
+.roadmap-stop[data-status="done"] .roadmap-pill-row::after { background: var(--accent); }
+.roadmap-pill-row > .roadmap-pill { z-index: 1; }
+
+/* Plain white arrows at each edge, above the fade. */
+.roadmap-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 2px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+}
+.roadmap-arrow:hover { background: var(--accent-soft); }
+.roadmap-arrow:disabled { opacity: 0.4; cursor: not-allowed; }
+.roadmap-arrow:disabled:hover { background: var(--surface); }
+.roadmap-arrow[data-side="left"] { left: 0.25rem; }
+.roadmap-arrow[data-side="right"] { right: 0.25rem; }
 
 .roadmap-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 15rem;
-  max-width: calc(100% - 2 * var(--amp));
+  width: 100%;
   min-height: 3.5rem;
   padding: 0.6rem 1.25rem;
   border: 2px solid var(--line-strong);
@@ -360,25 +399,18 @@ html[data-motion="paused"]::view-transition-group(*) {
   box-shadow: 0 5px 0 var(--pill-edge), 0 0 0 5px var(--bg), 0 0 0 8px var(--accent);
 }
 
+/* The details box opens below the carousel, full width. */
 .roadmap-panel {
-  flex: 1;
-  min-width: 0;
-  position: sticky;
-  top: calc(var(--sticky-header-h, 0px) + 1rem);
-  max-height: calc(100dvh - var(--sticky-header-h, 0px) - 2rem);
-  overflow-y: auto;
+  margin-top: 0.5rem;
   border-radius: 1rem;
-  animation: roadmap-panel-in 450ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation: roadmap-panel-in 400ms cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 @keyframes roadmap-panel-in {
-  from { opacity: 0; transform: translateX(3rem); }
+  from { opacity: 0; transform: translateY(1.5rem); }
 }
 
-/* Narrow screens: the trail fills the width, and an open step takes its place. */
-@container (max-width: 48rem) {
-  .roadmap-path { width: 100%; transform: none; --amp: 1.75rem; }
-  .roadmap-stage[data-open] .roadmap-path { display: none; }
-  .roadmap-panel { position: static; max-height: none; overflow: visible; }
+@container (max-width: 40rem) {
+  .roadmap-carousel { --stop-w: 12.5rem; }
 }
 
 /* A soft pulse for the "you are here" marker. Disabled by the rules above. */
