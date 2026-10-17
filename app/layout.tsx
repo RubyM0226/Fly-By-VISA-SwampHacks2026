@@ -10,6 +10,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
 import { SideNav } from "@/components/SideNav";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "FlyByVisa — your step-by-step path to the U.S.",
@@ -30,7 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         {/* Nav on the left (an icon rail on narrow screens); the page and footer fill the rest. */}
         <div className="flex flex-1">
-          <SideNav />
+          <Suspense fallback={<div>Loading...</div>}>
+  <SideNav />
+</Suspense>
           <div className="@container flex min-w-0 flex-1 flex-col">
             <main id="main-content" tabIndex={-1} className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-10 outline-none">
               {children}
