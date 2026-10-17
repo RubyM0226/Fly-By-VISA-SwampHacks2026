@@ -126,6 +126,18 @@ body {
 
 dialog::backdrop { background: rgb(0 0 0 / 0.55); }
 
+/* The native date picker icon is a separate focus stop; give it the same ring. */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+html[data-contrast="high"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
 /* A soft pulse for the "you are here" marker. Disabled by the rules above. */
 @keyframes saathi-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }

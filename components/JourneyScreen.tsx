@@ -71,7 +71,7 @@ export function JourneyScreen() {
         </p>
         <p className="text-base text-muted">
           {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}{" "}
-          <Link href="/start" className="font-semibold text-accent underline">
+          <Link href="/start" className="inline-flex min-h-12 items-center font-semibold text-accent underline">
             {t("journey.edit")}
           </Link>
         </p>

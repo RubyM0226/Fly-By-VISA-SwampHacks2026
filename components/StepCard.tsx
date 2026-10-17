@@ -57,7 +57,7 @@ export function StepCard({ step, plan, number, status, isLast, interviewDate, op
 
   const readText = simple
     ? `${text.title}. ${text.simple}`
-    : `${text.title}. ${plainText(text.what)} ${plainText(text.why)} ${text.documents.join(", ")}.`;
+    : `${text.title}. ${plainText(text.what)} ${plainText(text.why)} ${text.documents.map(plainText).join(", ")}.`;
 
   return (
     <li id={`step-${step.id}`} className="relative scroll-mt-4 pb-6 pl-16">
@@ -120,7 +120,9 @@ export function StepCard({ step, plan, number, status, isLast, interviewDate, op
               <h4 className="mb-1 text-lg font-bold">{t("journey.documents")}</h4>
               <ul className="list-disc space-y-1 pl-6 text-lg">
                 {text.documents.map((d) => (
-                  <li key={d}>{d}</li>
+                  <li key={d}>
+                    <RichText text={d} />
+                  </li>
                 ))}
               </ul>
             </div>
@@ -128,11 +130,15 @@ export function StepCard({ step, plan, number, status, isLast, interviewDate, op
             <dl className="grid gap-3 text-lg sm:grid-cols-2">
               <div>
                 <dt className="font-bold">{t("journey.cost")}</dt>
-                <dd>{text.cost}</dd>
+                <dd>
+                  <RichText text={text.cost} />
+                </dd>
               </div>
               <div>
                 <dt className="font-bold">{t("journey.time")}</dt>
-                <dd>{text.time}</dd>
+                <dd>
+                  <RichText text={text.time} />
+                </dd>
               </div>
             </dl>
 

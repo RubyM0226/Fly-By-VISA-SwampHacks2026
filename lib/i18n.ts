@@ -42,7 +42,7 @@ const en = {
 
   "start.title": "Tell us about your trip",
   "start.privacy": "Your answers stay in this browser. We do not send them anywhere.",
-  "start.visaNote": "We will plan for a visitor visa (B-2) for a first-time applicant.",
+  "start.visaNote": "We will plan for a visitor visa ([[b2|B-2]]) for a first-time applicant.",
   "start.why": "Why are you going?",
   "start.why.family": "Visit family",
   "start.why.study": "Study",
@@ -194,7 +194,7 @@ const hi: Record<UiKey, string> = {
 
   "start.title": "अपनी यात्रा के बारे में बताइए",
   "start.privacy": "आपके जवाब इसी ब्राउज़र में रहते हैं। हम इन्हें कहीं नहीं भेजते।",
-  "start.visaNote": "हम पहली बार आवेदन करने वाले के लिए आगंतुक वीज़ा (B-2) के हिसाब से योजना बनाएँगे।",
+  "start.visaNote": "हम पहली बार आवेदन करने वाले के लिए आगंतुक वीज़ा ([[b2|B-2]]) के हिसाब से योजना बनाएँगे।",
   "start.why": "आप क्यों जा रहे हैं?",
   "start.why.family": "परिवार से मिलने",
   "start.why.study": "पढ़ाई",

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { addDays } from "@/lib/journey";
 import { useToday } from "@/lib/clock";
+import { RichText } from "./Glossary";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
@@ -67,7 +68,9 @@ export function StartScreen() {
       <div className="space-y-3">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("start.title")}</h1>
         <p className="rounded-xl border-2 border-line-strong bg-accent-soft p-4 text-lg">{t("start.privacy")}</p>
-        <p className="text-lg text-muted">{t("start.visaNote")}</p>
+        <p className="text-lg text-muted">
+          <RichText text={t("start.visaNote")} />
+        </p>
       </div>
 
       {/* 1. Why */}
