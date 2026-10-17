@@ -88,6 +88,8 @@ html[data-contrast="high"] {
 html {
   /* Everything is in rem, so this scales the whole page, not just text. */
   font-size: calc(18px * var(--text-scale));
+  /* Keep focused elements and anchor targets clear of the sticky header. */
+  scroll-padding-top: calc(var(--sticky-header-h, 0px) + 0.75rem);
 }
 html[data-text-size="1"] { --text-scale: 1.2; }
 html[data-text-size="2"] { --text-scale: 1.4; }
