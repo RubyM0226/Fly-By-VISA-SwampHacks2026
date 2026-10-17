@@ -46,7 +46,7 @@ export function SideNav() {
   return (
     <nav
       aria-label={t("nav.main")}
-      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 overflow-y-auto border-r-2 border-line bg-surface md:w-56"
+      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 overflow-y-auto border-r-2 border-line bg-surface md:w-56 lg:w-1/4"
     >
       <ul className="flex flex-col gap-2 p-[8px] md:p-3">
         {user ? (
