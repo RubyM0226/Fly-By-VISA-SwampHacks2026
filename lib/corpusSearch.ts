@@ -51,6 +51,11 @@ function pool(): Pool {
   return globals.corpusPool;
 }
 
+/** The shared Gemini client for GEMINI_API_KEY (also used by Scam Check in lib/scam/service.ts). */
+export function ai(): GoogleGenAI {
+  return client(process.env.GEMINI_API_KEY ?? "");
+}
+
 function client(apiKey: string): GoogleGenAI {
   globals.corpusAi ??= new Map();
   let ai = globals.corpusAi.get(apiKey);

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
@@ -27,6 +27,15 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
   const { t, lang } = useT();
   const text = step.text[lang];
   const headingRef = useRef<HTMLHeadingElement>(null);
+  // Set only by pressing "Mark as done" here, so the stamp thumps down once
+  // then, and not when an already-done step is opened.
+  const [justStamped, setJustStamped] = useState(false);
+
+  function toggleDone() {
+    const markingDone = status !== "done";
+    setJustStamped(markingDone);
+    onToggleDone();
+  }
 
   useEffect(() => {
     if (autoFocus) headingRef.current?.focus({ preventScroll: true });
@@ -56,14 +65,23 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
       className={`rounded-2xl border-2 bg-surface ${status === "current" ? "border-accent" : "border-line-strong"}`}
     >
       <div className="space-y-3 border-b-2 border-line p-4">
-        <button
-          type="button"
-          onClick={onClose}
-          className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
-        >
-          <ArrowIcon className="h-5 w-5 rotate-180" />
-          {t("journey.backToMap")}
-        </button>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+          >
+            <ArrowIcon className="h-5 w-5 rotate-180" />
+            {t("journey.backToMap")}
+          </button>
+          {/* Decorative: the status line below already says "Done" in words. */}
+          {status === "done" && (
+            <span aria-hidden="true" className="done-stamp" data-animate={justStamped || undefined}>
+              <CheckIcon className="h-5 w-5 shrink-0" />
+              {t("journey.stamp")}
+            </span>
+          )}
+        </div>
         <div className="space-y-1">
           <p className="flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-muted">
             {status === "current" && <PinIcon className="h-5 w-5" />}
@@ -156,7 +174,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
         <div className="flex flex-wrap gap-3 border-t-2 border-line pt-4">
           <button
             type="button"
-            onClick={onToggleDone}
+            onClick={toggleDone}
             className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-2 text-lg font-bold ${
               status === "done"
                 ? "border-2 border-line-strong bg-surface text-ink hover:bg-accent-soft"
@@ -166,6 +184,9 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
             {status !== "done" && <CheckIcon className="h-5 w-5" />}
             {status === "done" ? t("journey.undo") : t("journey.markDone")}
           </button>
+          <p role="status" className="sr-only">
+            {status === "done" && justStamped ? t("journey.markedDone") : ""}
+          </p>
         </div>
       </div>
     </article>

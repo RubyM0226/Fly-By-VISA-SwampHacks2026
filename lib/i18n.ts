@@ -131,6 +131,8 @@ const en = {
   "journey.showDetails": "Show details",
   "journey.markDone": "Mark as done",
   "journey.undo": "Undo",
+  "journey.stamp": "Done",
+  "journey.markedDone": "Step marked as done.",
   "journey.whatToDo": "What to do",
   "journey.documents": "What you need",
   "journey.cost": "Cost",
@@ -394,6 +396,9 @@ const hi: Record<UiKey, string> = {
   "journey.showDetails": "विवरण देखें",
   "journey.markDone": "पूरा हुआ",
   "journey.undo": "वापस करें",
+  // DRAFT: the two stamp strings below need a native Hindi reader.
+  "journey.stamp": "पूरा हुआ",
+  "journey.markedDone": "चरण को पूरा चिह्नित किया गया।",
   "journey.whatToDo": "क्या करना है",
   "journey.documents": "आपको क्या चाहिए",
   "journey.cost": "खर्च",
