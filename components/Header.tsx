@@ -1,16 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
 import { useT } from "@/lib/i18n";
 import { LogoIcon } from "./Icons";
 import { AccessibilityBar } from "./AccessibilityBar";
 
-/** One sticky row: logo, accessibility controls, More. Sign-in lives in the side nav. */
+interface UserProfile {
+  name?: string;
+  email?: string;
+}
+
+/** One sticky row: logo, accessibility controls, Auth0 controls. */
 export function Header() {
   const { t, lang } = useT();
   const ref = useRef<HTMLElement>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  // Fetch Auth0 session profile
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/auth/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data) setUser(data);
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Tell the page how tall the sticky header is, so the side nav, focused
   // elements and in-page links are never hidden underneath it.
