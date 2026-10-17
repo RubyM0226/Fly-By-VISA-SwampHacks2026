@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useT, type UiKey } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
 import { BookIcon, DocumentIcon, MapIcon, PlaneIcon, PlanIcon, UserIcon } from "./Icons";
+import { ScamCheckNav } from "./ScamCheck";
 
 type IconType = (props: { className?: string }) => React.ReactElement;
 
@@ -50,9 +51,9 @@ export function SideNav() {
   return (
     <nav
       aria-label={t("nav.main")}
-      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 overflow-y-auto border-r-2 border-line bg-surface md:w-56 lg:w-1/4"
+      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 flex flex-col overflow-y-auto border-r-2 border-line bg-surface md:w-56 lg:w-1/4"
     >
-      <ul className="flex flex-col gap-2 p-[8px] md:p-3">
+      <ul className="flex shrink-0 flex-col gap-2 p-[8px] md:p-3">
         {user ? (
           item("/my-plan", "nav.myPlan", PlanIcon)
         ) : (
@@ -69,6 +70,8 @@ export function SideNav() {
         {item("/documents", "nav.documents", DocumentIcon)}
         {item("/glossary", "nav.glossary", BookIcon)}
       </ul>
+      {/* Scam Check fills the space under the links (an icon that opens it on phones). */}
+      <ScamCheckNav />
     </nav>
   );
 }

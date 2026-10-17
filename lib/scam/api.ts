@@ -44,7 +44,8 @@ export interface AiReview {
   sources: Source[];
 }
 
-export type Note = "ai-off" | "ai-failed" | "rate-limited";
+/** "offline" is set by the browser when it could not reach the server. */
+export type Note = "ai-off" | "ai-failed" | "rate-limited" | "offline";
 
 export interface ScamCheckResponse {
   kind: Kind;
