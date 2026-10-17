@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
@@ -8,12 +8,15 @@ import { useTrip, tripStore } from "@/lib/trip";
 import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
+import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 
 export function MyPlanScreen() {
   const { t, lang } = useT();
   const user = useProfile();
   const { user: auth0User } = useUser();
   const [trip] = useTrip();
+  const [helperUrl, setHelperUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
@@ -60,8 +63,20 @@ export function MyPlanScreen() {
     return code || "Not selected";
   };
 
+  const handleGenerateLink = async () => {
+    setIsGenerating(true);
+    const res = await createHelperLink("Family Helper");
+    if (res.token) {
+      const url = `${window.location.origin}/help/${res.token}`;
+      setHelperUrl(url);
+      navigator.clipboard.writeText(url);
+      alert("Helper link copied to clipboard!");
+    }
+    setIsGenerating(false);
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <h1 className="text-3xl font-bold">{t("nav.myPlan")}</h1>
 
       {user === undefined && <p className="text-lg text-muted">{t("myPlan.checking")}</p>}
@@ -128,6 +143,55 @@ export function MyPlanScreen() {
                 <p className="text-xl font-bold text-accent-ink">{currentStepTitle}</p>
               </div>
             </div>
+          </div>
+
+          {/* Helper Access Card */}
+          <div className="rounded-xl border-2 border-line-strong bg-surface p-6 space-y-4">
+            <h2 className="text-2xl font-bold text-accent">Helper Collaboration Link</h2>
+            <p className="text-muted">
+              Invite a family member abroad to check off administrative requirements and view your roadmap status without needing an account.
+            </p>
+
+            {helperUrl ? (
+              <div className="space-y-3">
+                <div className="rounded-lg border-2 border-line bg-slate-50 p-3 text-sm font-mono break-all text-slate-700">
+                  {helperUrl}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(helperUrl);
+                      alert("Link copied to clipboard!");
+                    }}
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-5 py-2 text-base font-bold text-accent-ink hover:bg-accent/90"
+                  >
+                    Copy Link Again
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const token = helperUrl.split("/").pop();
+                      if (token) await revokeHelperLink(token);
+                      setHelperUrl(null);
+                      alert("Helper link revoked successfully.");
+                    }}
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-red-300 bg-red-50 px-5 py-2 text-base font-semibold text-red-700 hover:bg-red-100"
+                  >
+                    Stop Sharing (Revoke Link)
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                disabled={isGenerating}
+                onClick={handleGenerateLink}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-6 py-3 text-lg font-bold text-accent-ink hover:bg-accent/90 disabled:opacity-50"
+              >
+                {isGenerating ? "Generating..." : "Generate & Copy Helper Link"}
+              </button>
+            )}
           </div>
 
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
