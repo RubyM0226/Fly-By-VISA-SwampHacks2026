@@ -1,15 +1,51 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
 import { useTrip, tripStore } from "@/lib/trip";
 import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
+import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 
 export function MyPlanScreen() {
   const { t, lang } = useT();
   const user = useProfile();
-  const [trip, setTrip] = useTrip();
+  const { user: auth0User } = useUser();
+  const [trip] = useTrip();
+
+  // Gatekeeper to prevent React infinite loops
+  const hasSynced = useRef(false);
+
+  // Sync travel profile and journey state from Tiger Data on login
+  useEffect(() => {
+    if (auth0User?.sub && !hasSynced.current) {
+      hasSynced.current = true;
+
+      const syncDatabase = async () => {
+        const tempId = localStorage.getItem("temp_journey_id");
+        if (tempId) {
+          await claimAnonymousJourney(tempId);
+          localStorage.removeItem("temp_journey_id");
+        }
+
+        const data = await getUserJourney();
+        if (data) {
+          tripStore.set({ 
+            from: data.profile?.from || "IN",
+            to: data.profile?.to || "US",
+            arrival: data.profile?.arrival || "",
+            stayMonths: data.profile?.stayMonths || 1,
+            purpose: data.profile?.purpose || "family",
+            done: data.stop_status || {} 
+          });
+        }
+      };
+
+      syncDatabase();
+    }
+  }, [auth0User?.sub]);
 
   // Calculate their current place on the roadmap
   const currentId = STEP_ORDER.find((id) => !trip.done[id]);
@@ -17,7 +53,7 @@ export function MyPlanScreen() {
     ? STEP_BY_ID[currentId]?.text[lang]?.title || "Next Step"
     : "All steps completed! You are ready to fly.";
 
-  // Helper to format country codes (Update these if you have a countries mapping file)
+  // Helper to format country codes
   const getCountryName = (code?: string) => {
     if (code === "IN") return "India";
     if (code === "US") return "United States";
@@ -73,7 +109,6 @@ export function MyPlanScreen() {
                 </p>
               </div>
 
-              {/* Add reason for visit if you have it in tripStore, default to Tourism/Business otherwise */}
               <div className="space-y-1">
                 <p className="text-sm font-bold uppercase tracking-wide text-muted">Reason for Visit</p>
                 <p className="text-lg font-medium text-slate-800">Tourism / Business (B1/B2)</p>
