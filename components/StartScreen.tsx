@@ -33,7 +33,7 @@ export function StartScreen() {
         <h1 className="text-3xl font-bold">{t("start.title")}</h1>
         <p className="text-xl">{t("start.needPlaces")}</p>
         <Link
-          href="/"
+          href="/places"
           transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
@@ -188,7 +188,7 @@ export function StartScreen() {
           {!isSubmitting && <ArrowIcon className="h-6 w-6" />}
         </button>
         <Link
-          href="/"
+          href="/places"
           transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center justify-center rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-lg font-semibold hover:bg-accent-soft"
