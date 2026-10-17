@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { buildJourney, formatDate, WAIT_TIMES, WAIT_TIMES_AS_OF, type PostId } from "@/lib/journey";
 import { OFFICE_MAPS, type Office } from "@/lib/offices";
 import { useTrip } from "@/lib/trip";
+import { ShortestWaitBadge } from "./FitPanel";
 
 // Set in .env.local. NEXT_PUBLIC_ so the browser can use it; restrict the key
 // to this site's address in Google Cloud. The placeholder value
@@ -67,6 +68,8 @@ export function LocationMapScreen() {
 
   // Same numbers as the "Earliest interview" calculation.
   const waits = useMemo(() => Object.fromEntries(WAIT_TIMES.map((w) => [w.id, w.waitMonths])) as Record<PostId, number>, []);
+  // The lowest wait in the data. Every office at exactly that value gets the badge.
+  const shortestWait = useMemo(() => Math.min(...Object.values(waits)), [waits]);
   const earliest = useMemo(() => {
     if (!today || !trip.arrival) return null;
     const journey = buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths });
@@ -197,7 +200,15 @@ export function LocationMapScreen() {
             const { title, lines } = officeLines(o);
             return (
               <li key={o.id} className="space-y-1 rounded-xl border-2 border-line-strong bg-surface p-4">
-                <p className="text-lg font-bold">{title}</p>
+                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-bold">
+                  <span>{title}</span>
+                  {waits[o.id] === shortestWait && (
+                    <>
+                      <span className="sr-only">, </span>
+                      <ShortestWaitBadge />
+                    </>
+                  )}
+                </p>
                 {lines.map((line) => (
                   <p key={line} className="text-base">
                     {line}
