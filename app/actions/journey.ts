@@ -4,6 +4,18 @@ import { auth0 } from "@/lib/auth0";
 import sql from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
+export interface JourneyProfile {
+  from: string;
+  fromCity: string;
+  homeAirport: string;
+  to: string;
+  toCity: string;
+  destAirport: string;
+  arrival: string;
+  stayMonths: number;
+  purpose: string;
+}
+
 export async function getUserJourney() {
   const session = await auth0.getSession();
   if (!session?.user) return null;
@@ -55,21 +67,19 @@ export async function updateJourneyProgress(newStop: number, stopId: string, sta
   }
 }
 
-export async function createIntakeJourney(profileData: Parameters<typeof sql.json>[0]) {
+export async function createIntakeJourney(profileData: JourneyProfile) {
   const session = await auth0.getSession();
   const userId = session?.user?.sub || null;
 
   try {
     if (userId) {
-      // If they are already signed in, check if they have a journey we can overwrite
       const existing = await sql`SELECT id FROM journeys WHERE user_id = ${userId}`;
       if (existing.length > 0) {
-        // Reset their progress and store the new profile
         await sql`
           UPDATE journeys 
           SET current_stop = 1, 
               stop_status = '{}'::jsonb, 
-              profile = ${sql.json(profileData)}, 
+              profile = ${sql.json(profileData as any)}, 
               updated_at = CURRENT_TIMESTAMP
           WHERE user_id = ${userId}
         `;
@@ -77,10 +87,9 @@ export async function createIntakeJourney(profileData: Parameters<typeof sql.jso
       }
     }
 
-    // Insert a brand new journey (anonymous or new user) with profile data
     const result = await sql`
       INSERT INTO journeys (user_id, current_stop, stop_status, profile)
-      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData)})
+      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData as any)})
       RETURNING id
     `;
     
