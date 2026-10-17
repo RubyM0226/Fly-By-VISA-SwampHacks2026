@@ -9,20 +9,35 @@
   --leading: 1.6;
   --weight: 400;
 
-  --bg: #fbf7f0;
-  --surface: #ffffff;
-  --ink: #1f2430;
-  --muted: #4b5263;
-  --line: #ddd5c5;
-  --line-strong: #7a7468;
-  --accent: #0b6b66;
+  /* Palette from the misty-hills illustration: pale sky, sage and
+     forest greens, a teal-blue ridge, and a soft lime hill. */
+  --bg: #dcebee;
+  --surface: #f9fbfa;
+  --ink: #1b2b30;
+  --muted: #3e5258;
+  --line: #c6d9d7;
+  --line-strong: #56716f;
+  --accent: #285d4a;
   --accent-ink: #ffffff;
-  --accent-soft: #ddf0ee;
-  --warm: #f6e7c8;
-  --warm-ink: #6a3e00;
+  --accent-soft: #dcebe2;
+  --warm: #eef0cf;
+  --warm-ink: #4a5110;
   --danger: #9b1c1c;
-  --danger-soft: #fbe4e4;
+  --danger-soft: #f8e3e1;
   --focus: #1d4ed8;
+
+  /* Footer hills */
+  --hill-ridge: #5f8d99;
+  --hill-sage: #7ea487;
+  --hill-lime: #c4d38c;
+  --hill-forest: #2f5a45;
+  --footer-ink: #ffffff;
+  --footer-link: #e6efb4;
+
+  /* Backgrounds. Set to none in high contrast. */
+  --sky: url("/textures/sky.svg");
+  --grain: url("/textures/grain.svg");
+  --grain-opacity: 0.05;
 
   color-scheme: light;
 }
@@ -42,6 +57,11 @@ html[data-contrast="high"] {
   --danger: #ff9a9a;
   --danger-soft: #1a1a1a;
   --focus: #00e5ff;
+  --hill-forest: #000000;
+  --footer-ink: #ffffff;
+  --footer-link: #ffd400;
+  --sky: none;
+  --grain: none;
   color-scheme: dark;
 }
 
@@ -117,6 +137,61 @@ body {
   line-height: var(--leading);
   font-weight: var(--weight);
 }
+
+/* ------------------------------------------------------------------ */
+/* Sky, grain and footer hills                                          */
+/* ------------------------------------------------------------------ */
+/* The sky sits behind everything and stays put while the page scrolls. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--sky) center top / cover no-repeat, var(--bg);
+  pointer-events: none;
+}
+
+/* Barely-there grain on the sky and on surfaces. It sits on backgrounds
+   only, never over text. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--grain);
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+}
+.bg-surface,
+.bg-accent-soft,
+.bg-warm {
+  background-image: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)), var(--grain);
+  background-blend-mode: normal, soft-light;
+}
+html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-image: none; }
+
+.site-footer {
+  position: relative;
+  color: var(--footer-ink);
+}
+.site-footer__hills { display: block; width: 100%; height: clamp(6rem, 16vw, 13rem); }
+.site-footer__body {
+  background-color: var(--hill-forest);
+  margin-top: -1px;
+}
+/* One grain layer over hills and body so they read as one painted piece. */
+.site-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.site-footer a { color: var(--footer-link); }
+html[data-contrast="high"] .site-footer__hills { display: none; }
+html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); }
 
 :focus-visible {
   outline: 3px solid var(--focus);
