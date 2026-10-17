@@ -11,6 +11,7 @@ import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
 import { DatePicker } from "./DatePicker";
 import { BACK, FORWARD } from "./ScreenTransition";
+import { createIntakeJourney } from "@/app/actions/journey";
 
 const MONTH_CHOICES = [1, 2, 3, 4, 5, 6];
 
@@ -21,6 +22,7 @@ export function StartScreen() {
   const update = tripStore.set;
   const today = useToday();
   const [error, setError] = useState<"" | "needDate" | "pastDate">("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dateRef = useRef<{ focus: () => void } | null>(null);
 
   const placesChosen = trip.from === "IN" && trip.to === "US";
@@ -31,7 +33,7 @@ export function StartScreen() {
         <h1 className="text-3xl font-bold">{t("start.title")}</h1>
         <p className="text-xl">{t("start.needPlaces")}</p>
         <Link
-          href="/"
+          href="/places"
           transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
@@ -51,7 +53,7 @@ export function StartScreen() {
     setError("");
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!trip.arrival) {
       setError("needDate");
@@ -63,6 +65,27 @@ export function StartScreen() {
       dateRef.current?.focus();
       return;
     }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create the row in Tiger Data WITH the profile data
+      const res = await createIntakeJourney({
+        from: trip.from,
+        to: trip.to,
+        arrival: trip.arrival,
+        stayMonths: trip.stayMonths,
+        purpose: trip.purpose || "family"
+      });
+      
+      if (res?.id) {
+        // Stash the UUID locally so Auth0 can claim it upon login
+        localStorage.setItem("temp_journey_id", res.id);
+      }
+    } catch (err) {
+      console.error("Database connection failed", err);
+    }
+
     router.push("/journey", { transitionTypes: FORWARD });
   }
 
@@ -158,13 +181,14 @@ export function StartScreen() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="submit"
-          className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
+          disabled={isSubmitting}
+          className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink disabled:opacity-50"
         >
-          {t("start.make")}
-          <ArrowIcon className="h-6 w-6" />
+          {isSubmitting ? "Saving..." : t("start.make")}
+          {!isSubmitting && <ArrowIcon className="h-6 w-6" />}
         </button>
         <Link
-          href="/"
+          href="/places"
           transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center justify-center rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-lg font-semibold hover:bg-accent-soft"

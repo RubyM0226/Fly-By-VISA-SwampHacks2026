@@ -1,0 +1,789 @@
+{
+  "search_metadata": {
+    "id": "6ad39e5e2f5ea0a8ce760c9a",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/ia05bLqgcL5E2drLwxbURkPm3E_MsW6ySK47OCw0fAU/6ad39e5e2f5ea0a8ce760c9a.json",
+    "markdown_endpoint": "https://serpapi.com/searches/ia05bLqgcL5E2drLwxbURkPm3E_MsW6ySK47OCw0fAU/6ad39e5e2f5ea0a8ce760c9a.md",
+    "created_at": "2026-10-17 16:12:14 UTC",
+    "processed_at": "2026-10-17 16:12:14 UTC",
+    "google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=in&curr=USD&tfs=CBwQAhoeEgoyMDI2LTEyLTEwagcIARIDREVMcgcIARIDSkZLQAFIAXABmAEC&tfu=EgIIAQ",
+    "raw_html_file": "https://serpapi.com/searches/ia05bLqgcL5E2drLwxbURkPm3E_MsW6ySK47OCw0fAU/6ad39e5e2f5ea0a8ce760c9a.html",
+    "prettify_html_file": "https://serpapi.com/searches/ia05bLqgcL5E2drLwxbURkPm3E_MsW6ySK47OCw0fAU/6ad39e5e2f5ea0a8ce760c9a.prettify",
+    "total_time_taken": 2.24
+  },
+  "search_parameters": {
+    "engine": "google_flights",
+    "hl": "en",
+    "gl": "in",
+    "type": "2",
+    "departure_id": "DEL",
+    "arrival_id": "JFK",
+    "outbound_date": "2026-12-10",
+    "currency": "USD"
+  },
+  "best_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 21:35"
+          },
+          "arrival_airport": {
+            "name": "Bahrain International Airport",
+            "id": "BAH",
+            "time": "2026-12-10 23:55"
+          },
+          "duration": 290,
+          "airplane": "Airbus A321neo",
+          "airline": "Gulf Air",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+          "travel_class": "Economy",
+          "flight_number": "GF 135",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "In-seat power & USB outlets",
+            "Stream media to your device",
+            "Carbon emissions estimate: 214 kg"
+          ]
+        },
+        {
+          "departure_airport": {
+            "name": "Bahrain International Airport",
+            "id": "BAH",
+            "time": "2026-12-11 02:50"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-11 09:00"
+          },
+          "duration": 850,
+          "airplane": "Boeing 787",
+          "airline": "Gulf Air",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+          "travel_class": "Economy",
+          "flight_number": "GF 91",
+          "legroom": "32 in",
+          "extensions": [
+            "Above average legroom (32 in)",
+            "Free Wi-Fi",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 571 kg"
+          ],
+          "overnight": true
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 175,
+          "name": "Bahrain International Airport",
+          "id": "BAH"
+        }
+      ],
+      "total_duration": 1315,
+      "carbon_emissions": {
+        "this_flight": 786000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 4
+      },
+      "price": 503,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3BIUmpFek5YeEhSamt4R2dzSTZZZ0RFQUlhQTFWVFJEZ2NjT21JQXc9PSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkJBSCIsbnVsbCwiR0YiLCIxMzUiXSxbIkJBSCIsIjIwMjYtMTItMTEiLCJKRksiLG51bGwsIkdGIiwiOTEiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 03:45"
+          },
+          "arrival_airport": {
+            "name": "Leonardo da Vinci International Airport",
+            "id": "FCO",
+            "time": "2026-12-10 08:15"
+          },
+          "duration": 540,
+          "airplane": "Airbus A330-900neo",
+          "airline": "ITA",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AZ.png",
+          "travel_class": "Economy",
+          "flight_number": "AZ 769",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 366 kg"
+          ],
+          "overnight": true,
+          "often_delayed_by_over_30_min": true
+        },
+        {
+          "departure_airport": {
+            "name": "Leonardo da Vinci International Airport",
+            "id": "FCO",
+            "time": "2026-12-10 10:15"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 14:15"
+          },
+          "duration": 600,
+          "airplane": "Airbus A330-900neo",
+          "airline": "ITA",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AZ.png",
+          "travel_class": "Economy",
+          "flight_number": "AZ 608",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 378 kg"
+          ],
+          "often_delayed_by_over_30_min": true
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 120,
+          "name": "Leonardo da Vinci International Airport",
+          "id": "FCO"
+        }
+      ],
+      "total_duration": 1260,
+      "carbon_emissions": {
+        "this_flight": 745000,
+        "typical_for_this_route": 756000,
+        "difference_percent": -1
+      },
+      "price": 595,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AZ.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3RCV2pjMk9YeEJXall3T0JvTENNWFFBeEFDR2dOVlUwUTRISERGMEFNPSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkZDTyIsbnVsbCwiQVoiLCI3NjkiXSxbIkZDTyIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkFaIiwiNjA4Il1dXQ=="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 23:55"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-11 06:10"
+          },
+          "duration": 1005,
+          "airplane": "Boeing 787",
+          "airline": "American",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+          "travel_class": "Economy",
+          "flight_number": "AA 293",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 923 kg"
+          ],
+          "overnight": true
+        }
+      ],
+      "total_duration": 1005,
+      "carbon_emissions": {
+        "this_flight": 923000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 22
+      },
+      "price": 641,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ1ZCUVRJNU14b0xDTVgwQXhBQ0dnTlZVMFE0SEhERjlBTT0iLFtbIkRFTCIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkFBIiwiMjkzIl1dXQ=="
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 05:40"
+          },
+          "arrival_airport": {
+            "name": "Bahrain International Airport",
+            "id": "BAH",
+            "time": "2026-12-10 08:00"
+          },
+          "duration": 290,
+          "airplane": "Airbus A321neo",
+          "airline": "Gulf Air",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+          "travel_class": "Economy",
+          "flight_number": "GF 131",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "In-seat power & USB outlets",
+            "Stream media to your device",
+            "Carbon emissions estimate: 214 kg"
+          ]
+        },
+        {
+          "departure_airport": {
+            "name": "Bahrain International Airport",
+            "id": "BAH",
+            "time": "2026-12-11 02:50"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-11 09:00"
+          },
+          "duration": 850,
+          "airplane": "Boeing 787",
+          "airline": "Gulf Air",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+          "travel_class": "Economy",
+          "flight_number": "GF 91",
+          "legroom": "32 in",
+          "extensions": [
+            "Above average legroom (32 in)",
+            "Free Wi-Fi",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 571 kg"
+          ],
+          "overnight": true
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 1130,
+          "name": "Bahrain International Airport",
+          "id": "BAH"
+        }
+      ],
+      "total_duration": 2270,
+      "carbon_emissions": {
+        "this_flight": 786000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 4
+      },
+      "price": 482,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/GF.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3BIUmpFek1YeEhSamt4R2dzSTdmY0NFQUlhQTFWVFJEZ2NjTzMzQWc9PSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkJBSCIsbnVsbCwiR0YiLCIxMzEiXSxbIkJBSCIsIjIwMjYtMTItMTEiLCJKRksiLG51bGwsIkdGIiwiOTEiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 11:20"
+          },
+          "arrival_airport": {
+            "name": "Heathrow Airport",
+            "id": "LHR",
+            "time": "2026-12-10 15:55"
+          },
+          "duration": 605,
+          "airplane": "Boeing 787",
+          "airline": "Virgin Atlantic",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VS.png",
+          "travel_class": "Economy",
+          "flight_number": "VS 301",
+          "ticket_also_sold_by": [
+            "Delta"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 469 kg"
+          ]
+        },
+        {
+          "departure_airport": {
+            "name": "Heathrow Airport",
+            "id": "LHR",
+            "time": "2026-12-10 20:10"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 23:30"
+          },
+          "duration": 500,
+          "airplane": "Airbus A330-900neo",
+          "airline": "Virgin Atlantic",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VS.png",
+          "travel_class": "Economy",
+          "flight_number": "VS 25",
+          "ticket_also_sold_by": [
+            "Delta"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 288 kg"
+          ]
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 255,
+          "name": "Heathrow Airport",
+          "id": "LHR"
+        }
+      ],
+      "total_duration": 1360,
+      "carbon_emissions": {
+        "this_flight": 758000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 0
+      },
+      "price": 526,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VS.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3BXVXpNd01YeFdVekkxR2dzSXk1b0RFQUlhQTFWVFJEZ2NjTXVhQXc9PSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkxIUiIsbnVsbCwiVlMiLCIzMDEiXSxbIkxIUiIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIlZTIiwiMjUiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 05:10"
+          },
+          "arrival_airport": {
+            "name": "Aéroport de Paris-Charles de Gaulle",
+            "id": "CDG",
+            "time": "2026-12-10 10:20"
+          },
+          "duration": 580,
+          "airplane": "Boeing 777",
+          "airline": "Air France",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AF.png",
+          "travel_class": "Economy",
+          "flight_number": "AF 215",
+          "ticket_also_sold_by": [
+            "Delta",
+            "KLM"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 419 kg"
+          ]
+        },
+        {
+          "departure_airport": {
+            "name": "Aéroport de Paris-Charles de Gaulle",
+            "id": "CDG",
+            "time": "2026-12-10 13:30"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 16:00"
+          },
+          "duration": 510,
+          "airplane": "Boeing 777",
+          "airline": "Air France",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AF.png",
+          "travel_class": "Economy",
+          "flight_number": "AF 6",
+          "ticket_also_sold_by": [
+            "Delta",
+            "KLM"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Free Wi-Fi",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 345 kg"
+          ]
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 190,
+          "name": "Aéroport de Paris-Charles de Gaulle",
+          "id": "CDG"
+        }
+      ],
+      "total_duration": 1280,
+      "carbon_emissions": {
+        "this_flight": 765000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 1
+      },
+      "price": 685,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AF.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ2xCUmpJeE5YeEJSallhQ3dqSmxnUVFBaG9EVlZORU9CeHd5WllFIixbWyJERUwiLCIyMDI2LTEyLTEwIiwiQ0RHIixudWxsLCJBRiIsIjIxNSJdLFsiQ0RHIiwiMjAyNi0xMi0xMCIsIkpGSyIsbnVsbCwiQUYiLCI2Il1dXQ=="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 01:45"
+          },
+          "arrival_airport": {
+            "name": "Zurich Airport",
+            "id": "ZRH",
+            "time": "2026-12-10 06:20"
+          },
+          "duration": 545,
+          "airplane": "Airbus A330",
+          "airline": "SWISS",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/LX.png",
+          "travel_class": "Economy",
+          "flight_number": "LX 147",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 373 kg"
+          ],
+          "overnight": true
+        },
+        {
+          "departure_airport": {
+            "name": "Zurich Airport",
+            "id": "ZRH",
+            "time": "2026-12-10 09:55"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 13:15"
+          },
+          "duration": 560,
+          "airplane": "Airbus A330",
+          "airline": "SWISS",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/LX.png",
+          "travel_class": "Economy",
+          "flight_number": "LX 16",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 305 kg"
+          ],
+          "often_delayed_by_over_30_min": true
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 215,
+          "name": "Zurich Airport",
+          "id": "ZRH"
+        }
+      ],
+      "total_duration": 1320,
+      "carbon_emissions": {
+        "this_flight": 679000,
+        "typical_for_this_route": 756000,
+        "difference_percent": -10
+      },
+      "price": 705,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/LX.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3BNV0RFME4zeE1XREUyR2dzSXVLWUVFQUlhQTFWVFJEZ2NjTGltQkE9PSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIlpSSCIsbnVsbCwiTFgiLCIxNDciXSxbIlpSSCIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkxYIiwiMTYiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 04:10"
+          },
+          "arrival_airport": {
+            "name": "Dubai International Airport",
+            "id": "DXB",
+            "time": "2026-12-10 06:35"
+          },
+          "duration": 235,
+          "airplane": "Airbus A380",
+          "airline": "Emirates",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/EK.png",
+          "travel_class": "Economy",
+          "flight_number": "EK 513",
+          "legroom": "32 in",
+          "extensions": [
+            "Above average legroom (32 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 191 kg"
+          ],
+          "overnight": true
+        },
+        {
+          "departure_airport": {
+            "name": "Dubai International Airport",
+            "id": "DXB",
+            "time": "2026-12-10 08:30"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 14:05"
+          },
+          "duration": 875,
+          "airplane": "Airbus A380",
+          "airline": "Emirates",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/EK.png",
+          "travel_class": "Economy",
+          "flight_number": "EK 201",
+          "legroom": "32 in",
+          "extensions": [
+            "Above average legroom (32 in)",
+            "Wi-Fi for a fee",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 912 kg"
+          ]
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 115,
+          "name": "Dubai International Airport",
+          "id": "DXB"
+        }
+      ],
+      "total_duration": 1225,
+      "carbon_emissions": {
+        "this_flight": 1104000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 46
+      },
+      "price": 797,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/EK.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3RGU3pVeE0zeEZTekl3TVJvTENNVHVCQkFDR2dOVlUwUTRISERFN2dRPSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkRYQiIsbnVsbCwiRUsiLCI1MTMiXSxbIkRYQiIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkVLIiwiMjAxIl1dXQ=="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 03:20"
+          },
+          "arrival_airport": {
+            "name": "Heathrow Airport",
+            "id": "LHR",
+            "time": "2026-12-10 07:40"
+          },
+          "duration": 590,
+          "airplane": "Airbus A350",
+          "airline": "British Airways",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/BA.png",
+          "travel_class": "Economy",
+          "flight_number": "BA 142",
+          "ticket_also_sold_by": [
+            "American"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 383 kg"
+          ],
+          "overnight": true
+        },
+        {
+          "departure_airport": {
+            "name": "Heathrow Airport",
+            "id": "LHR",
+            "time": "2026-12-10 09:35"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 12:35"
+          },
+          "duration": 480,
+          "airplane": "Boeing 777",
+          "airline": "British Airways",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/BA.png",
+          "travel_class": "Economy",
+          "flight_number": "BA 175",
+          "ticket_also_sold_by": [
+            "American"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 336 kg"
+          ]
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 115,
+          "name": "Heathrow Airport",
+          "id": "LHR"
+        }
+      ],
+      "total_duration": 1185,
+      "carbon_emissions": {
+        "this_flight": 720000,
+        "typical_for_this_route": 756000,
+        "difference_percent": -5
+      },
+      "price": 877,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/BA.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3RDUVRFME1ueENRVEUzTlJvTENOR3NCUkFDR2dOVlUwUTRISERSckFVPSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkxIUiIsbnVsbCwiQkEiLCIxNDIiXSxbIkxIUiIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkJBIiwiMTc1Il1dXQ=="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Indira Gandhi International Airport",
+            "id": "DEL",
+            "time": "2026-12-10 03:20"
+          },
+          "arrival_airport": {
+            "name": "Amsterdam Airport Schiphol",
+            "id": "AMS",
+            "time": "2026-12-10 08:05"
+          },
+          "duration": 555,
+          "airplane": "Boeing 777",
+          "airline": "KLM",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/KL.png",
+          "travel_class": "Economy",
+          "flight_number": "KL 872",
+          "ticket_also_sold_by": [
+            "Delta"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Wi-Fi for a fee",
+            "In-seat USB outlet",
+            "On-demand video",
+            "Carbon emissions estimate: 468 kg"
+          ],
+          "overnight": true
+        },
+        {
+          "departure_airport": {
+            "name": "Amsterdam Airport Schiphol",
+            "id": "AMS",
+            "time": "2026-12-10 08:55"
+          },
+          "arrival_airport": {
+            "name": "John F. Kennedy International Airport",
+            "id": "JFK",
+            "time": "2026-12-10 11:24"
+          },
+          "duration": 509,
+          "airplane": "Airbus A330-900neo",
+          "airline": "Delta",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+          "travel_class": "Economy",
+          "flight_number": "DL 47",
+          "ticket_also_sold_by": [
+            "KLM"
+          ],
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Free Wi-Fi",
+            "In-seat power & USB outlets",
+            "On-demand video",
+            "Carbon emissions estimate: 336 kg"
+          ]
+        }
+      ],
+      "layovers": [
+        {
+          "duration": 50,
+          "name": "Amsterdam Airport Schiphol",
+          "id": "AMS"
+        }
+      ],
+      "total_duration": 1114,
+      "carbon_emissions": {
+        "this_flight": 805000,
+        "typical_for_this_route": 756000,
+        "difference_percent": 6
+      },
+      "price": 1043,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/multi.png",
+      "booking_token": "WyJDalJJY1RWaFJGVkZhMFpTYVRSQlMxWmtObWRDUnkwdExTMHRMWFozYUdreE5pMXVNa0ZCUVVGQlIzSlVibXc0UVdSTVFWTkJFZ3BMVERnM01ueEVURFEzR2dzSTA2NEdFQUlhQTFWVFJEZ2NjTk91Qmc9PSIsW1siREVMIiwiMjAyNi0xMi0xMCIsIkFNUyIsbnVsbCwiS0wiLCI4NzIiXSxbIkFNUyIsIjIwMjYtMTItMTAiLCJKRksiLG51bGwsIkRMIiwiNDciXV1d"
+    }
+  ],
+  "airports": [
+    {
+      "departure": [
+        {
+          "airport": {
+            "id": "DEL",
+            "name": "Indira Gandhi International Airport"
+          },
+          "city": "New Delhi",
+          "country": "India",
+          "country_code": "IN",
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkRqzwP-0z4pH29-KifVzfrxM5wwXx56g3Hoo_ebldH9Fy8a8EjGqPzd3fZqJSKoE5tSIRC2iGJxgqzQ",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY7HqndXM-ihFCu1qUKosYR--X_yXSd-0mkQHeSUaG5rkpq5Y6uxD8CMmYUCdngZE7mV0onuN2zv_aVxGGO8xv4FMcpMlWvbXdvJFcemY"
+        }
+      ],
+      "arrival": [
+        {
+          "airport": {
+            "id": "JFK",
+            "name": "John F. Kennedy International Airport"
+          },
+          "city": "New York",
+          "country": "United States",
+          "country_code": "US",
+          "image": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRa1dwH1NZQk4dsbPiyA9Vrq2RX75jXSZ-OkHn7NkLHl-11HercqDXoZ4p2cDxJkH6vca2degawrCzHEQ",
+          "thumbnail": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQEaUa9NsdPWGpAUGkTApkZDT_4M6_6V8wTcC0v1b1wJAJX-BuMSiipXbsoznGgcI1xLOc5QiTcR_xovexgjdOz0gqQe0tRQ9h0bUkZ07Q"
+        }
+      ]
+    }
+  ]
+}

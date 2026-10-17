@@ -10,6 +10,10 @@ export interface Trip {
   arrival: string;
   /** step ids the traveler marked as done */
   done: Record<string, boolean>;
+  /** IATA code, e.g. "DEL" */
+  homeAirport: string;
+  /** IATA code, e.g. "JFK" */
+  destAirport: string;
 }
 
 export const DEFAULT_TRIP: Trip = {
@@ -19,6 +23,8 @@ export const DEFAULT_TRIP: Trip = {
   stayMonths: 4,
   arrival: "",
   done: {},
+  homeAirport: "DEL",
+  destAirport: "JFK",
 };
 
 export const tripStore = createPersistedStore<Trip>("flybyvisa:trip", DEFAULT_TRIP);

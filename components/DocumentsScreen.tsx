@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DOC_FAQ, searchDocs, type DocAnswer } from "@/content/documentsFaq";
+import type { CorpusHit } from "@/lib/corpusSearch";
 import { useT } from "@/lib/i18n";
 import { RichText } from "./Glossary";
 import { CloseIcon, ExternalIcon } from "./Icons";
@@ -22,6 +23,8 @@ export function DocumentsScreen() {
   const answer = picked ?? results[0] ?? null;
   const related = picked ? [] : results.slice(1, 4);
   const searching = query.trim().length > 0 && !picked;
+  // Also look through the official pages. A picked question searches by its text.
+  const corpus = useCorpusSearch(picked ? picked.question[lang] : query);
 
   const pickExample = (text: string) => {
     setPicked(null);
@@ -29,7 +32,7 @@ export function DocumentsScreen() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-hills-peek className="space-y-6 pb-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
         <p className="text-lg">{t("docs.blurb")}</p>
@@ -104,10 +107,16 @@ export function DocumentsScreen() {
           </article>
         )}
 
-        {searching && !answer && (
+        {searching && !answer && corpus.status === "done" && corpus.hits.length === 0 && (
           <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.noResults")}</p>
         )}
       </div>
+
+      {corpus.status === "loading" && <p className="text-lg text-muted">{t("docs.searching")}</p>}
+      {corpus.status === "error" && (
+        <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.searchError")}</p>
+      )}
+      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} />}
 
       {related.length > 0 && <QuestionList title={t("docs.related")} items={related} onPick={setPicked} />}
 
@@ -144,6 +153,84 @@ function QuestionList({
             >
               {d.question[lang]}
             </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+type CorpusState = { status: "idle" | "loading" | "done" | "error"; hits: CorpusHit[] };
+
+/** Semantic search over the indexed official pages, once typing pauses. */
+function useCorpusSearch(query: string): CorpusState {
+  // The last finished search; anything newer is still loading.
+  const [result, setResult] = useState<{ q: string; hits: CorpusHit[]; failed: boolean } | null>(null);
+  const q = query.trim();
+  const active = q.length >= 3;
+
+  useEffect(() => {
+    if (!active) return;
+    const ctrl = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+        if (!res.ok) throw new Error(String(res.status));
+        const { hits } = (await res.json()) as { hits: CorpusHit[] };
+        setResult({ q, hits, failed: false });
+      } catch {
+        if (!ctrl.signal.aborted) setResult({ q, hits: [], failed: true });
+      }
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, [q, active]);
+
+  if (!active) return { status: "idle", hits: [] };
+  if (result?.q !== q) return { status: "loading", hits: [] };
+  return { status: result.failed ? "error" : "done", hits: result.hits };
+}
+
+/** Chunks can start mid-sentence (index overlap); start at a clean break and keep it short. */
+function excerpt(text: string, max = 320): string {
+  let t = text.replace(/\s+/g, " ").trim();
+  if (!/^[A-Z0-9"(]/.test(t)) {
+    const cut = t.search(/[.!?:] [A-Z]/);
+    if (cut > 0 && cut < 160) t = t.slice(cut + 2);
+  }
+  if (t.length <= max) return t;
+  const end = t.lastIndexOf(" ", max);
+  return t.slice(0, end > 0 ? end : max) + "…";
+}
+
+function OfficialExcerpts({ hits }: { hits: CorpusHit[] }) {
+  const { t } = useT();
+  return (
+    <section className="space-y-3">
+      <h2 className="text-xl font-bold">{t("docs.official")}</h2>
+      <ul className="space-y-3">
+        {hits.map((h) => (
+          <li key={h.url} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
+            <h3 className="text-lg font-bold">{h.title}</h3>
+            {/* Official pages are in English only. */}
+            <p lang="en" className="text-lg">
+              {excerpt(h.text)}
+            </p>
+            <p className="flex flex-wrap items-center gap-x-4 text-base">
+              <a
+                href={h.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
+              >
+                {t("docs.readFull")}
+                <ExternalIcon className="h-4 w-4" />
+                <span className="sr-only">{t("journey.opensNewTab")}</span>
+              </a>
+              <span className="text-muted">{t("docs.savedOn", { date: h.savedOn })}</span>
+            </p>
           </li>
         ))}
       </ul>
