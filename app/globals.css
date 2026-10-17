@@ -463,6 +463,36 @@ html[data-motion="paused"] .roadmap-track { scroll-behavior: auto; }
 }
 .pulse-ring { animation: flybyvisa-pulse 2.4s ease-in-out infinite; }
 
+/* "Done" stamp on a step, like a passport stamp. It thumps down once when
+   the step is marked done, then rests tilted. The resting look is the base
+   style, so with motion paused or reduced the rules above leave it still. */
+.done-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.75rem;
+  border: 3px solid var(--accent);
+  border-radius: 0.6rem;
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+  color: var(--accent);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  transform: rotate(-6deg);
+  pointer-events: none;
+}
+/* Spacing between letters breaks up Devanagari, so none in Hindi. */
+html[lang="hi"] .done-stamp { letter-spacing: 0; }
+.done-stamp[data-animate] { animation: done-stamp-thump 600ms cubic-bezier(0.3, 0, 0.2, 1) both; }
+@keyframes done-stamp-thump {
+  0% { opacity: 0; transform: scale(1.9) rotate(-14deg); }
+  55% { opacity: 1; transform: scale(0.94) rotate(-5deg); }
+  75% { transform: scale(1.03) rotate(-6deg); }
+  100% { opacity: 1; transform: rotate(-6deg); }
+}
+
 /* ------------------------------------------------------------------ */
 /* Location map pins and hover card                                     */
 /* ------------------------------------------------------------------ */

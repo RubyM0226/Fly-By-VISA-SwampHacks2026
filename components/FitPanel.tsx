@@ -22,6 +22,17 @@ export function FitBadge({ fit }: { fit: Fit }) {
   );
 }
 
+/** Marks the office with the shortest wait. Also used on the Location Map, so both read the same. */
+export function ShortestWaitBadge() {
+  const { t } = useT();
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-sm font-bold text-accent-ink">
+      <ClockIcon className="h-4 w-4 shrink-0" />
+      {t("fit.fastest")}
+    </span>
+  );
+}
+
 /** Can the traveler arrive by their date? Plus the five U.S. offices compared. */
 export function FitPanel({ journey }: { journey: Journey }) {
   const { t, lang } = useT();
@@ -76,9 +87,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
               <p className="text-base">{t("fit.interview", { date: formatDate(p.interviewDate, lang) })}</p>
               {i === 0 && (
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-accent px-2 py-0.5 text-sm font-bold text-accent-ink">
-                    {t("fit.fastest")}
-                  </span>
+                  <ShortestWaitBadge />
                 </div>
               )}
             </li>
