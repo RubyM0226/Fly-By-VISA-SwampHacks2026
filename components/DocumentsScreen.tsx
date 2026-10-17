@@ -116,7 +116,7 @@ export function DocumentsScreen() {
       {corpus.status === "error" && (
         <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.searchError")}</p>
       )}
-      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} />}
+      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} query={picked ? picked.question.en : query} />}
 
       {related.length > 0 && <QuestionList title={t("docs.related")} items={related} onPick={setPicked} />}
 
@@ -193,11 +193,25 @@ function useCorpusSearch(query: string): CorpusState {
   return { status: result.failed ? "error" : "done", hits: result.hits };
 }
 
+// Question words that say nothing about what the person is looking for.
+const FILLER_WORDS = new Set([
+  "what", "how", "the", "and", "for", "can", "does", "need", "about", "with", "you", "your", "are",
+  "this", "that", "will", "when", "where", "which", "who", "why", "have", "has", "should", "get", "there",
+]);
+
+/** Lower-case words of 3+ letters, with a plural "s" dropped ("passports" -> "passport"). */
+function searchTerms(query: string): string[] {
+  return (query.toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [])
+    .filter((w) => !FILLER_WORDS.has(w))
+    .map((w) => w.replace(/s$/, ""));
+}
+
 /**
  * Chunks are markdown and start with their section heading. Split that off,
- * turn the rest into plain text, start at a clean sentence and keep it short.
+ * turn the rest into plain text, start at the first sentence that mentions a
+ * search term (else a clean sentence) and keep it short.
  */
-function excerpt(text: string, max = 320): { heading?: string; text: string } {
+function excerpt(text: string, terms: string[], max = 320): { heading?: string; text: string } {
   // A chunk can start with several heading lines; the last is the closest one.
   const block = text.trim().match(/^(?:#{1,6} .*(?:\n+|$))+/)?.[0] ?? "";
   const heading = block.trim().split("\n").pop()?.replace(/^#{1,6} /, "").trim() || undefined;
@@ -210,8 +224,18 @@ function excerpt(text: string, max = 320): { heading?: string; text: string } {
     .replace(/^\s*(?:[-*]|\d+\.)\s+/gm, "• ")
     .replace(/\s+/g, " ")
     .trim();
-  // The overlap between chunks can start mid-sentence.
-  if (!/^[A-Z0-9"(•]/.test(t)) {
+  // Jump to the first sentence or list item that mentions what was searched for.
+  const lower = t.toLowerCase();
+  // Terms are only letters and digits, so they are safe inside a RegExp.
+  const hit = Math.min(
+    ...terms.map((w) => lower.search(new RegExp(`(?:^|[^\\p{L}\\p{N}])${w}`, "u"))).filter((i) => i >= 0)
+  );
+  if (Number.isFinite(hit) && hit > 80) {
+    const sentence = t.lastIndexOf(". ", hit);
+    const start = Math.max(sentence >= 0 ? sentence + 2 : 0, t.lastIndexOf("• ", hit), 0);
+    t = "… " + t.slice(start);
+  } else if (!/^[A-Z0-9"(•]/.test(t)) {
+    // The overlap between chunks can start mid-sentence.
     const cut = t.search(/[.!?:] [A-Z]/);
     if (cut > 0 && cut < 160) t = t.slice(cut + 2);
   }
@@ -222,16 +246,18 @@ function excerpt(text: string, max = 320): { heading?: string; text: string } {
   return { heading, text: t };
 }
 
-function OfficialExcerpts({ hits }: { hits: CorpusHit[] }) {
+function OfficialExcerpts({ hits, query }: { hits: CorpusHit[]; query: string }) {
   const { t } = useT();
+  const terms = searchTerms(query);
   return (
     <section className="space-y-3">
       <h2 className="text-xl font-bold">{t("docs.official")}</h2>
       <ul className="space-y-3">
-        {hits.map((h) => {
-          const ex = excerpt(h.text);
+        {hits.map((h, i) => {
+          const ex = excerpt(h.text, terms);
           return (
-            <li key={h.url} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
+            // One page can appear twice (two sections), so the URL alone isn't unique.
+            <li key={`${h.url}#${i}`} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
               <h3 className="text-lg font-bold">{h.title}</h3>
               {/* Official pages are in English only. */}
               {ex.heading && ex.heading !== h.title && (
