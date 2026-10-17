@@ -11,7 +11,7 @@ import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
 
 export const metadata: Metadata = {
-  title: "Saathi — your step-by-step path to the U.S.",
+  title: "FlyByVisa — your step-by-step path to the U.S.",
   description:
     "A calm, accessible planner for visiting family in the United States. Available in English and Hindi.",
 };

@@ -139,8 +139,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
 html[data-contrast="high"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
 
 /* A soft pulse for the "you are here" marker. Disabled by the rules above. */
-@keyframes saathi-pulse {
+@keyframes flybyvisa-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
   50% { box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--accent) 0%, transparent); }
 }
-.pulse-ring { animation: saathi-pulse 2.4s ease-in-out infinite; }
+.pulse-ring { animation: flybyvisa-pulse 2.4s ease-in-out infinite; }

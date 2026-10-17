@@ -1,6 +1,6 @@
 // No React imports here: the root layout (a Server Component) uses this file.
 
-export const SETTINGS_KEY = "saathi:settings";
+export const SETTINGS_KEY = "flybyvisa:settings";
 
 /**
  * Runs in <head> before React hydrates so the page never flashes the wrong
