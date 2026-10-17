@@ -9,6 +9,7 @@ import { RichText } from "./Glossary";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
+import { DatePicker } from "./DatePicker";
 import { BACK, FORWARD } from "./ScreenTransition";
 
 const MONTH_CHOICES = [1, 2, 3, 4, 5, 6];
@@ -20,7 +21,7 @@ export function StartScreen() {
   const update = tripStore.set;
   const today = useToday();
   const [error, setError] = useState<"" | "needDate" | "pastDate">("");
-  const dateRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<{ focus: () => void } | null>(null);
 
   const placesChosen = trip.from === "IN" && trip.to === "US";
 
@@ -116,26 +117,27 @@ export function StartScreen() {
 
       {/* 3. When */}
       <div className="space-y-2">
-        <label htmlFor="arrival" className="block text-xl font-bold">
+        <p id="arrival-label" className="block text-xl font-bold">
           {t("start.when")}
-        </label>
+        </p>
         <p id="arrival-help" className="text-lg text-muted">
           {t("start.whenHelp")}
         </p>
-        <input
-          ref={dateRef}
-          id="arrival"
-          type="date"
-          value={trip.arrival}
-          min={today ? addDays(today, 1) : undefined}
-          onChange={(e) => {
-            update({ arrival: e.target.value });
-            setError("");
-          }}
-          aria-describedby={error ? "arrival-help arrival-error" : "arrival-help"}
-          aria-invalid={error ? true : undefined}
-          className="min-h-14 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-lg font-semibold sm:w-72"
-        />
+        {today && (
+          <DatePicker
+            id="arrival"
+            focusRef={dateRef}
+            value={trip.arrival}
+            min={addDays(today, 1)}
+            onChange={(day) => {
+              update({ arrival: day });
+              setError("");
+            }}
+            labelledBy="arrival-label"
+            describedBy={error ? "arrival-help arrival-error" : "arrival-help"}
+            invalid={!!error}
+          />
+        )}
         {error && (
           <p id="arrival-error" role="alert" className="text-lg font-semibold text-danger">
             {t(error === "needDate" ? "start.needDate" : "start.pastDate")}

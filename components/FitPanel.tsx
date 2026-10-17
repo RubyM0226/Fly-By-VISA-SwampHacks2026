@@ -32,27 +32,32 @@ export function FitPanel({ journey }: { journey: Journey }) {
     <section aria-labelledby="fit-title" className="space-y-5 rounded-2xl border-2 border-line-strong bg-surface p-5 sm:p-6">
       <div className="flex flex-wrap items-center gap-3">
         <h2 id="fit-title" className="text-2xl font-bold">
-          {t("fit.heading", { date: formatDate(journey.arrival, lang) })}
+          {t("fit.yourDate", { date: formatDate(journey.arrival, lang) })}
         </h2>
         <FitBadge fit={best.fit} />
       </div>
 
-      <p className="text-lg">
-        {t(`fit.${best.fit}.msg`, {
-          date: formatDate(best.interviewDate, lang),
-          post: bestName,
-          days: Math.abs(best.slackDays),
-        })}
-        {best.needsCheck && (
-          <>
-            {" "}
-            <span className="inline-block rounded-full border-2 border-warm-ink bg-warm px-2 py-0.5 text-sm font-bold text-warm-ink">
-              {t("fit.needsCheck")}
-            </span>
-          </>
-        )}
-      </p>
-      <p className="text-lg font-semibold">{t("fit.bookBy", { date: formatDate(journey.bookDate, lang) })}</p>
+      {/* One fact per line: label, then the value. */}
+      <dl className="divide-y-2 divide-line rounded-xl border-2 border-line text-lg">
+        <div className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[14rem_1fr]">
+          <dt className="text-muted">{t("fit.earliest")}</dt>
+          <dd className="font-bold">
+            {formatDate(best.interviewDate, lang)}, {bestName}
+          </dd>
+        </div>
+        <div className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[14rem_1fr]">
+          <dt className="text-muted">{t(best.slackDays < 0 ? "fit.late" : "fit.spare")}</dt>
+          <dd className={`font-bold ${best.slackDays < 0 ? "text-danger" : ""}`}>
+            {t("fit.aboutDays", { n: Math.abs(best.slackDays) })}
+          </dd>
+        </div>
+        <div className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[14rem_1fr]">
+          <dt className="text-muted">{t("fit.bookBy")}</dt>
+          <dd className="font-bold">{formatDate(journey.bookDate, lang)}</dd>
+        </div>
+      </dl>
+
+      {best.fit !== "onTrack" && <p className="text-lg font-semibold">{t(`fit.${best.fit}.tip`)}</p>}
       <p className="text-base text-muted">{t("fit.emergency")}</p>
 
       <div className="space-y-3">
@@ -69,18 +74,13 @@ export function FitPanel({ journey }: { journey: Journey }) {
               </div>
               <p className="text-base">{t("fit.wait", { n: p.waitMonths })}</p>
               <p className="text-base">{t("fit.interview", { date: formatDate(p.interviewDate, lang) })}</p>
-              <div className="flex flex-wrap gap-2">
-                {i === 0 && (
+              {i === 0 && (
+                <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-accent px-2 py-0.5 text-sm font-bold text-accent-ink">
                     {t("fit.fastest")}
                   </span>
-                )}
-                {p.needsCheck && (
-                  <span className="rounded-full border-2 border-warm-ink bg-warm px-2 py-0.5 text-sm font-bold text-warm-ink">
-                    {t("fit.needsCheck")}
-                  </span>
-                )}
-              </div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
