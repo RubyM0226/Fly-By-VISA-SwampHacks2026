@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { DEFAULT_SETTINGS, settingsStore, useSettings, type Settings } from "@/lib/settings";
 import { tripStore } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
@@ -79,54 +79,7 @@ function Switch({
   );
 }
 
-/** The same on/off switch, sized for the top row. */
-function BarSwitch({
-  label,
-  checked,
-  onChange,
-  onText,
-  offText,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  onText: string;
-  offText: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className={`inline-flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl border-2 bg-surface py-1.5 pl-3 pr-2 text-sm font-semibold hover:bg-accent-soft ${
-        checked ? "border-accent" : "border-line-strong"
-      }`}
-    >
-      <span>{label}</span>
-      {/* On/Off in words, so state is never colour alone. */}
-      <span
-        className={`inline-flex min-w-10 justify-center rounded-full px-2 py-0.5 text-xs font-bold ${
-          checked ? "bg-accent text-accent-ink" : "bg-warm text-warm-ink"
-        }`}
-      >
-        {checked ? onText : offText}
-      </span>
-    </button>
-  );
-}
-
-type SwitchKey =
-  | "highContrast"
-  | "monochrome"
-  | "dyslexiaFont"
-  | "boldText"
-  | "underlineLinks"
-  | "highlightLinks"
-  | "pauseMotion"
-  | "showDefinitions";
-
-const SWITCHES: { key: SwitchKey; label: UiKey }[] = [
+const SWITCHES: { key: keyof Settings; label: UiKey }[] = [
   { key: "highContrast", label: "a11y.highContrast" },
   { key: "monochrome", label: "a11y.mono" },
   { key: "dyslexiaFont", label: "a11y.dyslexia" },
@@ -175,35 +128,26 @@ function TextSizeControl({ value, onChange }: { value: Settings["textSize"]; onC
   );
 }
 
-type BarItemId = "language" | "textSize" | SwitchKey | "spacing";
-
-// Top-row order. As many as fit are shown, from the start of this list;
-// the rest move into "More", lowest priority first.
-const BAR_ORDER: BarItemId[] = [
-  "language",
-  "textSize",
-  "showDefinitions",
-  "dyslexiaFont",
-  "highContrast",
-  "monochrome",
-  "boldText",
-  "underlineLinks",
-  "highlightLinks",
-  "pauseMotion",
-  "spacing",
-];
-
-/** What fits on the top row: the first `count` of BAR_ORDER, and the logo size. */
+/** Which parts of the top row fit on one line. */
 interface Fit {
-  count: number;
+  language: boolean;
+  textSize: boolean;
   /** Logo shows just its icon. */
   compact: boolean;
 }
+// Tried in order: everything, then Language moves into More, then Text size,
+// and last the logo drops its name.
+const FITS: Fit[] = [
+  { language: true, textSize: true, compact: false },
+  { language: false, textSize: true, compact: false },
+  { language: false, textSize: false, compact: false },
+  { language: false, textSize: false, compact: true },
+];
 
 /**
- * The top row, always on one line: logo at the far left, as many settings as
- * fit in the middle (in BAR_ORDER), "More" at the far right. Whatever does not
- * fit moves into the "More" panel, along with reset and erase.
+ * The top row, always on one line: logo at the far left; language, text size
+ * and "More" together at the far right. Every other setting lives in the
+ * "More" panel, along with anything from the top row that does not fit.
  */
 export function AccessibilityBar({ start }: { start?: (compact: boolean) => React.ReactNode }) {
   const { t, lang } = useT();
@@ -217,40 +161,34 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
   const rowRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLSpanElement>(null);
   const logoCompactRef = useRef<HTMLSpanElement>(null);
-  const itemRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const [fit, setFit] = useState<Fit>({ count: BAR_ORDER.length, compact: false });
+  const languageRef = useRef<HTMLSpanElement>(null);
+  const textSizeRef = useRef<HTMLSpanElement>(null);
+  const [fit, setFit] = useState<Fit>(FITS[0]);
 
   const refit = useCallback(() => {
     const row = rowRef.current;
     const more = moreButton.current;
     const logo = logoRef.current;
     const logoCompact = logoCompactRef.current;
-    const items = itemRefs.current.slice(0, BAR_ORDER.length);
-    if (!row || !more || !logo || !logoCompact || items.length < BAR_ORDER.length || items.some((el) => !el)) return;
+    const language = languageRef.current;
+    const textSize = textSizeRef.current;
+    if (!row || !more || !logo || !logoCompact || !language || !textSize) return;
     const style = getComputedStyle(row);
     const space = row.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const gap = parseFloat(style.columnGap) || 0;
-    // How many settings fit next to a logo of this width and the More button.
-    const countFor = (logoWidth: number) => {
-      let used = logoWidth + gap + more.offsetWidth;
-      let n = 0;
-      for (const el of items) {
-        used += gap + el!.offsetWidth;
-        if (used > space) break;
-        n++;
-      }
-      return n;
+    const width = (f: Fit) => {
+      const parts = [
+        f.compact ? logoCompact.offsetWidth : logo.offsetWidth,
+        more.offsetWidth,
+        ...(f.language ? [language.offsetWidth] : []),
+        ...(f.textSize ? [textSize.offsetWidth] : []),
+      ];
+      return parts.reduce((a, b) => a + b, 0) + gap * (parts.length - 1);
     };
-    const full = countFor(logo.offsetWidth);
-    const compactCount = countFor(logoCompact.offsetWidth);
-    // Keep the name unless it does not fit at all, or dropping it lets
-    // language or text size onto the row.
-    const nameFits = logo.offsetWidth + gap + more.offsetWidth <= space;
-    const next: Fit =
-      nameFits && full >= Math.min(2, compactCount)
-        ? { count: full, compact: false }
-        : { count: compactCount, compact: true };
-    setFit((prev) => (prev.count === next.count && prev.compact === next.compact ? prev : next));
+    const next = FITS.find((f) => width(f) <= space) ?? FITS[FITS.length - 1];
+    setFit((prev) =>
+      prev.language === next.language && prev.textSize === next.textSize && prev.compact === next.compact ? prev : next,
+    );
   }, []);
 
   useLayoutEffect(() => {
@@ -258,63 +196,14 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
     // Watch the hidden copies too: they widen when a web font finishes
     // loading, which does not resize the row itself.
     const observer = new ResizeObserver(refit);
-    for (const el of [rowRef.current, logoRef.current, logoCompactRef.current, moreButton.current, ...itemRefs.current]) {
+    for (const el of [rowRef.current, logoRef.current, logoCompactRef.current, languageRef.current, textSizeRef.current]) {
       if (el) observer.observe(el);
     }
     return () => observer.disconnect();
-    // Any setting can change how wide the pieces are (text size, font, spacing, On/Off).
-  }, [refit, lang, settings]);
-
-  const onBar = (id: BarItemId) => BAR_ORDER.indexOf(id) < fit.count;
+  }, [refit, lang, settings.textSize, settings.dyslexiaFont, settings.boldText, settings.spacing]);
 
   const languageControl = <LanguageSelect />;
   const textSizeControl = <TextSizeControl value={settings.textSize} onChange={(v) => update({ textSize: v })} />;
-  const spacingControl = (className: string) => (
-    <Segmented
-      label={t("a11y.spacing")}
-      value={settings.spacing}
-      onChange={(v) => update({ spacing: v })}
-      className={className}
-      options={[
-        { value: 0, text: t("a11y.spacing0") },
-        { value: 1, text: t("a11y.spacing1") },
-        { value: 2, text: t("a11y.spacing2") },
-      ]}
-    />
-  );
-
-  /** One setting as it looks on the top row. */
-  const barItem = (id: BarItemId) => {
-    if (id === "language") return languageControl;
-    if (id === "textSize")
-      return (
-        <div className="flex shrink-0 items-center gap-2">
-          <span aria-hidden="true" className="hidden whitespace-nowrap text-sm font-semibold text-muted sm:inline">
-            {t("a11y.textSize")}
-          </span>
-          {textSizeControl}
-        </div>
-      );
-    if (id === "spacing")
-      return (
-        <div className="flex shrink-0 items-center gap-2">
-          <span aria-hidden="true" className="whitespace-nowrap text-sm font-semibold text-muted">
-            {t("a11y.spacing")}
-          </span>
-          {spacingControl("flex gap-1 whitespace-nowrap text-sm")}
-        </div>
-      );
-    const label = SWITCHES.find((s) => s.key === id)!.label;
-    return (
-      <BarSwitch
-        label={t(label)}
-        checked={settings[id]}
-        onChange={(v) => update({ [id]: v } as Partial<Settings>)}
-        onText={t("a11y.on")}
-        offText={t("a11y.off")}
-      />
-    );
-  };
 
   return (
     <div
@@ -338,25 +227,27 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
         <span ref={logoCompactRef} className="inline-flex shrink-0">
           {start?.(true)}
         </span>
-        {BAR_ORDER.map((id, i) => (
-          <span
-            key={id}
-            ref={(el) => {
-              itemRefs.current[i] = el;
-            }}
-            className="inline-flex shrink-0"
-          >
-            {barItem(id)}
-          </span>
-        ))}
+        <span ref={languageRef} className="inline-flex shrink-0">
+          {languageControl}
+        </span>
+        <span ref={textSizeRef} className="inline-flex shrink-0 items-center gap-2">
+          <span className="hidden text-sm font-semibold text-muted sm:inline">{t("a11y.textSize")}</span>
+          {textSizeControl}
+        </span>
       </div>
 
       <div ref={rowRef} className="flex flex-nowrap items-center gap-2 overflow-hidden px-3 py-2 sm:px-6">
         <div className="shrink-0">{start?.(fit.compact)}</div>
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
-          {BAR_ORDER.slice(0, fit.count).map((id) => (
-            <Fragment key={id}>{barItem(id)}</Fragment>
-          ))}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          {fit.language && languageControl}
+          {fit.textSize && (
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
+                {t("a11y.textSize")}
+              </span>
+              {textSizeControl}
+            </div>
+          )}
         </div>
         <button
           ref={moreButton}
@@ -381,15 +272,15 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
       >
         <div className="space-y-4 px-4 py-4 sm:px-6 lg:px-8">
           {/* Anything that did not fit on the top row lives here instead. */}
-          {(!onBar("language") || !onBar("textSize")) && (
+          {(!fit.language || !fit.textSize) && (
             <section className="flex flex-wrap items-end gap-x-6 gap-y-3">
-              {!onBar("language") && (
+              {!fit.language && (
                 <div className="space-y-2">
                   <h2 className="font-bold">{t("nav.language")}</h2>
                   {languageControl}
                 </div>
               )}
-              {!onBar("textSize") && (
+              {!fit.textSize && (
                 <div className="space-y-2">
                   <h2 className="font-bold">{t("a11y.textSize")}</h2>
                   {textSizeControl}
@@ -397,19 +288,27 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
               )}
             </section>
           )}
-          {!onBar("spacing") && (
-            <section className="space-y-2">
-              <h2 className="font-bold">{t("a11y.spacing")}</h2>
-              {spacingControl("grid grid-cols-3 gap-2 sm:max-w-md")}
-            </section>
-          )}
+          <section className="space-y-2">
+            <h2 className="font-bold">{t("a11y.spacing")}</h2>
+            <Segmented
+              label={t("a11y.spacing")}
+              value={settings.spacing}
+              onChange={(v) => update({ spacing: v })}
+              className="grid grid-cols-3 gap-2 sm:max-w-md"
+              options={[
+                { value: 0, text: t("a11y.spacing0") },
+                { value: 1, text: t("a11y.spacing1") },
+                { value: 2, text: t("a11y.spacing2") },
+              ]}
+            />
+          </section>
 
           <section className="grid gap-2 sm:grid-cols-2">
-            {SWITCHES.filter((s) => !onBar(s.key)).map((s) => (
+            {SWITCHES.map((s) => (
               <Switch
                 key={s.key}
                 label={t(s.label)}
-                checked={settings[s.key]}
+                checked={settings[s.key] as boolean}
                 onChange={(v) => update({ [s.key]: v } as Partial<Settings>)}
                 onText={t("a11y.on")}
                 offText={t("a11y.off")}

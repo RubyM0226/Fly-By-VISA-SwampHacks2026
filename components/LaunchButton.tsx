@@ -19,7 +19,21 @@ function prefersReducedMotion() {
  * A Continue link that turns into a little plane and flies off before moving
  * to the next screen. With motion reduced it is an ordinary link.
  */
-export function LaunchButton({ href, label, className }: { href: string; label: string; className: string }) {
+export function LaunchButton({
+  href,
+  label,
+  className,
+  transitionTypes = FORWARD,
+  scroll = true,
+}: {
+  href: string;
+  label: string;
+  className: string;
+  /** How the screens change; rolls forward unless told otherwise. */
+  transitionTypes?: string[];
+  /** False keeps the scroll position, as when the next screen shares this one's globe. */
+  scroll?: boolean;
+}) {
   const router = useRouter();
   const [settings] = useSettings();
   const systemReduce = useSyncExternalStore(noop, prefersReducedMotion, () => false);
@@ -34,13 +48,14 @@ export function LaunchButton({ href, label, className }: { href: string; label: 
     <Link
       href={href}
       data-button
-      transitionTypes={FORWARD}
+      transitionTypes={transitionTypes}
+      scroll={scroll}
       onClick={(e) => {
         if (reduceMotion) return; // plain navigation, swaps instantly
         e.preventDefault();
         if (launching) return;
         setLaunching(true);
-        setTimeout(() => router.push(href, { transitionTypes: FORWARD }), TAKEOFF_MS);
+        setTimeout(() => router.push(href, { transitionTypes, scroll }), TAKEOFF_MS);
       }}
       data-launching={launching || undefined}
       // Named so the plane keeps flying above the screens while they roll.

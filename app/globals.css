@@ -335,6 +335,89 @@ main:has([data-hills-peek]) {
 }
 body:has([data-hills-peek]) .site-footer { margin-top: 0; }
 
+/* ------------------------------------------------------------------ */
+/* Globe stage: the landing page and the country picker share one globe */
+/* (components/GlobeStage.tsx). The stage spans the whole page, also     */
+/* under the nav when it shows, so the globe has the same spot on both   */
+/* screens. The box and globe are centred on the page as a group, but    */
+/* never start where the nav is (or will be): a left spacer that is at   */
+/* least the nav's width, and a right spacer, share the free space.      */
+/* ------------------------------------------------------------------ */
+.globe-stage {
+  /* How far the nav pushes the content column right. Used on the stage
+     itself, where cqw is the content column. */
+  --stage-shift: 0px;
+  /* The nav's width (SideNav: 64px, md:w-56, lg:w-1/4). Used inside the
+     stage, where cqw is the stage, which is as wide as the page. */
+  --nav-w: 64px;
+  --pad: 0.75rem;
+  --box-w: 26rem;
+  --gap: 1rem;
+  container-type: inline-size;
+  position: relative;
+  margin-top: -1.5rem;
+  margin-left: calc(50% - 50cqw - var(--stage-shift));
+  width: calc(100cqw + var(--stage-shift));
+  padding-block: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* Narrow screens: the globe goes on top, as wide as fits (up to half the
+     screen height, so the box under it starts on the first screen). */
+  --globe: min(50dvh, 100cqw - var(--nav-w) - 2 * var(--pad));
+}
+.globe-stage[data-nav] { --stage-shift: 64px; }
+@media (min-width: 40rem) {
+  .globe-stage { margin-top: -2.5rem; --pad: 1.25rem; }
+}
+@media (min-width: 48rem) {
+  .globe-stage { --nav-w: 14rem; }
+  .globe-stage[data-nav] { --stage-shift: 14rem; }
+}
+@media (min-width: 64rem) {
+  .globe-stage { --nav-w: 25cqw; }
+  /* The column is 3/4 of the page, so the nav is a third of the column. */
+  .globe-stage[data-nav] { --stage-shift: calc(100cqw / 3); }
+}
+.globe-stage__slot { display: flex; }
+.globe-stage__slot--globe { order: -1; }
+/* The spacers: one pair per row on narrow screens, one pair on the stage
+   on wide screens. */
+@media (width < 75rem) {
+  .globe-stage__slot::before,
+  .globe-stage__slot::after { content: ""; flex: 1 1 0; min-width: var(--pad); }
+  .globe-stage__slot::before { min-width: calc(var(--nav-w) + var(--pad)); }
+  /* The globe is on top here, so the landing page needs no room under it
+     for the picker's zoom buttons and hint. */
+  .globe-stage:not([data-nav]) :is(.globe-stage__zoom, .globe-stage__hint) { display: none; }
+}
+.globe-stage__box { flex: 0 1 36rem; min-width: 0; }
+.globe-stage__globe { flex: 0 1 var(--globe); min-width: 0; }
+.globe-stage__zoom { margin-top: 0.5rem; }
+
+/* Wide screens: box and globe side by side, filling the first screen down
+   to the hills. The globe is as tall as the room left after the hint
+   under it (measured), or as wide as the room beside the box. */
+@media (min-width: 75rem) {
+  .globe-stage {
+    --stage-h: max(34rem, 100dvh - var(--sticky-header-h, 0px) - var(--hills-peek));
+    height: var(--stage-h);
+    min-height: 34rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    --globe: max(16rem, min(var(--stage-h) - 1.5rem - var(--hint-h, 4rem) - 0.5rem, 100cqw - var(--nav-w) - 2 * var(--pad) - var(--box-w) - var(--gap)));
+  }
+  .globe-stage::before,
+  .globe-stage::after { content: ""; flex: 1 1 0; min-width: var(--pad); }
+  .globe-stage::before { min-width: calc(var(--nav-w) + var(--pad)); }
+  .globe-stage__slot { display: contents; }
+  .globe-stage__box { flex: 0 1 var(--box-w); min-width: 18rem; margin-right: var(--gap); }
+  .globe-stage__globe { flex: 0 0 var(--globe); }
+  /* Zoom buttons on the globe's lower right corner. */
+  .globe-stage__zoom { position: absolute; right: 0.5rem; bottom: 0.5rem; margin-top: 0; flex-direction: column; }
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
