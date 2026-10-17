@@ -1,17 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
 import { GlobeLoader, useSupportsWebGL } from "./GlobeLoader";
-import { PlaceChoice } from "./PlaceChoice";
+import { PlaceSelect } from "./PlaceSelect";
 
 export function HomeScreen() {
   const { t } = useT();
   const [trip] = useTrip();
   const webgl = useSupportsWebGL();
+
+  // Start the globe just under the choices card so the card never hides it.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [cardBottom, setCardBottom] = useState(0);
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setCardBottom(el.offsetTop + el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const ready = trip.from === "IN" && trip.to === "US";
 
@@ -22,70 +34,62 @@ export function HomeScreen() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="max-w-3xl space-y-3">
-        <h1 className="text-3xl font-bold leading-tight sm:text-4xl">{t("home.title")}</h1>
-        <p className="text-xl text-muted">{t("home.lead")}</p>
-      </div>
+    // Full-bleed: break out of the page column and fill the screen under the sticky header.
+    <div className="relative -mt-6 ml-[calc(50%-50vw)] h-[calc(100dvh-var(--sticky-header-h,0px))] min-h-[34rem] w-screen sm:-mt-10">
+      {webgl && (
+        <div role="img" aria-label={t("home.globeLabel")} className="absolute inset-x-0 bottom-0" style={{ top: cardBottom }}>
+          <GlobeLoader from={trip.from} to={trip.to} onPick={pick} />
+        </div>
+      )}
 
-      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-        <div className="space-y-6">
-          <PlaceChoice
-            name="from"
-            legend={t("home.from")}
-            options={["IN"]}
-            value={trip.from}
-            onChange={pick}
-          />
-          <PlaceChoice
-            name="to"
-            legend={t("home.to")}
-            options={["US"]}
-            value={trip.to}
-            onChange={pick}
-          />
+      {/* The choices sit on top of the globe. Clicks pass through the gaps. */}
+      <div ref={cardRef} className="pointer-events-none absolute inset-x-0 top-0 px-3 pt-3 sm:px-6 sm:pt-5">
+        <div className="pointer-events-auto mx-auto max-w-5xl space-y-3 rounded-2xl border-2 border-line bg-surface p-4 shadow-lg sm:p-5">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{t("home.title")}</h1>
+            <p className="text-base text-muted">{t("home.lead")}</p>
+          </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <PlaceSelect id="place-from" label={t("home.from")} enabled={["IN"]} value={trip.from} onChange={pick} />
+            <PlaceSelect id="place-to" label={t("home.to")} enabled={["US"]} value={trip.to} onChange={pick} />
+
             {ready ? (
               <Link
                 href="/start"
                 data-button
-                className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink sm:w-auto"
+                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink"
               >
                 {t("home.continue")}
                 <ArrowIcon className="h-6 w-6" />
               </Link>
             ) : (
-              <>
-                <button
-                  type="button"
-                  disabled
-                  aria-describedby="pick-both-hint"
-                  className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-xl font-bold text-muted sm:w-auto"
-                >
-                  {t("home.continue")}
-                </button>
-                <p id="pick-both-hint" className="text-base text-muted">
-                  {t("home.pickBoth")}
-                </p>
-              </>
+              <button
+                type="button"
+                disabled
+                aria-describedby="pick-both-hint"
+                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-2 text-lg font-bold text-muted"
+              >
+                {t("home.continue")}
+              </button>
             )}
-            <p className="text-base text-muted">{t("home.scope")}</p>
           </div>
-        </div>
 
-        {webgl && (
-          <div className="order-first space-y-2 lg:order-none">
-            <div
-              role="img"
-              aria-label={t("home.globeLabel")}
-              className="relative h-72 overflow-hidden rounded-2xl bg-[#08182b] sm:h-96 lg:h-[30rem]"
-            >
-              <GlobeLoader from={trip.from} to={trip.to} onPick={pick} />
-            </div>
-            <p className="text-base text-muted">{t("home.globeHint")}</p>
-          </div>
-        )}
+          {!ready && (
+            <p id="pick-both-hint" className="text-sm text-muted">
+              {t("home.pickBoth")}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
+        <div className="mx-auto max-w-5xl">
+          <p className="inline-block rounded-xl bg-surface px-3 py-2 text-sm text-muted shadow">
+            {webgl && <>{t("home.globeHint")} </>}
+            {t("home.scope")}
+          </p>
+        </div>
       </div>
     </div>
   );
