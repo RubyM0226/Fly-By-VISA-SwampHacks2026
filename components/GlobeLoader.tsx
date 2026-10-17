@@ -43,6 +43,8 @@ interface Props {
   from: "" | CountryCode;
   to: "" | CountryCode;
   onPick: (code: CountryCode) => void;
+  /** Camera zoom; 1 is the normal view, larger is closer. */
+  zoom: number;
 }
 
 export function GlobeLoader(props: Props) {

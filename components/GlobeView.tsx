@@ -15,6 +15,8 @@ interface Props {
   from: "" | CountryCode;
   to: "" | CountryCode;
   onPick: (code: CountryCode) => void;
+  /** Camera zoom; 1 is the normal view, larger is closer. */
+  zoom: number;
 }
 
 interface Point {
@@ -51,6 +53,13 @@ const COLORS = {
 const ARC_ALT_SCALE = 0.45;
 const FLIGHT_MS = 4500;
 const PAUSE_MS = 1200;
+
+/** Camera height at zoom 1: closer once places are chosen. */
+function baseAltitude(from: string, to: string) {
+  if (from && to) return 2.2;
+  if (from || to) return 1.9;
+  return 2.5;
+}
 
 const SHAPES = feature(
   worldTopo as unknown as Topology,
@@ -108,7 +117,7 @@ function makePlane() {
  * The 3D globe. This is an enhancement: every choice is also available in the
  * dropdowns above it, so keyboard and screen-reader users never need it.
  */
-export default function GlobeView({ from, to, onPick }: Props) {
+export default function GlobeView({ from, to, onPick, zoom }: Props) {
   const { t } = useT();
   const [settings] = useSettings();
   const systemReduce = useSyncExternalStore(noop, prefersReducedMotion, () => false);
@@ -119,6 +128,9 @@ export default function GlobeView({ from, to, onPick }: Props) {
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [ready, setReady] = useState(false);
   const [hover, setHover] = useState<Shape | null>(null);
+  // Read by the "turn toward" effect without re-running it on every zoom step.
+  const zoomRef = useRef(zoom);
+  const appliedZoom = useRef(zoom);
 
   // Next keeps this page alive in the background after you move on, which tears
   // down effects: react-globe.gl then destroys its renderer and scene, and on
@@ -179,14 +191,25 @@ export default function GlobeView({ from, to, onPick }: Props) {
   useEffect(() => {
     if (!ready || !globeRef.current) return;
     const ms = reduceMotion ? 0 : 900;
+    const altitude = baseAltitude(from, to) / zoomRef.current;
     if (from && to) {
       const mid = midpoint(COUNTRY_BY_CODE[from], COUNTRY_BY_CODE[to]);
-      globeRef.current.pointOfView({ ...mid, altitude: 2.2 }, ms);
+      globeRef.current.pointOfView({ ...mid, altitude }, ms);
     } else if (from || to) {
       const c = COUNTRY_BY_CODE[(from || to) as CountryCode];
-      globeRef.current.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.9 }, ms);
+      globeRef.current.pointOfView({ lat: c.lat, lng: c.lng, altitude }, ms);
+    } else {
+      globeRef.current.pointOfView({ altitude }, 0);
     }
   }, [ready, reduceMotion, from, to]);
+
+  // Zoom buttons: move the camera closer or further, keeping where it looks.
+  useEffect(() => {
+    zoomRef.current = zoom;
+    if (!ready || !globeRef.current || appliedZoom.current === zoom) return;
+    appliedZoom.current = zoom;
+    globeRef.current.pointOfView({ altitude: baseAltitude(from, to) / zoom }, reduceMotion ? 0 : 400);
+  }, [ready, reduceMotion, zoom, from, to]);
 
   // A small plane flies the arc from origin to destination, then starts again.
   // With motion paused it waits halfway along the route instead.
