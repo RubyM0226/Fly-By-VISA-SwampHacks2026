@@ -67,6 +67,9 @@ const en = {
   "home.globeLabel": "Interactive globe. The same choices are in the lists.",
   "home.scope": "For now, FlyByVisa covers India to the United States only.",
   "home.globeLoading": "Loading the globe…",
+  "home.zoom": "Globe zoom",
+  "home.zoomIn": "Zoom in",
+  "home.zoomOut": "Zoom out",
 
   "country.IN": "India",
   "country.US": "United States",
@@ -314,6 +317,9 @@ const hi: Record<UiKey, string> = {
   "home.globeLabel": "ग्लोब। यही विकल्प सूची में भी हैं।",
   "home.scope": "अभी FlyByVisa केवल भारत से संयुक्त राज्य अमेरिका के लिए है।",
   "home.globeLoading": "ग्लोब खुल रहा है…",
+  "home.zoom": "ग्लोब का ज़ूम",
+  "home.zoomIn": "ज़ूम इन करें",
+  "home.zoomOut": "ज़ूम आउट करें",
 
   "country.IN": "भारत",
   "country.US": "संयुक्त राज्य अमेरिका",
