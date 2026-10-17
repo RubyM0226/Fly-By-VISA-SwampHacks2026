@@ -2,14 +2,14 @@
 
 import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
-import { useTrip } from "@/lib/trip";
+import { useTrip, tripStore } from "@/lib/trip";
 import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 
 export function MyPlanScreen() {
   const { t, lang } = useT();
   const user = useProfile();
-  const [trip] = useTrip();
+  const [trip, setTrip] = useTrip();
 
   // Calculate their current place on the roadmap
   const currentId = STEP_ORDER.find((id) => !trip.done[id]);
@@ -99,6 +99,17 @@ export function MyPlanScreen() {
           <a
             href="/auth/logout"
             data-button
+            onClick={() => {
+              // Wipe the browser's memory so the next user starts fresh
+              tripStore.set({ 
+                from: undefined as any, 
+                to: undefined as any, 
+                arrival: "", 
+                stayMonths: 1, 
+                done: {} 
+              });
+              localStorage.removeItem("temp_journey_id");
+            }}
             className="mt-4 inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
           >
             {t("myPlan.signOut")}

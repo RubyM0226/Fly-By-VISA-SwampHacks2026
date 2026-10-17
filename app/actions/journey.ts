@@ -10,7 +10,7 @@ export async function getUserJourney() {
 
   try {
     const result = await sql`
-      SELECT id, current_stop, stop_status 
+      SELECT id, current_stop, stop_status, profile 
       FROM journeys 
       WHERE user_id = ${session.user.sub}
       ORDER BY updated_at DESC 
@@ -47,7 +47,6 @@ export async function updateJourneyProgress(newStop: number, stopId: string, sta
       `;
     }
     
-    // Tell Next.js to refresh the page to show the new data
     revalidatePath("/location-map");
     return { success: true };
   } catch (error) {
@@ -56,29 +55,32 @@ export async function updateJourneyProgress(newStop: number, stopId: string, sta
   }
 }
 
-export async function createIntakeJourney() {
+export async function createIntakeJourney(profileData: any) {
   const session = await auth0.getSession();
-  const userId = session?.user?.sub || null; // Will be null if they aren't logged in yet
+  const userId = session?.user?.sub || null;
 
   try {
     if (userId) {
       // If they are already signed in, check if they have a journey we can overwrite
       const existing = await sql`SELECT id FROM journeys WHERE user_id = ${userId}`;
       if (existing.length > 0) {
-        // Reset their progress for the new trip
+        // Reset their progress and store the new profile
         await sql`
           UPDATE journeys 
-          SET current_stop = 1, stop_status = '{}'::jsonb, updated_at = CURRENT_TIMESTAMP
+          SET current_stop = 1, 
+              stop_status = '{}'::jsonb, 
+              profile = ${sql.json(profileData)}, 
+              updated_at = CURRENT_TIMESTAMP
           WHERE user_id = ${userId}
         `;
         return { success: true, id: existing[0].id };
       }
     }
 
-    // Insert a brand new journey (anonymous or new user) and return the UUID
+    // Insert a brand new journey (anonymous or new user) with profile data
     const result = await sql`
-      INSERT INTO journeys (user_id, current_stop, stop_status)
-      VALUES (${userId}, 1, '{}'::jsonb)
+      INSERT INTO journeys (user_id, current_stop, stop_status, profile)
+      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData)})
       RETURNING id
     `;
     
@@ -86,5 +88,23 @@ export async function createIntakeJourney() {
   } catch (error) {
     console.error("Failed to create intake journey:", error);
     return { success: false, id: null };
+  }
+}
+
+export async function claimAnonymousJourney(journeyId: string) {
+  const session = await auth0.getSession();
+  if (!session?.user) return { success: false };
+
+  try {
+    // Attach the pre-login anonymous journey to the newly logged-in Auth0 user ID
+    await sql`
+      UPDATE journeys 
+      SET user_id = ${session.user.sub} 
+      WHERE id = ${journeyId} AND user_id IS NULL
+    `;
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to claim journey:", error);
+    return { success: false };
   }
 }
