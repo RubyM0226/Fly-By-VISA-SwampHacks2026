@@ -32,7 +32,7 @@ export function DocumentsScreen() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-hills-peek className="space-y-6 pb-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
         <p className="text-lg">{t("docs.blurb")}</p>

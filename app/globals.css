@@ -183,7 +183,7 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { backgro
   position: relative;
   color: var(--footer-ink);
 }
-.site-footer__hills { display: block; width: 100%; height: clamp(6rem, 16vw, 13rem); }
+.site-footer__hills { display: block; width: 100%; height: var(--hills-h); pointer-events: none; }
 .site-footer__body {
   background-color: var(--hill-forest);
   margin-top: -1px;
@@ -200,7 +200,24 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { backgro
 }
 .site-footer a { color: var(--footer-link); }
 html[data-contrast="high"] .site-footer__hills { display: none; }
-html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); }
+html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); margin-top: 0; }
+
+/* Pages marked data-hills-peek (home, Important Documents, Location Map)
+   fill the first screen down to where the footer hills begin, so the top of
+   the hills shows without scrolling and the dark footer stays below the
+   fold. Longer content just pushes the hills down; they never cover it. */
+:root {
+  --hills-h: clamp(6rem, 16vw, 13rem);
+  /* The light top three-quarters, above the dark front hill. */
+  --hills-peek: calc(var(--hills-h) * 0.75);
+}
+/* No hills in high contrast, so keep the footer fully below the fold. */
+html[data-contrast="high"] { --hills-peek: 0px; }
+main:has([data-hills-peek]) {
+  min-height: calc(100dvh - var(--sticky-header-h, 0px) - var(--hills-peek));
+  padding-bottom: 0;
+}
+body:has([data-hills-peek]) .site-footer { margin-top: 0; }
 
 :focus-visible {
   outline: 3px solid var(--focus);

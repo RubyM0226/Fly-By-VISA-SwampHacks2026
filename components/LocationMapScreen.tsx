@@ -168,7 +168,7 @@ export function LocationMapScreen() {
   }, [status, lang, earliest, home.offices]);
 
   return (
-    <div className="space-y-4">
+    <div data-hills-peek className="space-y-4 pb-6">
       <div className="space-y-1">
         <h1 className="text-3xl font-bold">{t("nav.map")}</h1>
         <p className="text-lg text-muted">{t("map.intro")}</p>

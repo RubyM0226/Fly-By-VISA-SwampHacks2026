@@ -41,8 +41,9 @@ export function HomeScreen() {
   return (
     // Full-bleed: fill the content column beside the nav, under the sticky header.
     // Choices on the left, a large globe on the right once the content area is
-    // wide enough (about 900px); stacked below that.
-    <div className="relative -mt-6 ml-[calc(50%-50cqw)] w-[100cqw] px-3 py-3 sm:-mt-10 sm:px-5 @4xl:grid @4xl:h-[calc(100dvh-var(--sticky-header-h,0px))] @4xl:min-h-[34rem] @4xl:grid-cols-[minmax(18rem,26rem)_1fr] @4xl:items-center @4xl:gap-4">
+    // wide enough (about 900px); stacked below that. On wide screens it stops
+    // where the footer hills begin, so they show at the bottom of the screen.
+    <div data-hills-peek className="relative -mt-6 ml-[calc(50%-50cqw)] w-[100cqw] px-3 py-3 sm:-mt-10 sm:px-5 @4xl:grid @4xl:h-[calc(100dvh-var(--sticky-header-h,0px)-var(--hills-peek))] @4xl:min-h-[34rem] @4xl:grid-cols-[minmax(18rem,26rem)_1fr] @4xl:items-center @4xl:gap-4">
       <div className="@4xl:self-center">
         {/* If Auth0 is loading, we can show a minimal skeleton or just wait a split second */}
         {isLoading ? (
