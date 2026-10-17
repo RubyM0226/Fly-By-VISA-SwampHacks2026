@@ -120,6 +120,19 @@ export default function GlobeView({ from, to, onPick }: Props) {
   const [ready, setReady] = useState(false);
   const [hover, setHover] = useState<Shape | null>(null);
 
+  // Next keeps this page alive in the background after you move on, which tears
+  // down effects: react-globe.gl then destroys its renderer and scene, and on
+  // return it re-attaches that destroyed instance, leaving an empty box. So
+  // whenever we are torn down, ask for a brand-new globe for next time.
+  const [instance, setInstance] = useState(0);
+  useEffect(
+    () => () => {
+      setReady(false);
+      setInstance((n) => n + 1);
+    },
+    [],
+  );
+
   const globeMaterial = useMemo(() => new THREE.MeshLambertMaterial({ color: COLORS.ocean }), []);
 
   // Fit the globe to its container.
@@ -277,6 +290,7 @@ export default function GlobeView({ from, to, onPick }: Props) {
     <div ref={wrapRef} className="h-full w-full">
       {size.w > 0 && (
         <Globe
+          key={instance}
           ref={globeRef}
           width={size.w}
           height={size.h}

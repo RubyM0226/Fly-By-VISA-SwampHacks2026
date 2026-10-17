@@ -44,10 +44,9 @@ export function HomeScreen() {
       {/* The choices sit on top of the globe. Clicks pass through the gaps. */}
       <div ref={cardRef} className="pointer-events-none absolute inset-x-0 top-0 px-3 pt-3 sm:px-6 sm:pt-5">
         <div className="pointer-events-auto mx-auto max-w-5xl space-y-3 rounded-2xl border-2 border-line bg-surface p-4 shadow-lg sm:p-5">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{t("home.title")}</h1>
-            <p className="text-base text-muted">{t("home.lead")}</p>
-          </div>
+          {/* The two dropdown titles say it all; the page title stays for screen readers. */}
+          <h1 className="sr-only">{t("home.title")}</h1>
+          <p className="text-base text-muted">{t("home.lead")}</p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <PlaceSelect id="place-from" label={t("home.from")} enabled={["IN"]} value={trip.from} onChange={pick} />
