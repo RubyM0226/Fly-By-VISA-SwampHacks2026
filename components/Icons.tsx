@@ -111,6 +111,22 @@ export const DocumentIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+// A passport booklet with a globe on the cover, for visas.
+export const PassportIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <circle cx="12" cy="10" r="3" />
+    <path d="M9 10h6M12 7c-1 1-1 5 0 6M9 16.5h6" />
+  </svg>
+);
+
+// A government building with columns, for agencies and offices.
+export const BuildingIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <path d="M3 9.5 12 4l9 5.5H3ZM4 20h16M6 10v8M10 10v8M14 10v8M18 10v8" />
+  </svg>
+);
+
 // An open book, for the glossary.
 export const BookIcon = ({ className }: IconProps) => (
   <svg {...base} className={className}>

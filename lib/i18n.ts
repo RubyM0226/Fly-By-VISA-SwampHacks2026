@@ -47,7 +47,7 @@ const en = {
   "myPlan.signOut": "Sign out",
   "myPlan.signInFirst": "Log in or sign up to keep your trip plan in one place.",
 
-  "home.title": "Where are you coming from, and where do you want to go?",
+  "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "home.lead": "Pick both places and we will build your plan, step by step.",
   "home.from": "Where are you coming from (Home Country)",
   "home.to": "Where do you want to go (Visiting Country)",
@@ -248,7 +248,8 @@ const hi: Record<UiKey, string> = {
   "myPlan.signOut": "लॉग आउट",
   "myPlan.signInFirst": "अपनी यात्रा योजना एक जगह रखने के लिए लॉग इन या साइन अप करें।",
 
-  "home.title": "आप कहाँ से आ रहे हैं, और कहाँ जाना चाहते हैं?",
+  // DRAFT: needs a native Hindi reader.
+  "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
   "home.lead": "दोनों जगह चुनिए। हम आपके लिए कदम-दर-कदम योजना बनाएँगे।",
   "home.from": "आप कहाँ से आ रहे हैं (अपना देश)",
   "home.to": "आप कहाँ जाना चाहते हैं (जिस देश जा रहे हैं)",

@@ -27,8 +27,10 @@ export function HomeScreen() {
     <div className="relative -mt-6 ml-[calc(50%-50cqw)] w-[100cqw] px-3 py-3 sm:-mt-10 sm:px-6 sm:py-5 @4xl:grid @4xl:h-[calc(100dvh-var(--sticky-header-h,0px))] @4xl:min-h-[34rem] @4xl:grid-cols-[minmax(18rem,26rem)_1fr] @4xl:gap-8">
       <div className="@4xl:self-center">
         <div className="space-y-4 rounded-2xl border-2 border-line bg-surface p-4 shadow-lg sm:p-5">
-          {/* The two dropdown titles say it all; the page title stays for screen readers. */}
-          <h1 className="sr-only">{t("home.title")}</h1>
+          {/* The page's one heading, in the warm serif. */}
+          <h1 className="font-headline text-2xl font-semibold leading-snug text-ink text-balance sm:text-3xl">
+            {t("home.headline")}
+          </h1>
           <p className="text-base text-muted">{t("home.lead")}</p>
 
           <div className="flex flex-col gap-4">
