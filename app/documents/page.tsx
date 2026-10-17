@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderScreen } from "@/components/PlaceholderScreen";
+import { DocumentsScreen } from "@/components/DocumentsScreen";
 
 export const metadata: Metadata = { title: "Important Documents — FlyByVisa" };
 
 export default function DocumentsPage() {
-  return <PlaceholderScreen title="nav.documents" />;
+  return <DocumentsScreen />;
 }
