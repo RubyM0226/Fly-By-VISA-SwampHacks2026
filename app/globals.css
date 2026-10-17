@@ -218,6 +218,67 @@ input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
 }
 html[data-contrast="high"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
 
+/* ------------------------------------------------------------------ */
+/* Screen-to-screen journey                                             */
+/* ------------------------------------------------------------------ */
+/* Forward pushes the old screen out to the left while the next rolls in
+   from the right, like a slide "push". Back plays the same in reverse. */
+:root {
+  --journey-ms: 700ms;
+  --journey-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+::view-transition { pointer-events: none; }
+/* Only the screens move; the sky and footer swap in place. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }
+
+::view-transition-old(.journey-forward) { animation: var(--journey-ms) var(--journey-ease) both journey-out-left; }
+::view-transition-new(.journey-forward) { animation: var(--journey-ms) var(--journey-ease) both journey-in-right; }
+::view-transition-old(.journey-back) { animation: var(--journey-ms) var(--journey-ease) both journey-out-right; }
+::view-transition-new(.journey-back) { animation: var(--journey-ms) var(--journey-ease) both journey-in-left; }
+
+@keyframes journey-out-left { to { transform: translateX(-100vw); } }
+@keyframes journey-in-right { from { transform: translateX(100vw); } }
+@keyframes journey-out-right { to { transform: translateX(100vw); } }
+@keyframes journey-in-left { from { transform: translateX(-100vw); } }
+
+/* The header stays put as a fixed reference while the screens roll. */
+::view-transition-group(site-header) { animation: none; z-index: 100; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+
+/* Continue turns into a plane: the button melts away, the plane appears,
+   then it banks up and off to the right. */
+.launch-plane-icon { opacity: 0; transform: scale(0.4); }
+.launch-btn[data-launching] { animation: launch-btn 900ms cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+.launch-btn[data-launching] .launch-label { animation: launch-label 220ms ease-out forwards; }
+.launch-btn[data-launching] .launch-plane-icon { animation: launch-plane-in 260ms ease-out 100ms forwards; }
+@keyframes launch-btn {
+  30% { background-color: transparent; color: var(--accent); transform: none; }
+  100% { background-color: transparent; color: var(--accent); transform: translate(60vw, -55vh) rotate(-25deg); }
+}
+@keyframes launch-label { to { opacity: 0; transform: scale(0.8); } }
+@keyframes launch-plane-in { to { opacity: 1; transform: scale(1) rotate(-15deg); } }
+
+/* Once the screens start rolling, the plane keeps flying above them. */
+::view-transition-group(launch-plane) { animation: none; z-index: 110; }
+::view-transition-old(launch-plane) { animation: 600ms cubic-bezier(0.5, 0, 0.75, 0) both launch-fly-off; }
+@keyframes launch-fly-off { to { transform: translate(60vw, -55vh) rotate(-10deg); opacity: 0; } }
+
+/* Reduced motion (system setting or our own "Pause animations"): switch screens instantly. */
+html[data-motion="paused"]::view-transition-old(*),
+html[data-motion="paused"]::view-transition-new(*),
+html[data-motion="paused"]::view-transition-group(*) {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+}
+
 /* A soft pulse for the "you are here" marker. Disabled by the rules above. */
 @keyframes flybyvisa-pulse {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
