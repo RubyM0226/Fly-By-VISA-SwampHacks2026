@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
@@ -24,7 +24,6 @@ interface Props {
 /** Everything about one step, shown beside the roadmap when its pill is picked. */
 export function StepDetails({ step, plan, status, interviewDate, onToggleDone, onClose, autoFocus }: Props) {
   const { t, lang } = useT();
-  const [simple, setSimple] = useState(false);
   const text = step.text[lang];
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -42,9 +41,13 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
       end: formatDate(plan.end, lang),
     });
 
-  const readText = simple
-    ? `${text.title}. ${text.simple}`
-    : `${text.title}. ${plainText(text.what)} ${plainText(text.why)} ${text.documents.map(plainText).join(", ")}.`;
+  const readText = [
+    `${text.title}.`,
+    ...text.what.map(plainText),
+    `${t("journey.documents")}: ${text.documents.map(plainText).join(", ")}.`,
+    `${t("journey.cost")}: ${plainText(text.cost)}`,
+    `${t("journey.time")}: ${plainText(text.time)}.`,
+  ].join(" ");
 
   return (
     <article
@@ -80,27 +83,16 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
           </p>
         )}
 
-        {simple ? (
-          <div className="rounded-xl border-2 border-accent bg-accent-soft p-4">
-            <p className="mb-1 text-sm font-bold uppercase tracking-wide text-muted">{t("journey.simpleTitle")}</p>
-            <p className="text-xl">{text.simple}</p>
-          </div>
-        ) : (
-          <>
-            <div>
-              <h4 className="mb-1 text-lg font-bold">{t("journey.whatToDo")}</h4>
-              <p className="text-lg">
-                <RichText text={text.what} />
-              </p>
-            </div>
-            <div>
-              <h4 className="mb-1 text-lg font-bold">{t("journey.why")}</h4>
-              <p className="text-lg">
-                <RichText text={text.why} />
-              </p>
-            </div>
-          </>
-        )}
+        <div>
+          <h4 className="mb-1 text-lg font-bold">{t("journey.whatToDo")}</h4>
+          <ul className="list-disc space-y-1 pl-6 text-lg">
+            {text.what.map((line) => (
+              <li key={line}>
+                <RichText text={line} />
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div>
           <h4 className="mb-1 text-lg font-bold">{t("journey.documents")}</h4>
@@ -160,14 +152,6 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
           >
             {status !== "done" && <CheckIcon className="h-5 w-5" />}
             {status === "done" ? t("journey.undo") : t("journey.markDone")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setSimple((s) => !s)}
-            aria-pressed={simple}
-            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-lg font-semibold hover:bg-accent-soft"
-          >
-            {simple ? t("journey.showFull") : t("journey.explainSimply")}
           </button>
           <SpeakButton ownerId={`step-${step.id}`} label={t("journey.readStep")} getText={() => readText} />
         </div>
