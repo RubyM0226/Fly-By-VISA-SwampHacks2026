@@ -30,7 +30,7 @@ const headlineDevanagari = Noto_Serif_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "FlyByVisa — your step-by-step path to the U.S.",
+  title: "FlyByVisa: your step-by-step path to the U.S.",
   description:
     "A calm, accessible planner for visiting family in the United States. Available in English and Hindi.",
 };
