@@ -44,47 +44,42 @@ export function Header() {
     return () => observer.disconnect();
   }, []);
 
-  const handleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.location.href = "/auth/login";
-  };
-
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.location.href = "/auth/logout";
-  };
-
   return (
     <header ref={ref} className="sticky top-0 z-40" style={{ viewTransitionName: "site-header" }}>
       <div className="border-b-2 border-line bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2 sm:px-6">
-          <Link href="/" className="inline-flex min-h-12 items-center gap-2 text-xl font-bold text-accent" aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}>
+          <Link
+            href="/"
+            className="inline-flex min-h-12 items-center gap-2 text-xl font-bold text-accent"
+            aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}
+          >
             <LogoIcon className="h-7 w-7" />
             <span>{APP_NAME[lang]}</span>
           </Link>
 
           {/* Auth0 Controls */}
-{user ? (
-  <div className="flex items-center gap-2">
-    <span className="text-sm font-semibold text-slate-700">
-      Hi, {user.name || user.email}
-    </span>
-    {/* Use a standard 'a' tag, NOT next/link */}
-    <a
-      href="/auth/logout"
-      className="inline-flex min-h-10 items-center rounded-xl border-2 border-line-strong bg-surface px-3 py-1 font-semibold text-red-600 hover:bg-red-50"
-    >
-      Sign Out
-    </a>
-  </div>
-) : (
-  <a
-    href="/auth/login"
-    className="inline-flex min-h-10 items-center rounded-xl border-2 border-line-strong bg-accent px-4 py-1 font-semibold text-white hover:bg-accent/90"
-  >
-    Sign In
-  </a>
-)}
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-slate-700">
+                Hi, {user.name || user.email}
+              </span>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a
+                href="/auth/logout"
+                className="inline-flex min-h-10 items-center rounded-xl border-2 border-line-strong bg-surface px-3 py-1 font-semibold text-red-600 hover:bg-red-50"
+              >
+                Sign Out
+              </a>
+            </div>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-html-link-for-pages */
+            <a
+              href="/auth/login"
+              className="inline-flex min-h-10 items-center rounded-xl border-2 border-line-strong bg-accent px-4 py-1 font-semibold text-white hover:bg-accent/90"
+            >
+              Sign In
+            </a>
+          )}
         </div>
       </div>
 
