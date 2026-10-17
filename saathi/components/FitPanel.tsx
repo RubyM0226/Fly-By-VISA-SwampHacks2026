@@ -92,7 +92,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
           href={LINKS.waitTimes}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 font-semibold text-accent underline"
+          className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
         >
           {t("fit.officialLink")}
           <ExternalIcon className="h-4 w-4" />
