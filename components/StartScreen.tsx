@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { addDays } from "@/lib/journey";
 import { useToday } from "@/lib/clock";
-import { RichText } from "./Glossary";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
+import { Dropdown } from "./Dropdown";
+import { InfoTip } from "./InfoTip";
 import { DatePicker } from "./DatePicker";
 import { BACK, FORWARD } from "./ScreenTransition";
 import { createIntakeJourney } from "@/app/actions/journey";
@@ -43,14 +44,6 @@ export function StartScreen() {
         </Link>
       </div>
     );
-  }
-
-  function fillDemo() {
-    // Sharda wants to arrive next summer for about four months.
-    const now = new Date();
-    const year = now.getMonth() > 5 ? now.getFullYear() + 1 : now.getFullYear();
-    update({ from: "IN", to: "US", purpose: "family", stayMonths: 4, arrival: `${year}-07-01`, done: {} });
-    setError("");
   }
 
   async function submit(e: React.FormEvent) {
@@ -98,12 +91,9 @@ export function StartScreen() {
       className="mx-auto w-full max-w-2xl space-y-8 @5xl:grid @5xl:max-w-none @5xl:grid-cols-2 @5xl:items-start @5xl:gap-x-12 @5xl:space-y-0"
     >
       <div className="space-y-8">
-      <div className="space-y-3">
+      <div className="flex items-center gap-1">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("start.title")}</h1>
-        <p className="rounded-xl border-2 border-line-strong bg-accent-soft p-4 text-lg">{t("start.privacy")}</p>
-        <p className="text-lg text-muted">
-          <RichText text={t("start.visaNote")} />
-        </p>
+        <InfoTip label={t("start.privacyLabel")}>{t("start.privacyTip")}</InfoTip>
       </div>
 
       {/* 1. Why */}
@@ -128,21 +118,17 @@ export function StartScreen() {
 
       {/* 2. How long */}
       <div className="space-y-2">
-        <label htmlFor="stay" className="block text-xl font-bold">
+        <label id="stay-label" htmlFor="stay" className="block text-xl font-bold">
           {t("start.howLong")}
         </label>
-        <select
+        <Dropdown
           id="stay"
+          labelledBy="stay-label"
           value={trip.stayMonths}
-          onChange={(e) => update({ stayMonths: Number(e.target.value) })}
-          className="min-h-14 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-lg font-semibold sm:w-72"
-        >
-          {MONTH_CHOICES.map((n) => (
-            <option key={n} value={n}>
-              {n === 1 ? t("start.month") : t("start.months", { n })}
-            </option>
-          ))}
-        </select>
+          options={MONTH_CHOICES.map((n) => ({ value: n, label: n === 1 ? t("start.month") : t("start.months", { n }) }))}
+          onChange={(n) => update({ stayMonths: n })}
+          className="sm:w-72"
+        />
       </div>
 
       </div>
@@ -195,16 +181,6 @@ export function StartScreen() {
         >
           {t("start.back")}
         </Link>
-      </div>
-
-      <div className="border-t-2 border-line pt-6">
-        <button
-          type="button"
-          onClick={fillDemo}
-          className="min-h-12 rounded-xl border-2 border-dashed border-line-strong px-4 py-2 text-base font-semibold hover:bg-accent-soft"
-        >
-          {t("start.demo")}
-        </button>
       </div>
       </div>
     </form>

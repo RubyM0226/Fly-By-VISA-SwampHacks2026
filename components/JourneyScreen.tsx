@@ -122,6 +122,10 @@ export function JourneyScreen() {
     });
   }
 
+  // The details box is always open: on the step you picked, else the current one
+  // (the last one once everything is done).
+  const open: OpenStep = openStep ?? { id: currentId ?? STEP_ORDER[STEP_ORDER.length - 1], focus: false };
+
   const currentPlan = currentId ? journey.steps.find((s) => s.id === currentId) : undefined;
 
   return (
@@ -179,7 +183,7 @@ export function JourneyScreen() {
         <RoadmapPath
           journey={journey}
           statusOf={statusOf}
-          open={openStep}
+          open={open}
           onOpen={setOpenStep}
           onToggleDone={handleToggleDone} 
         />
