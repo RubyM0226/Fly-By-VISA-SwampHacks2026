@@ -1,6 +1,6 @@
 ---
 source_url: https://www.uscis.gov/visit-the-united-states/extend-your-stay
-title: Entend Your Stay
+title: Extend Your Stay
 saved_on: 2026-10-16
 ---
 
