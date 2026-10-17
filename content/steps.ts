@@ -33,6 +33,8 @@ export interface StepContent {
   id: StepId;
   text: Record<Lang, StepText>;
   links: StepLink[];
+  /** Optional in-app button shown at the top of the step's details. */
+  action?: { label: Record<Lang, string>; href: string };
 }
 
 export const STEPS: StepContent[] = [
@@ -247,31 +249,37 @@ export const STEPS: StepContent[] = [
     id: "travel",
     text: {
       en: {
-        title: "Book your travel",
+        title: "Book your flight",
         what: [
           "Wait until you have your visa and your passport is back.",
-          "Then book your flights.",
-          "Do not buy tickets before you have the visa.",
+          "Then compare flights with the button above.",
+          "Pick a flight with few stops and enough time to change planes.",
+          "Ask the airline for wheelchair help if you need it.",
           "Think about travel insurance.",
         ],
         documents: ["Passport with the visa", "Flight details", "Insurance papers, if you buy it"],
         cost: "Prices vary.",
         time: "A few days",
-        simple: "Buy tickets only after you have your visa.",
+        simple: "Buy tickets only after you have your visa. We help you compare flights.",
       },
       hi: {
-        title: "यात्रा बुक करें",
+        title: "अपनी उड़ान बुक करें",
         what: [
           "वीज़ा मिलने और पासपोर्ट वापस आने तक रुकें।",
-          "फिर उड़ानें बुक करें।",
-          "वीज़ा मिलने से पहले टिकट न खरीदें।",
+          "फिर ऊपर दिए बटन से उड़ानों की तुलना करें।",
+          "कम पड़ाव और विमान बदलने के लिए पर्याप्त समय वाली उड़ान चुनें।",
+          "ज़रूरत हो तो एयरलाइन से व्हीलचेयर सहायता माँगें।",
           "यात्रा बीमा के बारे में सोचें।",
         ],
         documents: ["वीज़ा वाला पासपोर्ट", "उड़ान की जानकारी", "बीमा के कागज़, अगर लें"],
         cost: "कीमतें अलग-अलग होती हैं।",
         time: "कुछ दिन",
-        simple: "वीज़ा मिलने के बाद ही टिकट खरीदें।",
+        simple: "वीज़ा मिलने के बाद ही टिकट खरीदें। हम उड़ानों की तुलना में मदद करते हैं।",
       },
+    },
+    action: {
+      label: { en: "Find and compare flights", hi: "उड़ानें खोजें और तुलना करें" },
+      href: "/flights",
     },
     links: [{ label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" }, url: LINKS.visitorVisa }],
   },
