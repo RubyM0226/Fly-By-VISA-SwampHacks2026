@@ -62,7 +62,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
 
       <div className="space-y-3">
         <h3 className="text-xl font-bold">{t("fit.compare")}</h3>
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-3 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-5">
           {journey.posts.map((p, i) => (
             <li
               key={p.id}

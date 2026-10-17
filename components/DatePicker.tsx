@@ -135,9 +135,9 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
       role="group"
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
-      className={`w-full max-w-md rounded-2xl border-2 bg-surface p-3 sm:p-4 ${invalid ? "border-danger" : "border-line-strong"}`}
+      className={`w-full max-w-md rounded-2xl border-2 bg-surface p-2 sm:p-4 ${invalid ? "border-danger" : "border-line-strong"}`}
     >
-      <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="mb-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1">
         <button
           type="button"
           onClick={() => moveMonths(-1, false)}
@@ -152,7 +152,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
           onClick={() => setPickerOpen((o) => !o)}
           aria-expanded={pickerOpen}
           aria-controls={`${id}-pick`}
-          className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 py-1 text-xl font-bold hover:bg-accent-soft"
+          className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1.5 justify-self-center rounded-xl px-1 py-1 text-center text-xl font-bold hover:bg-accent-soft sm:px-3"
         >
           <span id={`${id}-month`} aria-live="polite">
             {monthTitle}
@@ -225,7 +225,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
                       setActive(day);
                       onChange(day);
                     }}
-                    className={`flex aspect-square min-h-12 w-full items-center justify-center rounded-xl text-lg font-semibold ${
+                    className={`flex aspect-square min-h-11 w-full items-center justify-center rounded-xl text-lg font-semibold ${
                       day === value
                         ? "bg-accent text-accent-ink"
                         : day < min

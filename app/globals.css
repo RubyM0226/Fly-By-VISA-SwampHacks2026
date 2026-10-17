@@ -138,6 +138,9 @@ body {
   /* Full-bleed sections use 100vw, which includes the scrollbar; never let that
      cause sideways scrolling. clip (not hidden) keeps the sticky header working. */
   overflow-x: clip;
+  /* At large text sizes on narrow screens, let long words wrap rather than
+     push cards and buttons past the edge of the screen. */
+  overflow-wrap: anywhere;
   background: var(--bg);
   color: var(--ink);
   line-height: var(--leading);
@@ -204,6 +207,9 @@ html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line
   outline-offset: 3px;
   border-radius: 0.25rem;
 }
+
+/* Fieldsets default to their content's width; let them shrink like a div. */
+fieldset { min-inline-size: 0; }
 
 dialog::backdrop { background: rgb(0 0 0 / 0.55); }
 

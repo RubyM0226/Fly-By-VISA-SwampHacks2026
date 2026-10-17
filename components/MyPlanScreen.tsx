@@ -9,7 +9,7 @@ export function MyPlanScreen() {
   const user = useProfile();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4">
+    <div className="space-y-4">
       <h1 className="text-3xl font-bold">{t("nav.myPlan")}</h1>
 
       {user === undefined && <p className="text-lg text-muted">{t("myPlan.checking")}</p>}

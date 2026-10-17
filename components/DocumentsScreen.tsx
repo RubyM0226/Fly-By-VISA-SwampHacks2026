@@ -29,7 +29,7 @@ export function DocumentsScreen() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
         <p className="text-lg">{t("docs.blurb")}</p>
@@ -131,7 +131,7 @@ function QuestionList({
   return (
     <section className="space-y-2">
       <h2 className="text-xl font-bold">{title}</h2>
-      <ul className="space-y-2">
+      <ul className="grid gap-2 @3xl:grid-cols-2">
         {items.map((d) => (
           <li key={d.id}>
             <button
