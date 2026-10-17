@@ -27,7 +27,7 @@ export function StartScreen() {
 
   if (!placesChosen) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="space-y-4">
         <h1 className="text-3xl font-bold">{t("start.title")}</h1>
         <p className="text-xl">{t("start.needPlaces")}</p>
         <Link
@@ -67,7 +67,14 @@ export function StartScreen() {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="mx-auto max-w-2xl space-y-8">
+    // One centred column on narrow screens; on wide ones the questions sit on
+    // the left and the date, buttons and demo on the right.
+    <form
+      onSubmit={submit}
+      noValidate
+      className="mx-auto w-full max-w-2xl space-y-8 @5xl:grid @5xl:max-w-none @5xl:grid-cols-2 @5xl:items-start @5xl:gap-x-12 @5xl:space-y-0"
+    >
+      <div className="space-y-8">
       <div className="space-y-3">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("start.title")}</h1>
         <p className="rounded-xl border-2 border-line-strong bg-accent-soft p-4 text-lg">{t("start.privacy")}</p>
@@ -115,6 +122,9 @@ export function StartScreen() {
         </select>
       </div>
 
+      </div>
+
+      <div className="space-y-8">
       {/* 3. When */}
       <div className="space-y-2">
         <p id="arrival-label" className="block text-xl font-bold">
@@ -171,6 +181,7 @@ export function StartScreen() {
         >
           {t("start.demo")}
         </button>
+      </div>
       </div>
     </form>
   );

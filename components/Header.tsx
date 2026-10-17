@@ -28,16 +28,17 @@ export function Header() {
   return (
     <header ref={ref} className="sticky top-0 z-40" style={{ viewTransitionName: "site-header" }}>
       <AccessibilityBar
-        start={
+        start={(compact) => (
           <Link
             href="/"
-            className="inline-flex min-h-12 items-center gap-2 text-xl font-bold text-accent"
+            className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap text-xl font-bold text-accent"
             aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}
           >
-            <LogoIcon className="h-7 w-7" />
-            <span>{APP_NAME[lang]}</span>
+            <LogoIcon className="h-7 w-7 shrink-0" />
+            {/* On the narrowest screens only the icon shows. */}
+            {!compact && <span>{APP_NAME[lang]}</span>}
           </Link>
-        }
+        )}
       />
     </header>
   );

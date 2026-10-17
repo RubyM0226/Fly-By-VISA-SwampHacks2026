@@ -8,25 +8,29 @@ import { DocumentIcon, MapIcon, PlanIcon, UserIcon } from "./Icons";
 
 type IconType = (props: { className?: string }) => React.ReactElement;
 
+// Narrow screens: a square icon button (the label stays for screen readers and
+// as a tooltip). Tablets and up: icon and label side by side.
 const itemClass = (active: boolean) =>
-  `flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center text-sm font-semibold leading-tight md:flex-none md:flex-row md:justify-start md:gap-3 md:px-3 md:text-left md:text-base ${
+  `flex min-h-[48px] items-center justify-center rounded-xl p-[8px] font-semibold leading-tight md:min-h-14 md:justify-start md:gap-3 md:px-3 md:text-base ${
     active ? "bg-accent text-accent-ink" : "text-ink hover:bg-accent-soft"
   }`;
+const labelClass = "sr-only md:not-sr-only";
 
 function NavItem({ href, label, Icon, active }: { href: string; label: string; Icon: IconType; active: boolean }) {
   return (
-    <li className="flex md:block">
-      <Link href={href} aria-current={active ? "page" : undefined} className={itemClass(active)}>
+    <li>
+      <Link href={href} title={label} aria-current={active ? "page" : undefined} className={itemClass(active)}>
         <Icon className="h-6 w-6 shrink-0" />
-        <span>{label}</span>
+        <span className={labelClass}>{label}</span>
       </Link>
     </li>
   );
 }
 
 /**
- * Always-visible navigation: a column on the left under the header on tablets
- * and up, a bar along the bottom on phones. The current page is highlighted.
+ * Always-visible navigation in a column on the left, under the header: a
+ * narrow icon rail on phones, icons with labels from tablets up. The current
+ * page is highlighted.
  */
 export function SideNav() {
   const { t } = useT();
@@ -42,17 +46,17 @@ export function SideNav() {
   return (
     <nav
       aria-label={t("nav.main")}
-      className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-line bg-surface md:sticky md:top-[var(--sticky-header-h,0px)] md:bottom-auto md:h-[calc(100dvh-var(--sticky-header-h,0px))] md:w-56 md:shrink-0 md:overflow-y-auto md:border-r-2 md:border-t-0"
+      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 overflow-y-auto border-r-2 border-line bg-surface md:w-56"
     >
-      <ul className="flex gap-1 p-1.5 md:flex-col md:gap-2 md:p-3">
+      <ul className="flex flex-col gap-2 p-[8px] md:p-3">
         {user ? (
           item("/my-plan", "nav.myPlan", PlanIcon)
         ) : (
-          <li className="flex md:block">
+          <li>
             {/* Auth0's login page also offers sign up. It needs a full page load, not a client-side Link. */}
-            <a href={`/auth/login?returnTo=${encodeURIComponent(pathname)}`} className={itemClass(false)}>
+            <a href={`/auth/login?returnTo=${encodeURIComponent(pathname)}`} title={t("nav.login")} className={itemClass(false)}>
               <UserIcon className="h-6 w-6 shrink-0" />
-              <span>{t("nav.login")}</span>
+              <span className={labelClass}>{t("nav.login")}</span>
             </a>
           </li>
         )}

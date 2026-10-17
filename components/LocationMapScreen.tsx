@@ -192,7 +192,7 @@ export function LocationMapScreen() {
         <h2 id="offices-title" className="text-2xl font-bold">
           {t("map.listTitle")}
         </h2>
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-3 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-5">
           {home.offices.map((o) => {
             const { title, lines } = officeLines(o);
             return (

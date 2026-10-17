@@ -31,7 +31,7 @@ export function JourneyScreen() {
 
   if (!journey) {
     return (
-      <div className="max-w-2xl space-y-4">
+      <div className="space-y-4">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
         {today ? (
           <>

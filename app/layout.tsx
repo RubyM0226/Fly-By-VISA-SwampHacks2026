@@ -28,11 +28,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SettingsSync />
         <SkipLink />
         <Header />
-        {/* Nav on the left (bottom bar on phones); the page and footer sit beside it. */}
+        {/* Nav on the left (an icon rail on narrow screens); the page and footer fill the rest. */}
         <div className="flex flex-1">
           <SideNav />
-          <div className="@container flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
-            <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 outline-none">
+          <div className="@container flex min-w-0 flex-1 flex-col">
+            <main id="main-content" tabIndex={-1} className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-10 outline-none">
               {children}
             </main>
             <Footer />

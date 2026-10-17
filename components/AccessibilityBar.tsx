@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { DEFAULT_SETTINGS, settingsStore, useSettings, type Settings } from "@/lib/settings";
 import { tripStore } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
@@ -128,20 +128,82 @@ function TextSizeControl({ value, onChange }: { value: Settings["textSize"]; onC
   );
 }
 
+/** Which parts of the top row fit on one line. */
+interface Fit {
+  language: boolean;
+  textSize: boolean;
+  /** Logo shows just its icon. */
+  compact: boolean;
+}
+// Tried in order: everything, then Language moves into More, then Text size,
+// and last the logo drops its name.
+const FITS: Fit[] = [
+  { language: true, textSize: true, compact: false },
+  { language: false, textSize: true, compact: false },
+  { language: false, textSize: false, compact: false },
+  { language: false, textSize: false, compact: true },
+];
+
 /**
- * The top row: logo at the far left, language and text size in the middle,
- * "More" at the far right. The rest of the settings open under "More".
+ * The top row, always on one line: logo at the far left, language and text
+ * size in the middle, "More" at the far right. Whatever does not fit moves
+ * into the "More" panel, along with the rest of the settings.
  */
-export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
-  const { t } = useT();
+export function AccessibilityBar({ start }: { start?: (compact: boolean) => React.ReactNode }) {
+  const { t, lang } = useT();
   const [settings, update] = useSettings();
   const [open, setOpen] = useState(false);
   const [cleared, setCleared] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
 
+  // Measure the real width of each piece (from hidden copies), then show as
+  // much as fits. Re-checked when the screen, language or text settings change.
+  const rowRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLSpanElement>(null);
+  const logoCompactRef = useRef<HTMLSpanElement>(null);
+  const languageRef = useRef<HTMLSpanElement>(null);
+  const textSizeRef = useRef<HTMLSpanElement>(null);
+  const [fit, setFit] = useState<Fit>(FITS[0]);
+
+  const refit = useCallback(() => {
+    const row = rowRef.current;
+    const more = moreButton.current;
+    const logo = logoRef.current;
+    const logoCompact = logoCompactRef.current;
+    const language = languageRef.current;
+    const textSize = textSizeRef.current;
+    if (!row || !more || !logo || !logoCompact || !language || !textSize) return;
+    const style = getComputedStyle(row);
+    const space = row.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const gap = parseFloat(style.columnGap) || 0;
+    const width = (f: Fit) => {
+      const parts = [
+        f.compact ? logoCompact.offsetWidth : logo.offsetWidth,
+        more.offsetWidth,
+        ...(f.language ? [language.offsetWidth] : []),
+        ...(f.textSize ? [textSize.offsetWidth] : []),
+      ];
+      return parts.reduce((a, b) => a + b, 0) + gap * (parts.length - 1);
+    };
+    const next = FITS.find((f) => width(f) <= space) ?? FITS[FITS.length - 1];
+    setFit((prev) =>
+      prev.language === next.language && prev.textSize === next.textSize && prev.compact === next.compact ? prev : next,
+    );
+  }, []);
+
+  useLayoutEffect(() => {
+    refit();
+    const observer = new ResizeObserver(refit);
+    if (rowRef.current) observer.observe(rowRef.current);
+    return () => observer.disconnect();
+  }, [refit, lang, settings.textSize, settings.dyslexiaFont, settings.boldText, settings.spacing]);
+
+  const languageControl = <LanguageSelect />;
+  const textSizeControl = <TextSizeControl value={settings.textSize} onChange={(v) => update({ textSize: v })} />;
+
   return (
     <div
-      className="border-b-2 border-line bg-surface"
+      className="relative border-b-2 border-line bg-surface"
       onKeyDown={(e) => {
         if (e.key === "Escape" && open) {
           setOpen(false);
@@ -149,20 +211,39 @@ export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
         }
       }}
     >
-      {/* Phones: logo and More on the first line, the controls wrap below them. */}
-      <div className="flex flex-wrap items-center gap-2 px-3 py-2 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
-        <div className="order-1 md:justify-self-start">{start}</div>
-        <div className="order-3 flex w-full flex-wrap items-center gap-2 md:order-2 md:w-auto md:justify-center">
-          <LanguageSelect />
-          <div className="flex items-center gap-2">
-            <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
-              {t("a11y.textSize")}
-            </span>
-            <TextSizeControl
-              value={settings.textSize}
-              onChange={(v) => update({ textSize: v })}
-            />
-          </div>
+      {/* Hidden copies, only for measuring how wide each piece would be. */}
+      <div
+        aria-hidden="true"
+        inert
+        className="pointer-events-none invisible absolute left-0 top-0 flex h-0 w-0 overflow-hidden whitespace-nowrap"
+      >
+        <span ref={logoRef} className="inline-flex shrink-0">
+          {start?.(false)}
+        </span>
+        <span ref={logoCompactRef} className="inline-flex shrink-0">
+          {start?.(true)}
+        </span>
+        <span ref={languageRef} className="inline-flex shrink-0">
+          {languageControl}
+        </span>
+        <span ref={textSizeRef} className="inline-flex shrink-0 items-center gap-2">
+          <span className="hidden text-sm font-semibold text-muted sm:inline">{t("a11y.textSize")}</span>
+          {textSizeControl}
+        </span>
+      </div>
+
+      <div ref={rowRef} className="flex flex-nowrap items-center gap-2 overflow-hidden px-3 py-2 sm:px-6">
+        <div className="shrink-0">{start?.(fit.compact)}</div>
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
+          {fit.language && languageControl}
+          {fit.textSize && (
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
+                {t("a11y.textSize")}
+              </span>
+              {textSizeControl}
+            </div>
+          )}
         </div>
         <button
           ref={moreButton}
@@ -170,7 +251,7 @@ export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
           aria-expanded={open}
           aria-controls="a11y-more"
           onClick={() => setOpen((v) => !v)}
-          className="order-2 ml-auto inline-flex min-h-12 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3 md:order-3 md:justify-self-end"
+          className="ml-auto inline-flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3"
         >
           <GearIcon className="h-5 w-5" />
           <span>{t("a11y.more")}</span>
@@ -185,7 +266,24 @@ export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
         hidden={!open}
         className="max-h-[50dvh] overflow-y-auto border-t-2 border-line"
       >
-        <div className="mx-auto max-w-5xl space-y-4 px-4 py-4 sm:px-6">
+        <div className="space-y-4 px-4 py-4 sm:px-6 lg:px-8">
+          {/* Anything that did not fit on the top row lives here instead. */}
+          {(!fit.language || !fit.textSize) && (
+            <section className="flex flex-wrap items-end gap-x-6 gap-y-3">
+              {!fit.language && (
+                <div className="space-y-2">
+                  <h2 className="font-bold">{t("nav.language")}</h2>
+                  {languageControl}
+                </div>
+              )}
+              {!fit.textSize && (
+                <div className="space-y-2">
+                  <h2 className="font-bold">{t("a11y.textSize")}</h2>
+                  {textSizeControl}
+                </div>
+              )}
+            </section>
+          )}
           <section className="space-y-2">
             <h2 className="font-bold">{t("a11y.spacing")}</h2>
             <Segmented
