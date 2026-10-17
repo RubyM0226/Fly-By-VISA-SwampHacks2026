@@ -12,6 +12,7 @@ interface UserProfile {
   email?: string;
 }
 
+/** One sticky row: logo, accessibility controls, Auth0 controls. */
 export function Header() {
   const { t, lang } = useT();
   const ref = useRef<HTMLElement>(null);
@@ -32,7 +33,8 @@ export function Header() {
     };
   }, []);
 
-  // Sticky header height syncing
+  // Tell the page how tall the sticky header is, so the side nav, focused
+  // elements and in-page links are never hidden underneath it.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
