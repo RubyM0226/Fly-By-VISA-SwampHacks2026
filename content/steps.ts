@@ -18,8 +18,9 @@ export interface StepText {
   /** What to do, one short sentence per bullet. */
   what: string[];
   documents: string[];
-  cost: string;
-  time: string;
+  /** Leave out when there is nothing useful to say; the field is then hidden. */
+  cost?: string;
+  time?: string;
   /** One-line summary, shown in the "Your next step" card. */
   simple: string;
 }
@@ -50,7 +51,6 @@ export const STEPS: StepContent[] = [
           "Know how long you will stay.",
         ],
         documents: ["Your passport", "Your travel dates"],
-        cost: "No fee.",
         time: "About 1 week",
         simple: "Make sure your passport will not expire soon. Know why you are going.",
       },
@@ -63,7 +63,6 @@ export const STEPS: StepContent[] = [
           "जानें कि आप कितने समय रुकेंगे।",
         ],
         documents: ["आपका पासपोर्ट", "यात्रा की तारीखें"],
-        cost: "कोई शुल्क नहीं।",
         time: "लगभग 1 सप्ताह",
         simple: "देखिए कि पासपोर्ट जल्दी खत्म न हो रहा हो। जानिए कि आप क्यों जा रहे हैं।",
       },
@@ -178,7 +177,6 @@ export const STEPS: StepContent[] = [
           "Proof of how you will pay",
           "A simple trip plan",
         ],
-        cost: "No fee.",
         time: "1 to 2 weeks",
         simple: "Gather papers that show your life is in India and that you will go home after the trip.",
       },
@@ -200,7 +198,6 @@ export const STEPS: StepContent[] = [
           "खर्च कैसे उठाएँगे, इसका प्रमाण",
           "यात्रा की सरल योजना",
         ],
-        cost: "कोई शुल्क नहीं।",
         time: "1 से 2 सप्ताह",
         simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
       },
@@ -222,7 +219,6 @@ export const STEPS: StepContent[] = [
           "Answer honestly, in your own words. Keep it short.",
         ],
         documents: ["Your trip plan", "Your papers from the last step"],
-        cost: "Free.",
         time: "A few evenings",
         simple: "Practice saying your answers out loud.",
       },
@@ -236,7 +232,6 @@ export const STEPS: StepContent[] = [
           "सच्चाई से, अपने शब्दों में, छोटा जवाब दें।",
         ],
         documents: ["आपकी यात्रा की योजना", "पिछले कदम के कागज़ात"],
-        cost: "मुफ़्त।",
         time: "कुछ शामें",
         simple: "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
       },
@@ -258,8 +253,6 @@ export const STEPS: StepContent[] = [
           "Think about travel insurance.",
         ],
         documents: ["Passport with the visa", "Flight details", "Insurance papers, if you buy it"],
-        cost: "Prices vary.",
-        time: "A few days",
         simple: "Buy tickets only after you have your visa. We help you compare flights.",
       },
       hi: {
@@ -272,8 +265,6 @@ export const STEPS: StepContent[] = [
           "यात्रा बीमा के बारे में सोचें।",
         ],
         documents: ["वीज़ा वाला पासपोर्ट", "उड़ान की जानकारी", "बीमा के कागज़, अगर लें"],
-        cost: "कीमतें अलग-अलग होती हैं।",
-        time: "कुछ दिन",
         simple: "वीज़ा मिलने के बाद ही टिकट खरीदें। हम उड़ानों की तुलना में मदद करते हैं।",
       },
     },
@@ -296,8 +287,6 @@ export const STEPS: StepContent[] = [
           "Your leave date is on your [[i94|I-94]] record.",
         ],
         documents: ["Passport with the visa", "Address where you will stay", "Your trip details"],
-        cost: "No fee.",
-        time: "Arrival day",
         simple: "Keep your papers ready. The officer decides how long you can stay.",
       },
       hi: {
@@ -310,8 +299,6 @@ export const STEPS: StepContent[] = [
           "लौटने की तारीख आपके [[i94|I-94]] रिकॉर्ड में होती है।",
         ],
         documents: ["वीज़ा वाला पासपोर्ट", "ठहरने की जगह का पता", "आपकी यात्रा की जानकारी"],
-        cost: "कोई शुल्क नहीं।",
-        time: "पहुँचने का दिन",
         simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
       },
     },
@@ -333,7 +320,6 @@ export const STEPS: StepContent[] = [
         ],
         documents: ["Your [[i94|I-94]] record", "Your return ticket"],
         cost: "Asking to stay longer may cost a fee. Ask [[uscis|USCIS]].",
-        time: "Plan this before you leave home",
         simple: "Go home on time. Do not work.",
       },
       hi: {
@@ -346,7 +332,6 @@ export const STEPS: StepContent[] = [
         ],
         documents: ["आपका [[i94|I-94]] रिकॉर्ड", "वापसी का टिकट"],
         cost: "ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है। [[uscis|USCIS]] से पूछें।",
-        time: "घर से निकलने से पहले योजना बनाएँ",
         simple: "समय पर घर लौटें। काम न करें।",
       },
     },

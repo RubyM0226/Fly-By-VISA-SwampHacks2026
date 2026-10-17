@@ -134,8 +134,8 @@ const en = {
   "country.BR": "Brazil",
 
   "start.title": "Tell us about your trip",
-  "start.privacy": "You do not need an account. Your trip answers are saved to build your plan. If you log in, they are kept privately for you.",
-  "start.visaNote": "We will plan for a visitor visa ([[b2|B-2]]) for a first-time applicant.",
+  "start.privacyTip": "We never send your information to other websites or outside services. We only store it so FlyByVisa can plan your trip.",
+  "start.privacyLabel": "About your privacy",
   "start.why": "Why are you going?",
   "start.why.family": "Visit family",
   "start.why.study": "Study",
@@ -145,7 +145,6 @@ const en = {
   "start.months": "{n} months",
   "start.when": "When do you want to arrive?",
   "start.whenHelp": "Pick the day you want to be with your family.",
-  "start.demo": "Try the demo story: Sharda, 68, Jaipur",
   "start.make": "Show my journey",
   "start.needDate": "Please choose an arrival date.",
   "start.pastDate": "Please choose a day in the future.",
@@ -185,7 +184,6 @@ const en = {
   "journey.arriveOn": "Arrive on {date}",
   "journey.leaveBy": "Plan to leave by about {date}",
   "journey.roadmap": "Your roadmap",
-  "journey.backToMap": "Back to roadmap",
   "journey.earlier": "Earlier steps",
   "journey.later": "Later steps",
 
@@ -440,8 +438,8 @@ const hi: Record<UiKey, string> = {
 
   "start.title": "अपनी यात्रा के बारे में बताइए",
   // DRAFT: needs a native Hindi reader.
-  "start.privacy": "खाता नहीं चाहिए। आपकी योजना बनाने के लिए आपके यात्रा के जवाब सहेजे जाते हैं। लॉग इन करने पर वे आपके लिए निजी रूप से रखे जाते हैं।",
-  "start.visaNote": "हम पहली बार आवेदन करने वाले के लिए आगंतुक वीज़ा ([[b2|B-2]]) के हिसाब से योजना बनाएँगे।",
+  "start.privacyTip": "हम आपकी जानकारी किसी दूसरी वेबसाइट या बाहरी सेवा को नहीं भेजते। हम इसे सिर्फ़ आपकी यात्रा की योजना बनाने के लिए रखते हैं।",
+  "start.privacyLabel": "आपकी निजता के बारे में",
   "start.why": "आप क्यों जा रहे हैं?",
   "start.why.family": "परिवार से मिलने",
   "start.why.study": "पढ़ाई",
@@ -451,7 +449,6 @@ const hi: Record<UiKey, string> = {
   "start.months": "{n} महीने",
   "start.when": "आप कब पहुँचना चाहते हैं?",
   "start.whenHelp": "वह दिन चुनिए जब आप परिवार के साथ होना चाहते हैं।",
-  "start.demo": "डेमो कहानी देखें: शारदा, 68, जयपुर",
   "start.make": "मेरी यात्रा दिखाइए",
   "start.needDate": "कृपया पहुँचने की तारीख चुनें।",
   "start.pastDate": "कृपया भविष्य की कोई तारीख चुनें।",
@@ -492,7 +489,6 @@ const hi: Record<UiKey, string> = {
   "journey.arriveOn": "{date} को पहुँचें",
   "journey.leaveBy": "लगभग {date} तक लौटने की योजना बनाएँ",
   "journey.roadmap": "आपका रास्ता",
-  "journey.backToMap": "रोडमैप पर वापस",
   "journey.earlier": "पिछले कदम",
   "journey.later": "अगले कदम",
 

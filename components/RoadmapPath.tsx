@@ -16,8 +16,8 @@ export interface OpenStep {
 interface Props {
   journey: Journey;
   statusOf: (id: StepId) => StepStatus;
-  open: OpenStep | null;
-  onOpen: (open: OpenStep | null) => void;
+  open: OpenStep;
+  onOpen: (open: OpenStep) => void;
   onToggleDone: (id: StepId) => void;
 }
 
@@ -29,7 +29,6 @@ interface Props {
 export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: Props) {
   const { t, lang } = useT();
   const trackRef = useRef<HTMLOListElement>(null);
-  const pills = useRef<Partial<Record<StepId, HTMLButtonElement | null>>>({});
   const [centered, setCentered] = useState(0);
 
   const currentIndex = Math.max(
@@ -63,9 +62,10 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
   }, [center]);
 
   // Opening a step (from a pill or "Show details") brings it to the middle.
+  const openId = open.id;
   useEffect(() => {
-    if (open) center(STEP_ORDER.indexOf(open.id));
-  }, [open, center]);
+    center(STEP_ORDER.indexOf(openId));
+  }, [openId, center]);
 
   // Keep track of which step is in the middle, for the arrows. While an arrow
   // or pick is scrolling, keep its destination until the scroll settles.
@@ -87,28 +87,18 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
   }
 
   function pick(id: StepId) {
-    if (open?.id === id) {
+    if (open.id === id) {
       center(STEP_ORDER.indexOf(id));
       return;
     }
-    onOpen({ id, focus: !open });
+    onOpen({ id, focus: false });
   }
 
-  function close() {
-    const id = open?.id;
-    onOpen(null);
-    if (id) requestAnimationFrame(() => pills.current[id]?.focus({ preventScroll: true }));
-  }
-
-  const openPlan = open ? journey.steps.find((s) => s.id === open.id) : undefined;
+  const openPlan = journey.steps.find((s) => s.id === open.id);
   const last = STEP_ORDER.length - 1;
 
   return (
-    <div
-      onKeyDown={(e) => {
-        if (e.key === "Escape" && open) close();
-      }}
-    >
+    <div>
       <div className="roadmap-carousel">
         <button
           type="button"
@@ -145,13 +135,10 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
                 </div>
                 <div className="roadmap-pill-row">
                   <button
-                    ref={(el) => {
-                      pills.current[id] = el;
-                    }}
                     type="button"
                     data-status={status}
-                    aria-expanded={open?.id === id}
-                    aria-controls={open?.id === id ? "step-details" : undefined}
+                    aria-expanded={open.id === id}
+                    aria-controls={open.id === id ? "step-details" : undefined}
                     onClick={() => pick(id)}
                     onFocus={() => center(i)}
                     className="roadmap-pill"
@@ -178,7 +165,7 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
         </button>
       </div>
 
-      {open && openPlan && (
+      {openPlan && (
         <div id="step-details" key={open.id} className="roadmap-panel">
           <StepDetails
             step={STEP_BY_ID[open.id]}
@@ -186,7 +173,6 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
             status={statusOf(open.id)}
             interviewDate={journey.best.interviewDate}
             onToggleDone={() => onToggleDone(open.id)}
-            onClose={close}
             autoFocus={open.focus}
           />
         </div>
