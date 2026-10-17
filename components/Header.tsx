@@ -53,7 +53,7 @@ export function Header() {
           <Link
             href="/"
             className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap text-xl font-bold text-accent"
-            aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}
+            aria-label={`${APP_NAME[lang]}, ${t("nav.home")}`}
           >
             <LogoIcon className="h-7 w-7 shrink-0" />
             {/* On the narrowest screens only the icon shows. */}
