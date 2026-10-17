@@ -1,4 +1,4 @@
-# Saathi (working name)
+# FlyByVisa
 
 A calm, accessible planner for visiting family in the U.S. Pick where you are
 coming from and going to on a globe, answer three questions, and get a dated,
