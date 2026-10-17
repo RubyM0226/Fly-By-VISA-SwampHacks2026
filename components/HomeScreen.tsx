@@ -33,8 +33,8 @@ export function HomeScreen() {
   }
 
   return (
-    // Full-bleed: break out of the page column and fill the screen under the sticky header.
-    <div className="relative -mt-6 ml-[calc(50%-50vw)] h-[calc(100dvh-var(--sticky-header-h,0px))] min-h-[34rem] w-screen sm:-mt-10">
+    // Full-bleed: fill the content column beside the nav, under the sticky header.
+    <div className="relative -mt-6 ml-[calc(50%-50cqw)] h-[calc(100dvh-var(--sticky-header-h,0px)-6rem)] min-h-[34rem] md:h-[calc(100dvh-var(--sticky-header-h,0px))] w-[100cqw] sm:-mt-10">
       {webgl && (
         <div role="img" aria-label={t("home.globeLabel")} className="absolute inset-x-0 bottom-0" style={{ top: cardBottom }}>
           <GlobeLoader from={trip.from} to={trip.to} onPick={pick} />

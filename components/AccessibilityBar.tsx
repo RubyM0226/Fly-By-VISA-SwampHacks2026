@@ -128,8 +128,11 @@ function TextSizeControl({ value, onChange }: { value: Settings["textSize"]; onC
   );
 }
 
-/** Language and text size up front; everything else under "More". */
-export function AccessibilityBar() {
+/**
+ * The top row: logo at the far left, language and text size in the middle,
+ * "More" at the far right. The rest of the settings open under "More".
+ */
+export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
   const { t } = useT();
   const [settings, update] = useSettings();
   const [open, setOpen] = useState(false);
@@ -146,16 +149,20 @@ export function AccessibilityBar() {
         }
       }}
     >
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-3 py-2 sm:px-6">
-        <LanguageSelect />
-        <div className="flex items-center gap-2">
-          <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
-            {t("a11y.textSize")}
-          </span>
-          <TextSizeControl
-            value={settings.textSize}
-            onChange={(v) => update({ textSize: v })}
-          />
+      {/* Phones: logo and More on the first line, the controls wrap below them. */}
+      <div className="flex flex-wrap items-center gap-2 px-3 py-2 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
+        <div className="order-1 md:justify-self-start">{start}</div>
+        <div className="order-3 flex w-full flex-wrap items-center gap-2 md:order-2 md:w-auto md:justify-center">
+          <LanguageSelect />
+          <div className="flex items-center gap-2">
+            <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
+              {t("a11y.textSize")}
+            </span>
+            <TextSizeControl
+              value={settings.textSize}
+              onChange={(v) => update({ textSize: v })}
+            />
+          </div>
         </div>
         <button
           ref={moreButton}
@@ -163,7 +170,7 @@ export function AccessibilityBar() {
           aria-expanded={open}
           aria-controls="a11y-more"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto inline-flex min-h-12 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3"
+          className="order-2 ml-auto inline-flex min-h-12 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3 md:order-3 md:justify-self-end"
         >
           <GearIcon className="h-5 w-5" />
           <span>{t("a11y.more")}</span>
