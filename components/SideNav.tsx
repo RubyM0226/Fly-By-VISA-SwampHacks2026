@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT, type UiKey } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
-import { DocumentIcon, MapIcon, PlanIcon, UserIcon } from "./Icons";
+import { BookIcon, DocumentIcon, MapIcon, PlanIcon, UserIcon } from "./Icons";
 
 type IconType = (props: { className?: string }) => React.ReactElement;
 
@@ -62,6 +62,7 @@ export function SideNav() {
         )}
         {item("/location-map", "nav.map", MapIcon)}
         {item("/documents", "nav.documents", DocumentIcon)}
+        {item("/glossary", "nav.glossary", BookIcon)}
       </ul>
     </nav>
   );

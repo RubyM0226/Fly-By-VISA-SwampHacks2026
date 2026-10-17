@@ -111,6 +111,14 @@ export const DocumentIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+// An open book, for the glossary.
+export const BookIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <path d="M12 6.5C10.5 5 8 4.5 3 4.5v14c5 0 7.5.5 9 2 1.5-1.5 4-2 9-2v-14c-5 0-7.5.5-9 2Z" />
+    <path d="M12 6.5v14" />
+  </svg>
+);
+
 export const MinusIcon = ({ className }: IconProps) => (
   <svg {...base} className={className}>
     <path d="M5 12h14" />
