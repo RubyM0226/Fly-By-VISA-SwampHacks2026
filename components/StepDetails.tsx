@@ -69,9 +69,12 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
             {status === "done" && <CheckIcon className="h-5 w-5" />}
             {t(`status.${status}`)}
           </p>
-          <h3 id={`step-title-${step.id}`} ref={headingRef} tabIndex={-1} className="text-2xl font-bold outline-none">
-            {text.title}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 id={`step-title-${step.id}`} ref={headingRef} tabIndex={-1} className="text-2xl font-bold outline-none">
+              {text.title}
+            </h3>
+            <SpeakButton ownerId={`step-${step.id}`} getText={() => readText} />
+          </div>
           <p className="text-base text-muted">{dateLine}</p>
         </div>
       </div>
@@ -153,7 +156,6 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
             {status !== "done" && <CheckIcon className="h-5 w-5" />}
             {status === "done" ? t("journey.undo") : t("journey.markDone")}
           </button>
-          <SpeakButton ownerId={`step-${step.id}`} label={t("journey.readStep")} getText={() => readText} />
         </div>
       </div>
     </article>
