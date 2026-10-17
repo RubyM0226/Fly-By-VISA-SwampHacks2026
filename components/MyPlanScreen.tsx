@@ -9,6 +9,7 @@ import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
+import { MyDocuments } from "./MyDocuments";
 
 export function MyPlanScreen() {
   const { t, lang } = useT();
@@ -193,6 +194,9 @@ export function MyPlanScreen() {
               </button>
             )}
           </div>
+
+          {/* Private file uploads (Vercel Blob) */}
+          <MyDocuments />
 
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
