@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { isUploadDocId, type DocId } from "@/content/documents";
 import {
   ALLOWED_TYPES,
   MAX_UPLOAD_BYTES,
@@ -35,12 +36,18 @@ export function sanitizeFileName(name: string): string {
   return trimmed || "file";
 }
 
-/** u/<hash>/<kind>/<uuid>/<name>. The uuid keeps names unique without a random suffix. */
-export function buildPathname(sub: string, kind: UploadKind, fileName: string): string {
-  return `${userPrefix(sub)}${kind}/${randomUUID()}/${sanitizeFileName(fileName)}`;
+/**
+ * u/<hash>/<kind>/[<docId>/]<uuid>/<name>. The uuid keeps names unique without
+ * a random suffix. docId ties the file to a document in content/documents.ts;
+ * files added before documents existed have no docId segment.
+ */
+export function buildPathname(sub: string, kind: UploadKind, fileName: string, docId?: DocId): string {
+  const doc = docId ? `${docId}/` : "";
+  return `${userPrefix(sub)}${kind}/${doc}${randomUUID()}/${sanitizeFileName(fileName)}`;
 }
 
-const PATH_SHAPE = /^u\/[0-9a-f]{32}\/(immigration|scam_evidence)\/[0-9a-f-]{36}\/[^/]+$/;
+// The docId segment has no dashes, so it can never be mistaken for the uuid.
+const PATH_SHAPE = /^u\/[0-9a-f]{32}\/(immigration|scam_evidence)\/(?:[A-Za-z0-9]{1,40}\/)?[0-9a-f-]{36}\/[^/]+$/;
 
 /** True only for a well-formed path inside this person's own folder. */
 export function isOwnPathname(pathname: unknown, sub: string): pathname is string {
@@ -56,12 +63,16 @@ export function isOwnPathname(pathname: unknown, sub: string): pathname is strin
 export interface ParsedPathname {
   kind: UploadKind;
   name: string;
+  /** Null for older files and for ids no longer in the catalog: they show under "Other files". */
+  docId: DocId | null;
 }
 
 export function parsePathname(pathname: string): ParsedPathname | null {
   const parts = pathname.split("/");
-  if (parts.length !== 5 || !isUploadKind(parts[2])) return null;
-  return { kind: parts[2], name: parts[4] };
+  if (!isUploadKind(parts[2])) return null;
+  if (parts.length === 5) return { kind: parts[2], name: parts[4], docId: null };
+  if (parts.length === 6) return { kind: parts[2], name: parts[5], docId: isUploadDocId(parts[3]) ? parts[3] : null };
+  return null;
 }
 
 /** What the first bytes of a file say it is. Null when it is not a type we accept. */

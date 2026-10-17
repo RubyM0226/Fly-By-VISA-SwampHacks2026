@@ -318,7 +318,7 @@ html[data-mono="true"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-
 html[data-contrast="high"] .site-footer__hills { display: none; }
 html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); margin-top: 0; }
 
-/* Pages marked data-hills-peek (home, Important Documents, Location Map)
+/* Pages marked data-hills-peek (home, Information Lookup, Location Map)
    fill the first screen down to where the footer hills begin, so the top of
    the hills shows without scrolling and the dark footer stays below the
    fold. Longer content just pushes the hills down; they never cover it. */
@@ -347,7 +347,7 @@ body:has([data-hills-peek]) .site-footer { margin-top: 0; }
   /* How far the nav pushes the content column right. Used on the stage
      itself, where cqw is the content column. */
   --stage-shift: 0px;
-  /* The nav's width (SideNav: 64px, md:w-56, lg:w-1/4). Used inside the
+  /* The nav's width (SideNav: 64px, md:w-48). Used inside the
      stage, where cqw is the stage, which is as wide as the page. */
   --nav-w: 64px;
   --pad: 0.75rem;
@@ -371,13 +371,8 @@ body:has([data-hills-peek]) .site-footer { margin-top: 0; }
   .globe-stage { margin-top: -2.5rem; --pad: 1.25rem; }
 }
 @media (min-width: 48rem) {
-  .globe-stage { --nav-w: 14rem; }
-  .globe-stage[data-nav] { --stage-shift: 14rem; }
-}
-@media (min-width: 64rem) {
-  .globe-stage { --nav-w: 25cqw; }
-  /* The column is 3/4 of the page, so the nav is a third of the column. */
-  .globe-stage[data-nav] { --stage-shift: calc(100cqw / 3); }
+  .globe-stage { --nav-w: 12rem; }
+  .globe-stage[data-nav] { --stage-shift: 12rem; }
 }
 .globe-stage__slot { display: flex; }
 .globe-stage__slot--globe { order: -1; }

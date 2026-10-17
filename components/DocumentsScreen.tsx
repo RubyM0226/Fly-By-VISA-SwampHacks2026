@@ -1,290 +1,563 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { DOC_FAQ, searchDocs, type DocAnswer } from "@/content/documentsFaq";
-import type { CorpusHit } from "@/lib/corpusSearch";
-import { useT } from "@/lib/i18n";
-import { RichText } from "./Glossary";
-import { CloseIcon, ExternalIcon } from "./Icons";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { DOC_GROUPS, DOCUMENTS, UPLOAD_DOC_IDS, type Blank, type DocId } from "@/content/documents";
+import { STEP_BY_ID } from "@/content/steps";
+import { useT, type UiKey } from "@/lib/i18n";
+import { formatDate } from "@/lib/journey";
+import {
+  ACCEPT_ATTRIBUTE,
+  ALLOWED_TYPES,
+  MAX_FILES_PER_USER,
+  MAX_UPLOAD_BYTES,
+  UPLOAD_ERRORS,
+  UPLOAD_KINDS,
+  formatBytes,
+  type UploadError,
+  type UploadKind,
+  type UploadedFile,
+} from "@/lib/uploadsShared";
+import { plainText, RichText } from "./Glossary";
+import { CheckIcon, CircleIcon, DocumentIcon, ExternalIcon } from "./Icons";
+import { SpeakButton } from "./SpeakButton";
 
-const EXAMPLES: Record<"en" | "hi", string[]> = {
-  en: ["DS-160", "Passport photo", "Visa fee receipt", "Invitation letter"],
-  hi: ["DS-160", "पासपोर्ट फ़ोटो", "शुल्क रसीद", "निमंत्रण पत्र"],
-};
+// The Documents tab: private uploads for signed-in people, kept in a private
+// Vercel Blob store (see app/api/uploads). Files are grouped by the roadmap
+// step that needs them; files with no document (older ones, possible scams)
+// show under "Other files". Only mount this behind the sign-in gate.
 
-/** Blurb, search box, then one short answer with its official source. */
+const CONSENT_KEY = "flybyvisa-files-consent";
+const MB = Math.round(MAX_UPLOAD_BYTES / (1024 * 1024));
+const ALLOWED_EXTENSIONS: string[] = Object.values(ALLOWED_TYPES).flatMap((exts) => [...exts]);
+/** Where a status message shows: a document row ("<step>-<doc>") or "other". */
+type Where = string;
+
+type DeleteTarget = { kind: "one"; file: UploadedFile; where: Where } | { kind: "all" } | null;
+type Message = { where: Where; text: string; problem: boolean };
+
+function isUploadError(value: unknown): value is UploadError {
+  return typeof value === "string" && (UPLOAD_ERRORS as readonly string[]).includes(value);
+}
+
+/** Reads the error code from a failed response, if there is one. */
+async function errorCode(res: Response): Promise<UploadError> {
+  try {
+    const body = (await res.json()) as { error?: unknown };
+    if (isUploadError(body.error)) return body.error;
+  } catch {
+    /* not JSON */
+  }
+  return res.status === 401 ? "unauthorized" : "server";
+}
+
+/** The signed-in person's files, or null when they could not be loaded. */
+async function fetchFiles(): Promise<UploadedFile[] | null> {
+  try {
+    const res = await fetch("/api/uploads", { cache: "no-store" });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { files: UploadedFile[] };
+    return body.files;
+  } catch {
+    return null;
+  }
+}
+
+const noopSubscribe = () => () => {};
+
+/** The saved consent tick. The server render has none, so it starts unticked there. */
+function readConsent(): boolean {
+  try {
+    return localStorage.getItem(CONSENT_KEY) === "yes";
+  } catch {
+    return false; // private mode: start unticked
+  }
+}
+
+const outlineButton =
+  "inline-flex min-h-12 w-full items-center justify-center gap-1 text-center sm:w-auto rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft disabled:opacity-60";
+const dangerButton =
+  "inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-5 py-2 text-lg font-semibold text-danger hover:bg-danger-soft disabled:opacity-60";
+const linkClass = "inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline";
+
 export function DocumentsScreen() {
   const { t, lang } = useT();
-  const [query, setQuery] = useState("");
-  // A question picked from a list shows directly, without typing.
-  const [picked, setPicked] = useState<DocAnswer | null>(null);
+  const [files, setFiles] = useState<UploadedFile[] | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [kind, setKind] = useState<UploadKind>("immigration");
+  const savedConsent = useSyncExternalStore(noopSubscribe, readConsent, () => false);
+  const [consentChoice, setConsentChoice] = useState<boolean | null>(null);
+  const consent = consentChoice ?? savedConsent;
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<Message>({ where: "", text: "", problem: false });
+  const [target, setTarget] = useState<DeleteTarget>(null);
+  const otherInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
+  // Which document row the shared file picker is for.
+  const pickRef = useRef<{ where: Where; docId: DocId; replaces?: string } | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const results = useMemo(() => searchDocs(query), [query]);
-  const answer = picked ?? results[0] ?? null;
-  const related = picked ? [] : results.slice(1, 4);
-  const searching = query.trim().length > 0 && !picked;
-  // Also look through the official pages. A picked question searches by its text.
-  const corpus = useCorpusSearch(picked ? picked.question[lang] : query);
+  const say = (where: Where, text: string, problem = false) => setMessage({ where, text, problem });
+  const errorText = (code: UploadError) =>
+    t(`files.err.${code}` as UiKey, { mb: MB, n: MAX_FILES_PER_USER });
 
-  const pickExample = (text: string) => {
-    setPicked(null);
-    setQuery(text);
-  };
+  const apply = useCallback((loaded: UploadedFile[] | null) => {
+    if (loaded) {
+      setFiles(loaded);
+      setLoadFailed(false);
+    } else {
+      setLoadFailed(true);
+      setFiles((current) => current ?? []);
+    }
+  }, []);
 
-  return (
-    <div data-hills-peek className="space-y-6 pb-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
-        <p className="text-lg">{t("docs.blurb")}</p>
-      </div>
-
-      <form role="search" onSubmit={(e) => e.preventDefault()} className="space-y-3">
-        <label htmlFor="doc-search" className="block text-lg font-bold">
-          {t("docs.searchLabel")}
-        </label>
-        <div className="relative">
-          <input
-            id="doc-search"
-            type="search"
-            value={query}
-            onChange={(e) => {
-              setPicked(null);
-              setQuery(e.target.value);
-            }}
-            placeholder={t("docs.placeholder")}
-            autoComplete="off"
-            className="min-h-14 w-full rounded-xl border-2 border-line-strong bg-surface py-3 pl-4 pr-14 text-xl"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => pickExample("")}
-              aria-label={t("docs.clear")}
-              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-accent-soft"
-            >
-              <CloseIcon className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-base text-muted">{t("docs.try")}</span>
-          {EXAMPLES[lang].map((ex) => (
-            <button
-              key={ex}
-              type="button"
-              onClick={() => pickExample(ex)}
-              className="min-h-11 rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-accent-soft"
-            >
-              {ex}
-            </button>
-          ))}
-        </div>
-      </form>
-
-      {/* Announces the answer (or "not found") as people type. */}
-      <div aria-live="polite" className="space-y-4">
-        {answer && (
-          <article aria-labelledby="doc-answer-title" className="space-y-3 rounded-2xl border-2 border-accent bg-surface p-5">
-            <h2 id="doc-answer-title" className="text-2xl font-bold">
-              {answer.question[lang]}
-            </h2>
-            <p className="text-lg">
-              <RichText text={answer.answer[lang]} />
-            </p>
-            <p className="text-base">
-              <span className="text-muted">{t("docs.source")} </span>
-              <a
-                href={answer.source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
-              >
-                {answer.source.label[lang]}
-                <ExternalIcon className="h-4 w-4" />
-                <span className="sr-only">{t("journey.opensNewTab")}</span>
-              </a>
-            </p>
-          </article>
-        )}
-
-        {searching && !answer && corpus.status === "done" && corpus.hits.length === 0 && (
-          <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.noResults")}</p>
-        )}
-      </div>
-
-      {corpus.status === "loading" && <p className="text-lg text-muted">{t("docs.searching")}</p>}
-      {corpus.status === "error" && (
-        <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.searchError")}</p>
-      )}
-      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} query={picked ? picked.question.en : query} />}
-
-      {related.length > 0 && <QuestionList title={t("docs.related")} items={related} onPick={setPicked} />}
-
-      {!searching && <QuestionList title={t("docs.common")} items={DOC_FAQ} onPick={setPicked} current={answer?.id} />}
-    </div>
-  );
-}
-
-function QuestionList({
-  title,
-  items,
-  onPick,
-  current,
-}: {
-  title: string;
-  items: DocAnswer[];
-  onPick: (d: DocAnswer) => void;
-  current?: string;
-}) {
-  const { lang } = useT();
-  return (
-    <section className="space-y-2">
-      <h2 className="text-xl font-bold">{title}</h2>
-      <ul className="grid gap-2 @3xl:grid-cols-2">
-        {items.map((d) => (
-          <li key={d.id}>
-            <button
-              type="button"
-              onClick={() => onPick(d)}
-              aria-current={current === d.id ? "true" : undefined}
-              className={`min-h-12 w-full rounded-xl border-2 px-4 py-2 text-left text-lg font-semibold hover:bg-accent-soft ${
-                current === d.id ? "border-accent bg-accent-soft" : "border-line-strong bg-surface"
-              }`}
-            >
-              {d.question[lang]}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-type CorpusState = { status: "idle" | "loading" | "done" | "error"; hits: CorpusHit[] };
-
-/** Semantic search over the indexed official pages, once typing pauses. */
-function useCorpusSearch(query: string): CorpusState {
-  // The last finished search; anything newer is still loading.
-  const [result, setResult] = useState<{ q: string; hits: CorpusHit[]; failed: boolean } | null>(null);
-  const q = query.trim();
-  const active = q.length >= 3;
+  const refresh = useCallback(async () => apply(await fetchFiles()), [apply]);
 
   useEffect(() => {
-    if (!active) return;
-    const ctrl = new AbortController();
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
-        if (!res.ok) throw new Error(String(res.status));
-        const { hits } = (await res.json()) as { hits: CorpusHit[] };
-        setResult({ q, hits, failed: false });
-      } catch {
-        if (!ctrl.signal.aborted) setResult({ q, hits: [], failed: true });
-      }
-    }, 600);
+    let active = true;
+    void fetchFiles().then((loaded) => {
+      if (active) apply(loaded);
+    });
     return () => {
-      clearTimeout(timer);
-      ctrl.abort();
+      active = false;
     };
-  }, [q, active]);
+  }, [apply]);
 
-  if (!active) return { status: "idle", hits: [] };
-  if (result?.q !== q) return { status: "loading", hits: [] };
-  return { status: result.failed ? "error" : "done", hits: result.hits };
-}
+  // "Go to my documents" links to #docs-<step>. This screen streams in after the
+  // sign-in check, so the browser's own jump can miss: scroll and focus once here.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!id.startsWith("docs-")) return;
+    const heading = document.getElementById(id === "docs-other" ? "doc-other" : `docs-title-${id.slice(5)}`);
+    heading?.closest("section")?.scrollIntoView();
+    heading?.focus({ preventScroll: true });
+  }, []);
 
-// Question words that say nothing about what the person is looking for.
-const FILLER_WORDS = new Set([
-  "what", "how", "the", "and", "for", "can", "does", "need", "about", "with", "you", "your", "are",
-  "this", "that", "will", "when", "where", "which", "who", "why", "have", "has", "should", "get", "there",
-]);
+  // Open and close the native dialog together with `target`.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (target && !dialog.open) dialog.showModal();
+    if (!target && dialog.open) dialog.close();
+  }, [target]);
 
-/** Lower-case words of 3+ letters, with a plural "s" dropped ("passports" -> "passport"). */
-function searchTerms(query: string): string[] {
-  return (query.toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [])
-    .filter((w) => !FILLER_WORDS.has(w))
-    .map((w) => w.replace(/s$/, ""));
-}
+  function onConsent(checked: boolean) {
+    setConsentChoice(checked);
+    try {
+      localStorage.setItem(CONSENT_KEY, checked ? "yes" : "no");
+    } catch {
+      /* ignore */
+    }
+  }
 
-/**
- * Chunks are markdown and start with their section heading. Split that off,
- * turn the rest into plain text, start at the first sentence that mentions a
- * search term (else a clean sentence) and keep it short.
- */
-function excerpt(text: string, terms: string[], max = 320): { heading?: string; text: string } {
-  // A chunk can start with several heading lines; the last is the closest one.
-  const block = text.trim().match(/^(?:#{1,6} .*(?:\n+|$))+/)?.[0] ?? "";
-  const heading = block.trim().split("\n").pop()?.replace(/^#{1,6} /, "").trim() || undefined;
-  const md = text.trim().slice(block.length);
+  /** Keyboard and screen-reader users stay on the row they acted on after it re-renders. */
+  function focusRow(where: Where) {
+    document.getElementById(`doc-${where}`)?.focus();
+  }
 
-  let t = md
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // [text](url) -> text
-    .replace(/\*\*|__/g, "")
-    .replace(/^#{1,6} /gm, "")
-    .replace(/^\s*(?:[-*]|\d+\.)\s+/gm, "• ")
-    .replace(/\s+/g, " ")
-    .trim();
-  // Jump to the first sentence or list item that mentions what was searched for.
-  const lower = t.toLowerCase();
-  // Terms are only letters and digits, so they are safe inside a RegExp.
-  const hit = Math.min(
-    ...terms.map((w) => lower.search(new RegExp(`(?:^|[^\\p{L}\\p{N}])${w}`, "u"))).filter((i) => i >= 0)
+  /** Checks, sends and reports one upload. Returns true when it was saved. */
+  async function send(
+    file: File,
+    opts: { where: Where; kind: UploadKind; docId?: DocId; replaces?: string },
+  ): Promise<boolean> {
+    // Quick checks here save a round trip. The server checks again.
+    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+    const early = !ALLOWED_EXTENSIONS.includes(ext) ? "bad_type" : file.size > MAX_UPLOAD_BYTES ? "too_large" : null;
+    if (early) {
+      say(opts.where, errorText(early), true);
+      return false;
+    }
+
+    setBusy(true);
+    say(opts.where, t("files.uploading"));
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("kind", opts.kind);
+      if (opts.docId) body.append("docId", opts.docId);
+      if (opts.replaces) body.append("replaces", opts.replaces);
+      const res = await fetch("/api/uploads", { method: "POST", body });
+      if (!res.ok) {
+        say(opts.where, errorText(await errorCode(res)), true);
+        return false;
+      }
+      say(opts.where, t(opts.replaces ? "documents.replaced" : "files.added"));
+      await refresh();
+      return true;
+    } catch {
+      say(opts.where, errorText("server"), true);
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** "Add my copy" and "Replace": open the file picker for one document. */
+  function pickFor(where: Where, docId: DocId, replaces?: string) {
+    if (!consent) return say(where, t("files.consentNeeded"), true);
+    pickRef.current = { where, docId, replaces };
+    docInputRef.current?.click();
+  }
+
+  async function onDocPicked(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    const pick = pickRef.current;
+    e.target.value = "";
+    if (!file || !pick) return;
+    await send(file, { ...pick, kind: "immigration" });
+    focusRow(pick.where);
+  }
+
+  async function onOtherUpload(e: React.FormEvent) {
+    e.preventDefault();
+    const file = otherInputRef.current?.files?.[0];
+    if (!consent) return say("other", t("files.consentNeeded"), true);
+    if (!file) return say("other", t("files.noFile"), true);
+    if ((await send(file, { where: "other", kind })) && otherInputRef.current) otherInputRef.current.value = "";
+  }
+
+  async function confirmDelete() {
+    const current = target;
+    setTarget(null);
+    if (!current) return;
+    const where = current.kind === "all" ? "all" : current.where;
+    setBusy(true);
+    try {
+      const url =
+        current.kind === "all"
+          ? "/api/uploads?all=1"
+          : `/api/uploads?pathname=${encodeURIComponent(current.file.pathname)}`;
+      const res = await fetch(url, { method: "DELETE" });
+      if (!res.ok) {
+        say(where, errorText(await errorCode(res)), true);
+        return;
+      }
+      say(where, t(current.kind === "all" ? "files.allDeleted" : "files.deleted"));
+      await refresh();
+    } catch {
+      say(where, errorText("server"), true);
+    } finally {
+      setBusy(false);
+      if (current.kind === "one") focusRow(current.where);
+    }
+  }
+
+  // Statuses are only shown once the list has really loaded, never guessed.
+  const known = files !== null && !loadFailed;
+  const filesFor = (docId: DocId) => (files ?? []).filter((f) => f.docId === docId);
+  const otherFiles = (files ?? []).filter((f) => f.docId === null);
+  const addedCount = UPLOAD_DOC_IDS.filter((id) => filesFor(id).length > 0).length;
+  const count = files?.length ?? 0;
+  const kindLabel = (k: UploadKind) => t(k === "immigration" ? "files.kind.short.immigration" : "files.kind.short.scam");
+  const docName = (id: DocId) => DOCUMENTS[id].name[lang];
+
+  const statusMessage = (where: Where) => (
+    <p
+      role="status"
+      aria-live="polite"
+      className={`text-lg ${message.where === where && message.text ? "" : "sr-only"} ${
+        message.problem ? "font-semibold text-danger" : "text-muted"
+      }`}
+    >
+      {message.where === where ? message.text : ""}
+    </p>
   );
-  if (Number.isFinite(hit) && hit > 80) {
-    const sentence = t.lastIndexOf(". ", hit);
-    const start = Math.max(sentence >= 0 ? sentence + 2 : 0, t.lastIndexOf("• ", hit), 0);
-    t = "… " + t.slice(start);
-  } else if (!/^[A-Z0-9"(•]/.test(t)) {
-    // The overlap between chunks can start mid-sentence.
-    const cut = t.search(/[.!?:] [A-Z]/);
-    if (cut > 0 && cut < 160) t = t.slice(cut + 2);
-  }
-  if (t.length > max) {
-    const end = t.lastIndexOf(" ", max);
-    t = t.slice(0, end > 0 ? end : max) + "…";
-  }
-  return { heading, text: t };
-}
 
-function OfficialExcerpts({ hits, query }: { hits: CorpusHit[]; query: string }) {
-  const { t } = useT();
-  const terms = searchTerms(query);
+  const fileDetails = (f: UploadedFile) => (
+    <div className="space-y-1">
+      <p className="break-all text-lg font-semibold">{f.name}</p>
+      <p className="text-base text-muted">
+        {formatBytes(f.size)} · {formatDate(f.uploadedAt.slice(0, 10), lang)}
+      </p>
+    </div>
+  );
+
+  const openLink = (f: UploadedFile) => (
+    <a
+      href={`/api/uploads/file?pathname=${encodeURIComponent(f.pathname)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-button
+      className={outlineButton}
+    >
+      {t("files.open")}
+      <span className="sr-only"> {f.name}</span>
+      <ExternalIcon className="h-4 w-4" />
+      <span className="sr-only"> {t("journey.opensNewTab")}</span>
+    </a>
+  );
+
+  const deleteButton = (f: UploadedFile, where: Where) => (
+    <button type="button" disabled={busy} onClick={() => setTarget({ kind: "one", file: f, where })} className={dangerButton}>
+      {t("files.delete")}
+      <span className="sr-only"> {f.name}</span>
+    </button>
+  );
+
+  function blankInfo(blank: Blank | undefined) {
+    if (!blank) return null;
+    if (blank.type === "template") {
+      return (
+        <div className="space-y-1">
+          <a href={blank.file} download className={linkClass}>
+            <DocumentIcon className="h-5 w-5 shrink-0" />
+            {t("documents.blank.template")}
+          </a>
+          <p className="text-base text-muted">{t("documents.blank.templateNote")}</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-1">
+        <p className="text-base text-muted">
+          {t(blank.type === "online" ? "documents.blank.online" : "documents.blank.none")}
+        </p>
+        {blank.url && (
+          <a href={blank.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
+            {t(blank.type === "online" ? "documents.blank.onlineLink" : "documents.blank.noneLink")}
+            <ExternalIcon className="h-4 w-4" />
+            <span className="sr-only">{t("journey.opensNewTab")}</span>
+          </a>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <section className="space-y-3">
-      <h2 className="text-xl font-bold">{t("docs.official")}</h2>
-      <ul className="space-y-3">
-        {hits.map((h, i) => {
-          const ex = excerpt(h.text, terms);
-          return (
-            // One page can appear twice (two sections), so the URL alone isn't unique.
-            <li key={`${h.url}#${i}`} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
-              <h3 className="text-lg font-bold">{h.title}</h3>
-              {/* Official pages are in English only. */}
-              {ex.heading && ex.heading !== h.title && (
-                <p lang="en" className="text-lg font-semibold">
-                  {ex.heading}
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
+        <p className="text-lg text-muted">{t("documents.lead")}</p>
+      </div>
+
+      <section aria-label={t("files.title")} className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6">
+        <p className="text-lg">{t("files.lead")}</p>
+        <label className="flex cursor-pointer items-start gap-3 text-lg">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => onConsent(e.target.checked)}
+            className="mt-1 h-6 w-6 shrink-0 accent-[var(--accent)]"
+          />
+          <span>{t("files.consent")}</span>
+        </label>
+        <p className="text-base text-muted">{t("files.formats", { mb: MB, n: MAX_FILES_PER_USER })}</p>
+        {files === null && <p className="text-lg text-muted">{t("files.loading")}</p>}
+        {loadFailed && <p className="text-lg font-semibold text-danger">{t("files.loadError")}</p>}
+        {statusMessage("all")}
+        {known && (
+          <p className="text-lg font-semibold">
+            {t("documents.summary", { n: addedCount, total: UPLOAD_DOC_IDS.length })}
+            <span className="ml-2 text-base font-normal text-muted">
+              {t("files.count", { n: count, max: MAX_FILES_PER_USER })}
+            </span>
+          </p>
+        )}
+      </section>
+
+      {/* One hidden picker shared by every "Add my copy" and "Replace" button. */}
+      <input ref={docInputRef} type="file" accept={ACCEPT_ATTRIBUTE} hidden onChange={onDocPicked} />
+
+      {DOC_GROUPS.map(({ stepId, docs }) => {
+        const title = STEP_BY_ID[stepId].text[lang].title;
+        const readText = [
+          `${title}.`,
+          ...docs.map(
+            (id) =>
+              `${plainText(docName(id))}: ${
+                known ? t(filesFor(id).length > 0 ? "documents.added" : "documents.missing") : ""
+              }.`,
+          ),
+        ].join(" ");
+        return (
+          <section
+            key={stepId}
+            id={`docs-${stepId}`}
+            aria-labelledby={`docs-title-${stepId}`}
+            className="scroll-mt-24 space-y-4 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 id={`docs-title-${stepId}`} tabIndex={-1} className="text-2xl font-bold text-accent outline-none">
+                {title}
+              </h2>
+              <SpeakButton ownerId={`docs-${stepId}`} getText={() => readText} />
+            </div>
+            <ul className="space-y-3">
+              {docs.map((docId) => {
+                const where = `${stepId}-${docId}`;
+                const mine = filesFor(docId);
+                const has = mine.length > 0;
+                return (
+                  <li key={docId} className="space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
+                    <div className="space-y-1">
+                      <h3 id={`doc-${where}`} tabIndex={-1} className="text-xl font-bold outline-none">
+                        <RichText text={docName(docId)} />
+                      </h3>
+                      {known && (
+                        <p className={`flex items-center gap-1.5 text-lg font-semibold ${has ? "text-accent" : "text-muted"}`}>
+                          {has ? <CheckIcon className="h-5 w-5 shrink-0" /> : <CircleIcon className="h-5 w-5 shrink-0" />}
+                          {t(has ? "documents.added" : "documents.missing")}
+                        </p>
+                      )}
+                    </div>
+
+                    {mine.map((f) => (
+                      <div key={f.pathname} className="space-y-3">
+                        {fileDetails(f)}
+                        <div className="flex flex-wrap gap-3">
+                          {openLink(f)}
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => pickFor(where, docId, f.pathname)}
+                            className={outlineButton}
+                          >
+                            {t("documents.replace")}
+                            <span className="sr-only"> {f.name}</span>
+                          </button>
+                          {deleteButton(f, where)}
+                        </div>
+                      </div>
+                    ))}
+
+                    {known && !has && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => pickFor(where, docId)}
+                        className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink disabled:opacity-60"
+                      >
+                        {t("documents.addCopy")}
+                        <span className="sr-only"> {plainText(docName(docId))}</span>
+                      </button>
+                    )}
+
+                    {statusMessage(where)}
+                    {blankInfo(DOCUMENTS[docId].blank)}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
+
+      <section
+        id="docs-other"
+        aria-labelledby="doc-other"
+        className="scroll-mt-24 space-y-5 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
+      >
+        <div className="space-y-2">
+          <h2 id="doc-other" tabIndex={-1} className="text-2xl font-bold text-accent outline-none">
+            {t("documents.other")}
+          </h2>
+          <p className="text-lg text-muted">{t("documents.otherLead")}</p>
+        </div>
+
+        <form onSubmit={onOtherUpload} className="space-y-5" noValidate>
+          <fieldset className="space-y-2">
+            <legend className="mb-1 text-lg font-bold">{t("files.kind")}</legend>
+            {UPLOAD_KINDS.map((k) => (
+              <label key={k} className="block cursor-pointer">
+                <input
+                  type="radio"
+                  name="file-kind"
+                  value={k}
+                  checked={kind === k}
+                  onChange={() => setKind(k)}
+                  className="peer sr-only"
+                />
+                <span className="flex min-h-14 items-center rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-lg peer-checked:border-accent peer-checked:bg-accent-soft peer-checked:font-semibold peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]">
+                  {t(k === "immigration" ? "files.kind.immigration" : "files.kind.scam")}
+                </span>
+              </label>
+            ))}
+          </fieldset>
+
+          <div className="space-y-2">
+            <label htmlFor="file-input" className="block text-lg font-bold">
+              {t("files.choose")}
+            </label>
+            <input
+              ref={otherInputRef}
+              id="file-input"
+              type="file"
+              accept={ACCEPT_ATTRIBUTE}
+              className="block w-full min-w-0 rounded-xl border-2 border-line-strong bg-surface p-2 text-lg file:mb-2 file:mr-0 file:block file:w-full file:min-h-12 file:cursor-pointer file:rounded-lg file:border-0 file:bg-accent file:px-5 file:py-2 file:text-lg file:font-bold file:text-accent-ink"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={busy}
+            className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-3 text-lg font-bold text-accent-ink disabled:opacity-60"
+          >
+            {t("files.upload")}
+          </button>
+          {statusMessage("other")}
+        </form>
+
+        {known && otherFiles.length === 0 && <p className="text-lg text-muted">{t("files.none")}</p>}
+        {otherFiles.length > 0 && (
+          <ul className="space-y-3 border-t-2 border-line pt-5">
+            {otherFiles.map((f) => (
+              <li key={f.pathname} className="space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
+                <p className="inline-block rounded-lg border-2 border-line-strong px-3 py-0.5 text-sm font-bold">
+                  {kindLabel(f.kind)}
                 </p>
-              )}
-              <p lang="en" className="text-lg">
-                {ex.text}
-              </p>
-              <p className="flex flex-wrap items-center gap-x-4 text-base">
-                <a
-                  href={h.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
-                >
-                  {t("docs.readFull")}
-                  <ExternalIcon className="h-4 w-4" />
-                  <span className="sr-only">{t("journey.opensNewTab")}</span>
-                </a>
-                <span className="text-muted">{t("docs.savedOn", { date: h.savedOn })}</span>
-              </p>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
+                {fileDetails(f)}
+                <div className="flex flex-wrap gap-3">
+                  {openLink(f)}
+                  {deleteButton(f, "other")}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {files && files.length > 1 && (
+        <button type="button" disabled={busy} onClick={() => setTarget({ kind: "all" })} className={dangerButton}>
+          {t("files.deleteAll")}
+        </button>
+      )}
+
+      {/* Native dialog: focus is trapped and Escape closes it. "Keep it" comes first. */}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="files-dialog-title"
+        onClose={() => setTarget(null)}
+        className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-2xl border-2 border-line-strong bg-surface p-6 text-ink"
+      >
+        {target && (
+          <div className="space-y-4">
+            <h2 id="files-dialog-title" className="text-2xl font-bold">
+              {t(target.kind === "all" ? "files.deleteAllTitle" : "files.deleteTitle")}
+            </h2>
+            <p className="break-words text-lg">
+              {target.kind === "all"
+                ? t("files.deleteAllBody", { n: count })
+                : t("files.deleteBody", { name: target.file.name })}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                autoFocus
+                onClick={() => setTarget(null)}
+                className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink"
+              >
+                {t("files.keep")}
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-6 py-2 text-lg font-semibold text-danger hover:bg-danger-soft"
+              >
+                {t("files.confirmDelete")}
+              </button>
+            </div>
+          </div>
+        )}
+      </dialog>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
 
 import { isStronger, type Verdict } from "../lib/scam";
 import type { ScamCheckRequest } from "../lib/scam/api";
-import { defaultDeps, runScamCheck, type ScamDeps } from "../lib/scam/service";
+import { defaultDeps, readScreenshot, runScamCheck, type ScamDeps } from "../lib/scam/service";
 import { SAMPLES } from "./scam-samples";
 
 const LIVE = process.argv.includes("--live");
@@ -27,6 +27,7 @@ function fakeModel(verdict: Verdict, summary = "We are not sure. Please check th
       return JSON.stringify({ kind: "message", verdict, summary, reasons: [], sourceUrls: [] });
     },
     search: null,
+    readImage: null,
   };
   return { deps, prompts };
 }
@@ -60,7 +61,7 @@ async function main() {
   }
 
   // 4. Fallbacks never throw and say why.
-  const noKey = await runScamCheck(req(SAMPLES[0].text), { generate: null, search: null });
+  const noKey = await runScamCheck(req(SAMPLES[0].text), { generate: null, search: null, readImage: null });
   if (noKey.note !== "ai-off" || noKey.verdict !== noKey.rules.verdict) problems.push("missing key did not fall back to rules");
   const broken = await runScamCheck(req(SAMPLES[0].text), {
     generate: async () => {
@@ -69,9 +70,10 @@ async function main() {
     search: async () => {
       throw new Error("db down");
     },
+    readImage: null,
   });
   if (broken.note !== "ai-failed" || broken.verdict !== "likely-scam") problems.push("failing model did not fall back to rules");
-  const garbage = await runScamCheck(req(SAMPLES[0].text), { generate: async () => "not json", search: null });
+  const garbage = await runScamCheck(req(SAMPLES[0].text), { generate: async () => "not json", search: null, readImage: null });
   if (garbage.note !== "ai-failed") problems.push("bad model output did not fall back to rules");
 
   // 5. Forbidden wording from the model is dropped.
@@ -85,6 +87,29 @@ async function main() {
   const env = await runScamCheck(req(SAMPLES[0].text), defaultDeps());
   if (env.note !== "ai-off") problems.push("defaultDeps() with no GEMINI_API_KEY should be rules-only");
   process.env.GEMINI_API_KEY = saved;
+
+  // 7. Screenshots: the text read from the picture gets the same rules and redaction as pasted text.
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const shot = SAMPLES.find((x) => x.label === "scam")!.text + " Call +91 98110 45672.";
+  const seen = fakeModel("cant-tell");
+  const reader = (impl: ScamDeps["readImage"]): ScamDeps => ({ ...seen.deps, readImage: impl });
+  const read = await readScreenshot(png, "image/png", reader(async () => shot));
+  if (!read.ok) problems.push("screenshot text was not read");
+  else {
+    const r = await runScamCheck(req(read.text), seen.deps);
+    if (r.verdict === "cant-tell") problems.push("scam screenshot was not flagged");
+    if (seen.prompts.join(" ").includes("45672")) problems.push("screenshot phone number was sent to the model");
+  }
+  const noKey2 = await readScreenshot(png, "image/png", reader(null));
+  if (noKey2.ok || noKey2.error !== "image-unavailable") problems.push("missing key should make screenshots unavailable");
+  const failed = await readScreenshot(png, "image/png", reader(async () => { throw new Error("down"); }));
+  if (failed.ok || failed.error !== "image-failed") problems.push("failing image read did not report image-failed");
+  const blank = await readScreenshot(png, "image/png", reader(async () => "  "));
+  if (blank.ok || blank.error !== "no-text") problems.push("empty screenshot did not report no-text");
+  // A question is pointed to Information Lookup and never sent to the model.
+  const asked = fakeModel("likely-scam");
+  const q = await runScamCheck(req("What is DS-160?"), asked.deps);
+  if (q.kind !== "question" || asked.prompts.length > 0) problems.push("a question was not left to Information Lookup");
 
   console.log(`Fake-model checks: ${problems.length === 0 ? "all passed" : `${problems.length} problem(s)`}`);
 

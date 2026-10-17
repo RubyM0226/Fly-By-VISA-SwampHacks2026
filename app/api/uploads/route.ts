@@ -6,11 +6,12 @@ import {
   type UploadError,
   type UploadedFile,
 } from "@/lib/uploadsShared";
+import { isUploadDocId, type DocId } from "@/content/documents";
 import { buildPathname, checkUpload, isOwnPathname, parsePathname, userPrefix } from "@/lib/uploadsServer";
 
 // Private document uploads, stored in a PRIVATE Vercel Blob store.
 //
-//   POST   /api/uploads            multipart: file + kind  -> { file }
+//   POST   /api/uploads            multipart: file + kind [+ docId] [+ replaces] -> { file }
 //   GET    /api/uploads            list my files           -> { files }
 //   DELETE /api/uploads?pathname=  delete one of my files
 //   DELETE /api/uploads?all=1      delete all of my files
@@ -46,7 +47,14 @@ async function listAll(prefix: string) {
 function toFile(b: { pathname: string; size: number; uploadedAt: Date }): UploadedFile | null {
   const parsed = parsePathname(b.pathname);
   if (!parsed) return null;
-  return { pathname: b.pathname, kind: parsed.kind, name: parsed.name, size: b.size, uploadedAt: b.uploadedAt.toISOString() };
+  return {
+    pathname: b.pathname,
+    kind: parsed.kind,
+    docId: parsed.docId,
+    name: parsed.name,
+    size: b.size,
+    uploadedAt: b.uploadedAt.toISOString(),
+  };
 }
 
 export async function GET() {
@@ -80,20 +88,39 @@ export async function POST(request: Request) {
   const kind = form.get("kind");
   if (!(file instanceof File) || !isUploadKind(kind)) return fail("bad_request", 400);
 
+  // Optional: the roadmap document this file is a copy of (visa papers only).
+  const docIdField = form.get("docId");
+  let docId: DocId | undefined;
+  if (docIdField !== null) {
+    if (!isUploadDocId(docIdField) || kind !== "immigration") return fail("bad_request", 400);
+    docId = docIdField;
+  }
+
+  // Optional: one of MY files that this upload replaces. It is removed only after the new one is saved.
+  const replacesField = form.get("replaces");
+  let replaces: string | undefined;
+  if (replacesField !== null) {
+    if (!isOwnPathname(replacesField, sub)) return fail("not_found", 404);
+    replaces = replacesField;
+  }
+
   const head = new Uint8Array(await file.slice(0, 4096).arrayBuffer());
   const checked = checkUpload(file, head);
   if (!checked.ok) return fail(checked.error, checked.error === "too_large" ? 413 : 400);
 
   try {
     const existing = await listAll(userPrefix(sub));
-    if (existing.length >= MAX_FILES_PER_USER) return fail("too_many", 409);
+    if (replaces && !existing.some((b) => b.pathname === replaces)) return fail("not_found", 404);
+    // A replacement does not add to the count, so it still works at the limit.
+    if (existing.length - (replaces ? 1 : 0) >= MAX_FILES_PER_USER) return fail("too_many", 409);
 
-    const blob = await put(buildPathname(sub, kind, file.name), file, {
+    const blob = await put(buildPathname(sub, kind, file.name, docId), file, {
       access: "private",
       contentType: checked.contentType,
       addRandomSuffix: false,
       allowOverwrite: false,
     });
+    if (replaces) await del(replaces);
 
     const saved = toFile({ pathname: blob.pathname, size: file.size, uploadedAt: new Date() });
     if (!saved) return fail("server", 500);

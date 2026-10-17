@@ -55,7 +55,7 @@ export async function updateJourneyProgress(newStop: number, stopId: string, sta
   }
 }
 
-export async function createIntakeJourney(profileData: any) {
+export async function createIntakeJourney(profileData: Parameters<typeof sql.json>[0]) {
   const session = await auth0.getSession();
   const userId = session?.user?.sub || null;
 

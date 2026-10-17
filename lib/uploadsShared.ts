@@ -1,6 +1,8 @@
 // Shared by the upload routes (server) and the My documents panel (browser).
 // Pure data and tiny helpers: no Node or Vercel imports, so it is safe in both.
 
+import type { DocId } from "@/content/documents";
+
 /** The two kinds of file a person can add. */
 export const UPLOAD_KINDS = ["immigration", "scam_evidence"] as const;
 export type UploadKind = (typeof UPLOAD_KINDS)[number];
@@ -52,6 +54,8 @@ export interface UploadedFile {
   /** The private path in the store. Only meaningful to our own routes. */
   pathname: string;
   kind: UploadKind;
+  /** The roadmap document this file is a copy of, or null ("Other files"). */
+  docId: DocId | null;
   name: string;
   size: number;
   uploadedAt: string;

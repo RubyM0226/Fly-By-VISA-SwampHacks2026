@@ -141,6 +141,11 @@ export function JourneyScreen() {
             {t("journey.edit")}
           </Link>
         </p>
+        <p>
+          <Link href="/my-plan" className="inline-flex min-h-12 items-center font-semibold text-accent underline">
+            {t("journey.profileLink")}
+          </Link>
+        </p>
       </div>
 
       {/* One sentence, one big button: always a way forward. */}

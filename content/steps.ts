@@ -1,4 +1,5 @@
 import { LINKS } from "@/lib/config";
+import type { DocId } from "./documents";
 import type { StepId } from "@/lib/journey";
 import type { Lang } from "@/lib/settings";
 
@@ -17,7 +18,6 @@ export interface StepText {
   title: string;
   /** What to do, one short sentence per bullet. */
   what: string[];
-  documents: string[];
   /** Leave out when there is nothing useful to say; the field is then hidden. */
   cost?: string;
   time?: string;
@@ -33,6 +33,8 @@ export interface StepLink {
 export interface StepContent {
   id: StepId;
   text: Record<Lang, StepText>;
+  /** The "What you need" list: ids from content/documents.ts. */
+  documents: DocId[];
   links: StepLink[];
   /** Optional in-app button shown at the top of the step's details. */
   action?: { label: Record<Lang, string>; href: string };
@@ -41,6 +43,7 @@ export interface StepContent {
 export const STEPS: StepContent[] = [
   {
     id: "ready",
+    documents: ["passport", "travelDates"],
     text: {
       en: {
         title: "Get ready",
@@ -50,7 +53,6 @@ export const STEPS: StepContent[] = [
           "Know why you are going.",
           "Know how long you will stay.",
         ],
-        documents: ["Your passport", "Your travel dates"],
         time: "About 1 week",
         simple: "Make sure your passport will not expire soon. Know why you are going.",
       },
@@ -62,7 +64,6 @@ export const STEPS: StepContent[] = [
           "जानें कि आप क्यों जा रहे हैं।",
           "जानें कि आप कितने समय रुकेंगे।",
         ],
-        documents: ["आपका पासपोर्ट", "यात्रा की तारीखें"],
         time: "लगभग 1 सप्ताह",
         simple: "देखिए कि पासपोर्ट जल्दी खत्म न हो रहा हो। जानिए कि आप क्यों जा रहे हैं।",
       },
@@ -80,6 +81,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "ds160",
+    documents: ["passport", "travelFamilyDetails", "photo"],
     text: {
       en: {
         title: "Fill in the online form",
@@ -90,7 +92,6 @@ export const STEPS: StepContent[] = [
           "At the end, print the page with the barcode.",
           "Take this page to your interview.",
         ],
-        documents: ["Your passport", "Travel and family details", "A digital photo"],
         cost: "Free. The visa fee is the next step.",
         time: "A few hours",
         simple: "Answer every question honestly. Print the confirmation page at the end.",
@@ -104,7 +105,6 @@ export const STEPS: StepContent[] = [
           "अंत में बारकोड वाला पृष्ठ प्रिंट करें।",
           "यह पृष्ठ इंटरव्यू में ले जाएँ।",
         ],
-        documents: ["आपका पासपोर्ट", "यात्रा और परिवार की जानकारी", "डिजिटल फ़ोटो"],
         cost: "मुफ़्त। वीज़ा शुल्क अगले कदम में है।",
         time: "कुछ घंटे",
         simple: "हर सवाल का जवाब सच्चाई से दें। अंत में पुष्टि पृष्ठ प्रिंट करें।",
@@ -117,6 +117,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "book",
+    documents: ["ds160Confirmation", "feeReceipt", "passport"],
     text: {
       en: {
         title: "Pay the fee and book your appointments",
@@ -127,7 +128,6 @@ export const STEPS: StepContent[] = [
           "Book as early as you can. The wait is long.",
           "Follow the U.S. Embassy website. The steps can change.",
         ],
-        documents: ["[[ds160|DS-160]] confirmation page", "Payment receipt", "Your passport"],
         cost: "$185. Other fees may apply.",
         time: "Booking: about 1 day. Waiting for the interview: usually months.",
         simple: "Pay, then book. Book as early as you can.",
@@ -141,7 +141,6 @@ export const STEPS: StepContent[] = [
           "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
           "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
         ],
-        documents: ["[[ds160|DS-160]] पुष्टि पृष्ठ", "भुगतान की रसीद", "आपका पासपोर्ट"],
         cost: "$185। दूसरे शुल्क भी लग सकते हैं।",
         time: "बुकिंग: लगभग 1 दिन। इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।",
         simple: "पहले भुगतान करें, फिर बुक करें। जितना जल्दी हो सके बुक करें।",
@@ -158,6 +157,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "documents",
+    documents: ["passport", "ds160Confirmation", "feeReceipt", "appointmentLetters", "lifeInIndia", "fundsProof", "tripPlan"],
     text: {
       en: {
         title: "Gather your documents",
@@ -167,15 +167,6 @@ export const STEPS: StepContent[] = [
           "Show that you will come home.",
           "Show how the trip will be paid for.",
           "A letter from family in the U.S. is not needed.",
-        ],
-        documents: [
-          "Your passport",
-          "[[ds160|DS-160]] confirmation page",
-          "Fee receipt",
-          "Appointment letters",
-          "Proof of your life in India",
-          "Proof of how you will pay",
-          "A simple trip plan",
         ],
         time: "1 to 2 weeks",
         simple: "Gather papers that show your life is in India and that you will go home after the trip.",
@@ -189,15 +180,6 @@ export const STEPS: StepContent[] = [
           "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
           "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
         ],
-        documents: [
-          "आपका पासपोर्ट",
-          "[[ds160|DS-160]] पुष्टि पृष्ठ",
-          "शुल्क की रसीद",
-          "अपॉइंटमेंट पत्र",
-          "भारत में आपके जीवन का प्रमाण",
-          "खर्च कैसे उठाएँगे, इसका प्रमाण",
-          "यात्रा की सरल योजना",
-        ],
         time: "1 से 2 सप्ताह",
         simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
       },
@@ -208,6 +190,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "practice",
+    documents: ["tripPlan", "lastStepPapers"],
     text: {
       en: {
         title: "Practice for the interview",
@@ -218,7 +201,6 @@ export const STEPS: StepContent[] = [
           "Why will you come home?",
           "Answer honestly, in your own words. Keep it short.",
         ],
-        documents: ["Your trip plan", "Your papers from the last step"],
         time: "A few evenings",
         simple: "Practice saying your answers out loud.",
       },
@@ -231,7 +213,6 @@ export const STEPS: StepContent[] = [
           "आप घर क्यों लौटेंगे?",
           "सच्चाई से, अपने शब्दों में, छोटा जवाब दें।",
         ],
-        documents: ["आपकी यात्रा की योजना", "पिछले कदम के कागज़ात"],
         time: "कुछ शामें",
         simple: "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
       },
@@ -242,6 +223,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "travel",
+    documents: ["passportWithVisa", "flightDetails", "insurance"],
     text: {
       en: {
         title: "Book your flight",
@@ -252,7 +234,6 @@ export const STEPS: StepContent[] = [
           "Ask the airline for wheelchair help if you need it.",
           "Think about travel insurance.",
         ],
-        documents: ["Passport with the visa", "Flight details", "Insurance papers, if you buy it"],
         simple: "Buy tickets only after you have your visa. We help you compare flights.",
       },
       hi: {
@@ -264,7 +245,6 @@ export const STEPS: StepContent[] = [
           "ज़रूरत हो तो एयरलाइन से व्हीलचेयर सहायता माँगें।",
           "यात्रा बीमा के बारे में सोचें।",
         ],
-        documents: ["वीज़ा वाला पासपोर्ट", "उड़ान की जानकारी", "बीमा के कागज़, अगर लें"],
         simple: "वीज़ा मिलने के बाद ही टिकट खरीदें। हम उड़ानों की तुलना में मदद करते हैं।",
       },
     },
@@ -276,6 +256,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "arrive",
+    documents: ["passportWithVisa", "stayAddress", "tripDetails"],
     text: {
       en: {
         title: "Arrive in the U.S.",
@@ -286,7 +267,6 @@ export const STEPS: StepContent[] = [
           "A visa does not guarantee entry.",
           "Your leave date is on your [[i94|I-94]] record.",
         ],
-        documents: ["Passport with the visa", "Address where you will stay", "Your trip details"],
         simple: "Keep your papers ready. The officer decides how long you can stay.",
       },
       hi: {
@@ -298,7 +278,6 @@ export const STEPS: StepContent[] = [
           "वीज़ा से प्रवेश की गारंटी नहीं मिलती।",
           "लौटने की तारीख आपके [[i94|I-94]] रिकॉर्ड में होती है।",
         ],
-        documents: ["वीज़ा वाला पासपोर्ट", "ठहरने की जगह का पता", "आपकी यात्रा की जानकारी"],
         simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
       },
     },
@@ -309,6 +288,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "return",
+    documents: ["i94", "returnTicket"],
     text: {
       en: {
         title: "Return on time",
@@ -318,7 +298,6 @@ export const STEPS: StepContent[] = [
           "Staying too long can cancel your visa.",
           "Want to stay longer? Read the rules before that date.",
         ],
-        documents: ["Your [[i94|I-94]] record", "Your return ticket"],
         cost: "Asking to stay longer may cost a fee. Ask [[uscis|USCIS]].",
         simple: "Go home on time. Do not work.",
       },
@@ -330,7 +309,6 @@ export const STEPS: StepContent[] = [
           "ज़्यादा रुकने से वीज़ा रद्द हो सकता है।",
           "ज़्यादा रुकना है? उस तारीख से पहले नियम पढ़ें।",
         ],
-        documents: ["आपका [[i94|I-94]] रिकॉर्ड", "वापसी का टिकट"],
         cost: "ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है। [[uscis|USCIS]] से पूछें।",
         simple: "समय पर घर लौटें। काम न करें।",
       },

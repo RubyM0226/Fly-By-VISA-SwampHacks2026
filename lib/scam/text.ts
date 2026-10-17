@@ -3,6 +3,10 @@
 // PRIVACY: nothing here stores or logs the message. Keep it that way.
 
 export const MAX_MESSAGE_CHARS = 4000;
+/** Largest screenshot we read. */
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+/** Screenshot types we accept. */
+export const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
 
 export type ValidationResult =
   | { ok: true; text: string }
