@@ -53,6 +53,7 @@ const en = {
   "myPlan.signOut": "Sign out",
   "myPlan.signInFirst": "Log in or sign up to keep your trip plan in one place.",
 
+  "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "landing.about":
     "FlyByVisa helps older adults in India plan their U.S. visitor visa journey, one step at a time. It is free, in English and Hindi.",
   "landing.getStarted": "Get started",
@@ -312,6 +313,8 @@ const hi: Record<UiKey, string> = {
   "myPlan.signOut": "लॉग आउट",
   "myPlan.signInFirst": "अपनी यात्रा योजना एक जगह रखने के लिए लॉग इन या साइन अप करें।",
 
+  // DRAFT: needs a native Hindi reader.
+  "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
   // DRAFT: the two landing strings below need a native Hindi reader.
   "landing.about":
     "FlyByVisa भारत के बुज़ुर्गों को अमेरिका के आगंतुक वीज़ा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और हिन्दी में।",

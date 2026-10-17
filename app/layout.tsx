@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fraunces, Noto_Serif_Devanagari } from "next/font/google";
 import "@fontsource-variable/noto-sans";
 import "@fontsource-variable/noto-sans-devanagari";
 import "@fontsource/opendyslexic/400.css";
@@ -11,6 +12,22 @@ import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
 import { SideNav } from "@/components/SideNav";
 
+// Warm serif for the home headline only (see --font-headline in globals.css).
+// Hindi falls back to Noto Serif Devanagari, which loads only when Devanagari
+// text is on the page.
+const headlineLatin = Fraunces({
+  subsets: ["latin"],
+  axes: ["SOFT"],
+  display: "swap",
+  variable: "--font-headline-latin",
+});
+const headlineDevanagari = Noto_Serif_Devanagari({
+  subsets: ["devanagari"],
+  display: "swap",
+  preload: false,
+  variable: "--font-headline-devanagari",
+});
+
 export const metadata: Metadata = {
   title: "FlyByVisa — your step-by-step path to the U.S.",
   description:
@@ -20,7 +37,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // suppressHydrationWarning: the pre-hydration script sets lang and data-* on <html>.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${headlineLatin.variable} ${headlineDevanagari.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PRE_HYDRATION_SCRIPT }} />
       </head>
