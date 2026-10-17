@@ -21,7 +21,7 @@ export const DEFAULT_TRIP: Trip = {
   done: {},
 };
 
-export const tripStore = createPersistedStore<Trip>("saathi:trip", DEFAULT_TRIP);
+export const tripStore = createPersistedStore<Trip>("flybyvisa:trip", DEFAULT_TRIP);
 
 export function useTrip() {
   return useStore(tripStore);

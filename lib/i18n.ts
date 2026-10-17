@@ -25,7 +25,7 @@ const en = {
   "home.pickBoth": "Choose both places to continue.",
   "home.globeHint": "You can also tap a place on the globe.",
   "home.globeLabel": "Interactive globe. The same choices are in the lists.",
-  "home.scope": "For now, Saathi covers India to the United States only.",
+  "home.scope": "For now, FlyByVisa covers India to the United States only.",
   "home.globeLoading": "Loading the globe…",
 
   "country.IN": "India",
@@ -148,7 +148,7 @@ const en = {
   "glossary.open": "Show meaning of {term}",
 
   "footer.disclaimer":
-    "General information only, not legal advice. Saathi is not part of any government. Always check the official sources linked on each step.",
+    "General information only, not legal advice. FlyByVisa is not part of any government. Always check the official sources linked on each step.",
   "footer.privacy": "No account needed. Your answers stay in your browser.",
   "footer.scam":
     "Official visa fees are paid only through official channels. Beware of agents who promise a visa.",
@@ -177,7 +177,7 @@ const hi: Record<UiKey, string> = {
   "home.pickBoth": "आगे बढ़ने के लिए दोनों जगह चुनें।",
   "home.globeHint": "आप ग्लोब पर किसी जगह को छू भी सकते हैं।",
   "home.globeLabel": "ग्लोब। यही विकल्प सूची में भी हैं।",
-  "home.scope": "अभी साथी केवल भारत से संयुक्त राज्य अमेरिका के लिए है।",
+  "home.scope": "अभी FlyByVisa केवल भारत से संयुक्त राज्य अमेरिका के लिए है।",
   "home.globeLoading": "ग्लोब खुल रहा है…",
 
   "country.IN": "भारत",
@@ -300,7 +300,7 @@ const hi: Record<UiKey, string> = {
   "glossary.open": "{term} का अर्थ दिखाएँ",
 
   "footer.disclaimer":
-    "यह केवल सामान्य जानकारी है, कानूनी सलाह नहीं। साथी किसी सरकार का हिस्सा नहीं है। हर कदम पर दिए आधिकारिक स्रोत ज़रूर देखें।",
+    "यह केवल सामान्य जानकारी है, कानूनी सलाह नहीं। FlyByVisa किसी सरकार का हिस्सा नहीं है। हर कदम पर दिए आधिकारिक स्रोत ज़रूर देखें।",
   "footer.privacy": "खाता नहीं चाहिए। आपके जवाब आपके ब्राउज़र में ही रहते हैं।",
   "footer.scam":
     "आधिकारिक वीज़ा शुल्क केवल आधिकारिक माध्यम से ही भरें। वीज़ा का वादा करने वाले एजेंटों से सावधान रहें।",

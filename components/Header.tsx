@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { APP_NAME } from "@/lib/config";
 import { useT } from "@/lib/i18n";
-import { AccessIcon, RouteIcon } from "./Icons";
+import { AccessIcon, LogoIcon } from "./Icons";
 import { LanguageToggle } from "./LanguageToggle";
 import { SpeakButton } from "./SpeakButton";
 import { AccessibilityPanel } from "./AccessibilityPanel";
@@ -17,7 +17,7 @@ export function Header() {
     <header className="border-b-2 border-line bg-surface">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="inline-flex min-h-12 items-center gap-2 text-xl font-bold text-accent" aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}>
-          <RouteIcon className="h-7 w-7" />
+          <LogoIcon className="h-7 w-7" />
           <span>{APP_NAME[lang]}</span>
         </Link>
 
