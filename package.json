@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.32.1",
     "@fontsource-variable/noto-sans": "^5.3.0",
     "@fontsource-variable/noto-sans-devanagari": "^5.3.0",
     "@fontsource/opendyslexic": "^5.3.0",
