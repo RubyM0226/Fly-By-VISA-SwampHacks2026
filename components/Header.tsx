@@ -25,7 +25,7 @@ export function Header() {
   }, []);
 
   return (
-    <header ref={ref} className="sticky top-0 z-40">
+    <header ref={ref} className="sticky top-0 z-40" style={{ viewTransitionName: "site-header" }}>
       <div className="border-b-2 border-line bg-surface">
         <div className="mx-auto flex max-w-5xl items-center px-4 py-2 sm:px-6">
           <Link href="/" className="inline-flex min-h-12 items-center gap-2 text-xl font-bold text-accent" aria-label={`${APP_NAME[lang]} — ${t("nav.home")}`}>

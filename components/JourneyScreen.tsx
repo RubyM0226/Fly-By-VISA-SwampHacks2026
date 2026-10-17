@@ -12,6 +12,7 @@ import { useSettings } from "@/lib/settings";
 import { ArrowIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
 import { StepCard, type StepStatus } from "./StepCard";
+import { BACK } from "./ScreenTransition";
 
 export function JourneyScreen() {
   const { t, lang } = useT();
@@ -36,6 +37,7 @@ export function JourneyScreen() {
             <p className="text-xl">{t("journey.needInfo")}</p>
             <Link
               href="/start"
+              transitionTypes={BACK}
               data-button
               className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
             >
@@ -71,7 +73,7 @@ export function JourneyScreen() {
         </p>
         <p className="text-base text-muted">
           {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}{" "}
-          <Link href="/start" className="inline-flex min-h-12 items-center font-semibold text-accent underline">
+          <Link href="/start" transitionTypes={BACK} className="inline-flex min-h-12 items-center font-semibold text-accent underline">
             {t("journey.edit")}
           </Link>
         </p>

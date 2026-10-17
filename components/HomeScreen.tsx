@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
-import { ArrowIcon } from "./Icons";
+import { LaunchButton } from "./LaunchButton";
 import { GlobeLoader, useSupportsWebGL } from "./GlobeLoader";
 import { PlaceSelect } from "./PlaceSelect";
 
@@ -55,14 +54,11 @@ export function HomeScreen() {
             <PlaceSelect id="place-to" label={t("home.to")} enabled={["US"]} value={trip.to} onChange={pick} />
 
             {ready ? (
-              <Link
+              <LaunchButton
                 href="/start"
-                data-button
+                label={t("home.continue")}
                 className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink"
-              >
-                {t("home.continue")}
-                <ArrowIcon className="h-6 w-6" />
-              </Link>
+              />
             ) : (
               <button
                 type="button"

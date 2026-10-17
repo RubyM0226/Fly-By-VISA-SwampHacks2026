@@ -9,6 +9,7 @@ import { RichText } from "./Glossary";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
 import { ArrowIcon } from "./Icons";
+import { BACK, FORWARD } from "./ScreenTransition";
 
 const MONTH_CHOICES = [1, 2, 3, 4, 5, 6];
 
@@ -30,6 +31,7 @@ export function StartScreen() {
         <p className="text-xl">{t("start.needPlaces")}</p>
         <Link
           href="/"
+          transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
         >
@@ -60,7 +62,7 @@ export function StartScreen() {
       dateRef.current?.focus();
       return;
     }
-    router.push("/journey");
+    router.push("/journey", { transitionTypes: FORWARD });
   }
 
   return (
@@ -151,6 +153,7 @@ export function StartScreen() {
         </button>
         <Link
           href="/"
+          transitionTypes={BACK}
           data-button
           className="inline-flex min-h-14 items-center justify-center rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-lg font-semibold hover:bg-accent-soft"
         >
