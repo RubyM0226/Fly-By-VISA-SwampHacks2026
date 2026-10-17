@@ -83,6 +83,34 @@ export const GearIcon =({ className }: IconProps) => (
   </svg>
 );
 
+export const UserIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </svg>
+);
+
+export const PlanIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <rect x="5" y="4" width="14" height="17" rx="2" />
+    <path d="M9 4V2.5h6V4M9 10h6M9 14h6M9 18h3" />
+  </svg>
+);
+
+export const MapIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" />
+    <path d="M9 4v14M15 6v14" />
+  </svg>
+);
+
+export const DocumentIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+    <path d="M14 3v5h5M9 13h6M9 17h6" />
+  </svg>
+);
+
 export const MinusIcon = ({ className }: IconProps) => (
   <svg {...base} className={className}>
     <path d="M5 12h14" />
