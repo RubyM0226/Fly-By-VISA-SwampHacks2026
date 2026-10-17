@@ -18,6 +18,7 @@ const en = {
   "nav.myPlan": "My Plan",
   "nav.map": "Location Map",
   "nav.documents": "Important Documents",
+  "nav.glossary": "Glossary",
   "docs.blurb": "Find out which papers you need for your visa, and what each one is. Type a question or the name of a document.",
   "docs.searchLabel": "Search documents",
   "docs.placeholder": "For example: passport photo",
@@ -190,6 +191,15 @@ const en = {
   "a11y.more": "More",
 
   "glossary.open": "Show meaning of {term}",
+  "glossary.blurb": "Plain meanings of the visa words you will see on this site. Tap a group to jump to it, or type a word.",
+  "glossary.searchLabel": "Find a word",
+  "glossary.placeholder": "For example: I-94",
+  "glossary.jumpTo": "Jump to a group",
+  "glossary.noResults": "No words match. Try a shorter word, like visa or form.",
+  "glossary.cat.visas": "Visas",
+  "glossary.cat.forms": "Forms & Documents",
+  "glossary.cat.agencies": "Agencies & Offices",
+  "glossary.cat.process": "Process & Travel Terms",
 
   "footer.disclaimer":
     "General information only, not legal advice. FlyByVisa is not part of any government. Always check the official sources linked on each step.",
@@ -214,6 +224,7 @@ const hi: Record<UiKey, string> = {
   "nav.myPlan": "मेरी योजना",
   "nav.map": "स्थान का नक्शा",
   "nav.documents": "ज़रूरी कागज़ात",
+  "nav.glossary": "शब्दावली",
   "docs.blurb": "जानिए वीज़ा के लिए कौन-से कागज़ात चाहिए, और हर एक क्या है। कोई सवाल या कागज़ का नाम लिखें।",
   "docs.searchLabel": "कागज़ात खोजें",
   "docs.placeholder": "जैसे: पासपोर्ट फ़ोटो",
@@ -386,6 +397,15 @@ const hi: Record<UiKey, string> = {
   "a11y.more": "और",
 
   "glossary.open": "{term} का अर्थ दिखाएँ",
+  "glossary.blurb": "इस साइट पर आने वाले वीज़ा के शब्दों के आसान अर्थ। किसी समूह पर जाने के लिए उसे छुएँ, या कोई शब्द लिखें।",
+  "glossary.searchLabel": "कोई शब्द खोजें",
+  "glossary.placeholder": "जैसे: I-94",
+  "glossary.jumpTo": "किसी समूह पर जाएँ",
+  "glossary.noResults": "कोई शब्द नहीं मिला। छोटा शब्द लिखकर देखें, जैसे वीज़ा या फ़ॉर्म।",
+  "glossary.cat.visas": "वीज़ा",
+  "glossary.cat.forms": "फ़ॉर्म और कागज़ात",
+  "glossary.cat.agencies": "सरकारी विभाग और कार्यालय",
+  "glossary.cat.process": "प्रक्रिया और यात्रा के शब्द",
 
   "footer.disclaimer":
     "यह केवल सामान्य जानकारी है, कानूनी सलाह नहीं। FlyByVisa किसी सरकार का हिस्सा नहीं है। हर कदम पर दिए आधिकारिक स्रोत ज़रूर देखें।",
