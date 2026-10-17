@@ -7,7 +7,7 @@ import { GoogleGenAI } from "@google/genai";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local")});
 
-const CORPUS_DIR = path.resolve(process.cwd(), "..", "corpus");
+const CORPUS_DIR = path.resolve(process.cwd(), "corpus");
 const MIN_CHARS = 800;
 const BATCH_SIZE = 5;
 const BATCH_PAUSE_MS = 4000;
