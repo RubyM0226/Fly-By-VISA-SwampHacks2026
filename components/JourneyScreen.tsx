@@ -11,7 +11,8 @@ import { tripStore, useTrip } from "@/lib/trip";
 import { useSettings } from "@/lib/settings";
 import { ArrowIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
-import { StepCard, type StepStatus } from "./StepCard";
+import { RoadmapPath, type OpenStep } from "./RoadmapPath";
+import type { StepStatus } from "./StepDetails";
 import { BACK } from "./ScreenTransition";
 
 export function JourneyScreen() {
@@ -19,7 +20,7 @@ export function JourneyScreen() {
   const [trip] = useTrip();
   const [settings] = useSettings();
   const today = useToday();
-  const [openId, setOpenId] = useState<StepId | null>(null);
+  const [openStep, setOpenStep] = useState<OpenStep | null>(null);
 
   const ready = Boolean(today && trip.arrival && trip.from === "IN" && trip.to === "US");
 
@@ -54,10 +55,10 @@ export function JourneyScreen() {
   const statusOf = (id: StepId): StepStatus => (trip.done[id] ? "done" : id === currentId ? "current" : "upcoming");
 
   function showStep(id: StepId) {
-    setOpenId(id);
+    setOpenStep({ id, focus: true });
     requestAnimationFrame(() => {
       document
-        .getElementById(`step-${id}`)
+        .getElementById("roadmap-title")
         ?.scrollIntoView({ behavior: settings.pauseMotion ? "auto" : "smooth", block: "start" });
     });
   }
@@ -116,25 +117,13 @@ export function JourneyScreen() {
         <h2 id="roadmap-title" className="text-2xl font-bold">
           {t("journey.roadmap")}
         </h2>
-        <ol>
-          {STEP_ORDER.map((id, i) => {
-            const plan = journey.steps.find((s) => s.id === id)!;
-            return (
-              <StepCard
-                key={id}
-                step={STEP_BY_ID[id]}
-                plan={plan}
-                number={i + 1}
-                status={statusOf(id)}
-                isLast={i === STEP_ORDER.length - 1}
-                interviewDate={journey.best.interviewDate}
-                open={openId === id}
-                onToggle={() => setOpenId(openId === id ? null : id)}
-                onToggleDone={() => tripStore.set({ done: { ...trip.done, [id]: !trip.done[id] } })}
-              />
-            );
-          })}
-        </ol>
+        <RoadmapPath
+          journey={journey}
+          statusOf={statusOf}
+          open={openStep}
+          onOpen={setOpenStep}
+          onToggleDone={(id) => tripStore.set({ done: { ...trip.done, [id]: !trip.done[id] } })}
+        />
       </section>
     </div>
   );

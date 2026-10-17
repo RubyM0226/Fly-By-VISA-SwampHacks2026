@@ -93,6 +93,7 @@ const en = {
   "journey.arriveOn": "Arrive on {date}",
   "journey.leaveBy": "Plan to leave by about {date}",
   "journey.roadmap": "Your roadmap",
+  "journey.backToMap": "Back to roadmap",
 
   "status.done": "Done",
   "status.current": "You are here",
@@ -249,6 +250,7 @@ const hi: Record<UiKey, string> = {
   "journey.arriveOn": "{date} को पहुँचें",
   "journey.leaveBy": "लगभग {date} तक लौटने की योजना बनाएँ",
   "journey.roadmap": "आपका रास्ता",
+  "journey.backToMap": "रोडमैप पर वापस",
 
   "status.done": "पूरा",
   "status.current": "आप यहाँ हैं",
