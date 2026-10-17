@@ -53,6 +53,10 @@ const en = {
   "myPlan.signOut": "Sign out",
   "myPlan.signInFirst": "Log in or sign up to keep your trip plan in one place.",
 
+  "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
+  "landing.about":
+    "FlyByVisa helps older adults in India plan their U.S. visitor visa journey, one step at a time. It is free, in English and Hindi.",
+  "landing.getStarted": "Get started",
   "home.title": "Where are you coming from, and where do you want to go?",
   "home.lead": "Pick both places and we will build your plan, step by step.",
   "home.from": "Where are you coming from (Home Country)",
@@ -67,6 +71,15 @@ const en = {
   "home.globeLabel": "Interactive globe. The same choices are in the lists.",
   "home.scope": "For now, FlyByVisa covers India to the United States only.",
   "home.globeLoading": "Loading the globe…",
+  "home.zoom": "Globe zoom",
+  "home.zoomIn": "Zoom in",
+  "home.zoomOut": "Zoom out",
+  "home.checkingAccount": "Checking your account…",
+  "home.welcomeBack": "Welcome back, {name}!",
+  "home.traveler": "Traveler",
+  "home.journeySaved": "Your visa journey is saved and ready for your next step.",
+  "home.resumeJourney": "Resume My Journey",
+  "home.viewProfile": "View Travel Profile",
 
   "country.IN": "India",
   "country.US": "United States",
@@ -300,6 +313,12 @@ const hi: Record<UiKey, string> = {
   "myPlan.signOut": "लॉग आउट",
   "myPlan.signInFirst": "अपनी यात्रा योजना एक जगह रखने के लिए लॉग इन या साइन अप करें।",
 
+  // DRAFT: needs a native Hindi reader.
+  "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
+  // DRAFT: the two landing strings below need a native Hindi reader.
+  "landing.about":
+    "FlyByVisa भारत के बुज़ुर्गों को अमेरिका के आगंतुक वीज़ा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और हिन्दी में।",
+  "landing.getStarted": "शुरू करें",
   "home.title": "आप कहाँ से आ रहे हैं, और कहाँ जाना चाहते हैं?",
   "home.lead": "दोनों जगह चुनिए। हम आपके लिए कदम-दर-कदम योजना बनाएँगे।",
   "home.from": "आप कहाँ से आ रहे हैं (अपना देश)",
@@ -314,6 +333,16 @@ const hi: Record<UiKey, string> = {
   "home.globeLabel": "ग्लोब। यही विकल्प सूची में भी हैं।",
   "home.scope": "अभी FlyByVisa केवल भारत से संयुक्त राज्य अमेरिका के लिए है।",
   "home.globeLoading": "ग्लोब खुल रहा है…",
+  "home.zoom": "ग्लोब का ज़ूम",
+  "home.zoomIn": "ज़ूम इन करें",
+  "home.zoomOut": "ज़ूम आउट करें",
+  // DRAFT: the six signed-in strings below need a native Hindi reader.
+  "home.checkingAccount": "आपका खाता देखा जा रहा है…",
+  "home.welcomeBack": "फिर से स्वागत है, {name}!",
+  "home.traveler": "यात्री",
+  "home.journeySaved": "आपकी वीज़ा यात्रा सहेजी गई है और अगले कदम के लिए तैयार है।",
+  "home.resumeJourney": "मेरी यात्रा जारी रखें",
+  "home.viewProfile": "यात्रा प्रोफ़ाइल देखें",
 
   "country.IN": "भारत",
   "country.US": "संयुक्त राज्य अमेरिका",

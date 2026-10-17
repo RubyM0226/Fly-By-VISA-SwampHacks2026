@@ -32,7 +32,7 @@ export function DocumentsScreen() {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-hills-peek className="space-y-6 pb-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
         <p className="text-lg">{t("docs.blurb")}</p>
@@ -193,16 +193,33 @@ function useCorpusSearch(query: string): CorpusState {
   return { status: result.failed ? "error" : "done", hits: result.hits };
 }
 
-/** Chunks can start mid-sentence (index overlap); start at a clean break and keep it short. */
-function excerpt(text: string, max = 320): string {
-  let t = text.replace(/\s+/g, " ").trim();
-  if (!/^[A-Z0-9"(]/.test(t)) {
+/**
+ * Chunks are markdown and start with their section heading. Split that off,
+ * turn the rest into plain text, start at a clean sentence and keep it short.
+ */
+function excerpt(text: string, max = 320): { heading?: string; text: string } {
+  // A chunk can start with several heading lines; the last is the closest one.
+  const block = text.trim().match(/^(?:#{1,6} .*(?:\n+|$))+/)?.[0] ?? "";
+  const heading = block.trim().split("\n").pop()?.replace(/^#{1,6} /, "").trim() || undefined;
+  const md = text.trim().slice(block.length);
+
+  let t = md
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // [text](url) -> text
+    .replace(/\*\*|__/g, "")
+    .replace(/^#{1,6} /gm, "")
+    .replace(/^\s*(?:[-*]|\d+\.)\s+/gm, "• ")
+    .replace(/\s+/g, " ")
+    .trim();
+  // The overlap between chunks can start mid-sentence.
+  if (!/^[A-Z0-9"(•]/.test(t)) {
     const cut = t.search(/[.!?:] [A-Z]/);
     if (cut > 0 && cut < 160) t = t.slice(cut + 2);
   }
-  if (t.length <= max) return t;
-  const end = t.lastIndexOf(" ", max);
-  return t.slice(0, end > 0 ? end : max) + "…";
+  if (t.length > max) {
+    const end = t.lastIndexOf(" ", max);
+    t = t.slice(0, end > 0 ? end : max) + "…";
+  }
+  return { heading, text: t };
 }
 
 function OfficialExcerpts({ hits }: { hits: CorpusHit[] }) {
@@ -211,28 +228,36 @@ function OfficialExcerpts({ hits }: { hits: CorpusHit[] }) {
     <section className="space-y-3">
       <h2 className="text-xl font-bold">{t("docs.official")}</h2>
       <ul className="space-y-3">
-        {hits.map((h) => (
-          <li key={h.url} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
-            <h3 className="text-lg font-bold">{h.title}</h3>
-            {/* Official pages are in English only. */}
-            <p lang="en" className="text-lg">
-              {excerpt(h.text)}
-            </p>
-            <p className="flex flex-wrap items-center gap-x-4 text-base">
-              <a
-                href={h.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
-              >
-                {t("docs.readFull")}
-                <ExternalIcon className="h-4 w-4" />
-                <span className="sr-only">{t("journey.opensNewTab")}</span>
-              </a>
-              <span className="text-muted">{t("docs.savedOn", { date: h.savedOn })}</span>
-            </p>
-          </li>
-        ))}
+        {hits.map((h) => {
+          const ex = excerpt(h.text);
+          return (
+            <li key={h.url} className="space-y-2 rounded-2xl border-2 border-line-strong bg-surface p-5">
+              <h3 className="text-lg font-bold">{h.title}</h3>
+              {/* Official pages are in English only. */}
+              {ex.heading && ex.heading !== h.title && (
+                <p lang="en" className="text-lg font-semibold">
+                  {ex.heading}
+                </p>
+              )}
+              <p lang="en" className="text-lg">
+                {ex.text}
+              </p>
+              <p className="flex flex-wrap items-center gap-x-4 text-base">
+                <a
+                  href={h.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline"
+                >
+                  {t("docs.readFull")}
+                  <ExternalIcon className="h-4 w-4" />
+                  <span className="sr-only">{t("journey.opensNewTab")}</span>
+                </a>
+                <span className="text-muted">{t("docs.savedOn", { date: h.savedOn })}</span>
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

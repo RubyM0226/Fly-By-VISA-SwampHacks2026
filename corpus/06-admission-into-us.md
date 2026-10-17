@@ -1,29 +1,40 @@
 ---
-source_url: https://www.cbp.gov/travel/international-visitors/applying-admission-united-states
+source_url: >-
+  https://www.cbp.gov/travel/international-visitors/applying-admission-united-states
 title: Admission into United States
-saved_on: 2026-10-16
+saved_on: '2026-10-17'
 ---
 
-Applying for admission into the United States
-How does the Inspection Process work?
-All persons arriving at a port-of-entry to the United States are subject to inspection by U.S. Customs and Border Protection (CBP) officers. CBP officers will conduct the Immigration, Customs and Agriculture components of the Inspections process. Additional information regarding the inspection process is located in the Code of Federal Regulations, see, e.g. 8 CFR 235 Inspection of Persons Applying for Admission
+# Admission into United States
 
-Will I be able to travel into or through the United States?
-Aliens seeking to lawfully enter into the United States must establish their admissibility to the satisfaction of the CBP officer. This is done as part of the inspection process. The reasons that a traveler who is applying for admission into the United States could be inadmissible are found in INA § 212(a)
+## Applying for admission into the United States
 
-What procedures apply in considering the health-related grounds of inadmissibility?
+### How does the Inspection Process work?
+
+All persons arriving at a port-of-entry to the United States are subject to inspection by U.S. Customs and Border Protection (CBP) officers. CBP officers will conduct the Immigration, Customs and Agriculture components of the Inspections process. Additional information regarding the inspection process is located in the Code of Federal Regulations, see, e.g. [8 CFR 235 Inspection of Persons Applying for Admission](http://www.gpo.gov/fdsys/granule/CFR-2012-title8-vol1/CFR-2012-title8-vol1-part235/content-detail.html)
+
+### Will I be able to travel into or through the United States?
+
+Aliens seeking to lawfully enter into the United States must establish their admissibility to the satisfaction of the CBP officer. This is done as part of the inspection process. The reasons that a traveler who is applying for admission into the United States could be inadmissible are found in [INA § 212(a)](http://www.uscis.gov/ilink/docView/SLB/HTML/SLB/0-0-0-1/0-0-0-29/0-0-0-2006.html)
+
+### What procedures apply in considering the health-related grounds of inadmissibility?
+
 Under INA § 212(a)(1)(A), aliens seeking to travel into the United States who have certain health-related issues may be inadmissible. Should it be necessary, a physical and/or mental examination of an applicant for admission should be conducted by a panel physician. When CBP officers encounter an alien at a port of entry who may be inadmissible under public health grounds, the CBP officer may refer the alien to a panel physician. In those circumstances, the CBP officer will provide the alien with the list of panel physicians. In that case, the alien will have to go to one of the panel physicians for an evaluation before again presenting themselves for admission. The panel physician will notify CBP of the results of the examination, so that CBP can make an admissibility determination.
 
 The panel physician evaluation is valid for only one year. Thus, even if you have previously had such an evaluation, if it has been more than a year since the examination was conducted, a new examination will likely be necessary.
 
-What if I have questions about whether I will be deemed admissible?
+### What if I have questions about whether I will be deemed admissible?
+
 Before you travel, if you have any concerns about your admissibility, you should seek legal counsel. CBP cannot provide legal advice to members of the public.
 
-What will happen if I am not found admissible?
+### What will happen if I am not found admissible?
+
 If you are determined to be inadmissible you could, in certain circumstances, be placed into removal proceedings. In some circumstances an officer may, in his or her sole discretion, determine to permit you to withdraw your application for admission. A determination of inadmissibility may have an impact on your future admissibility and may result in the cancellation of your visa, if you have one.
 
-Bringing agricultural products into the United States
-Agricultural Products
+## Bringing agricultural products into the United States
+
+### Agricultural Products
+
 If you’ve had food, plants or souvenirs taken away by a Customs & Border Protection (CBP) agriculture specialist and/or officer at an international airport, border crossing, or seaport, we want you to understand the reasons.
 
 Certain items brought into the United States from foreign countries are restricted according to U.S. Department of Agriculture (USDA) regulations. Prohibited agricultural items can harbor plant pests and foreign animal diseases that could seriously damage America’s crops, livestock, and the environment – and a large sector of our country’s economy.
@@ -32,75 +43,84 @@ All travelers entering the United States are Required to Declare meats, fruits, 
 
 Upon examination of plants, animal products, and associated items, CBP agriculture specialists at the ports of entry will determine if these items meet the entry requirements of the United States. During the examination, include any declaration orally to CBP personnel at arrival and/or make your declarations in the CBP mobile application.
 
-Media player
-
-|
-|
-0:00 / 1:24
-Paused
 Overview of agriculture regulations to traveling public.
-Protecting American Agriculture
-When planning your trip, keep in mind that regulations change frequently around the world, depending on outbreaks of plant and animal diseases. So, whether or not the item in question seems to be one that is permitted, travelers are still responsible for declaring those items and presenting them for inspection upon returning to the United States. For more information on protecting agriculture visit our Protecting Agriculture page.
 
-Avoid Fines and Delays
+### Protecting American Agriculture
+
+When planning your trip, keep in mind that regulations change frequently around the world, depending on outbreaks of plant and animal diseases. So, whether or not the item in question seems to be one that is permitted, travelers are still responsible for declaring those items and presenting them for inspection upon returning to the United States. For more information on protecting agriculture visit our [Protecting Agriculture](https://www.cbp.gov/border-security/protecting-agriculture) page.
+
+### Avoid Fines and Delays
+
 Prohibited items that are not declared by passengers are confiscated and disposed of by CBP agriculture specialists. More importantly, civil penalties may be assessed for failure to declare prohibited agricultural products and may range up to $1,000 per first-time offense for non-commercial quantities. If the items are determined to be for commercial use, violations will be assessed at a much higher rate. The same fines apply to prohibited agricultural products sent through international mail.
 
-Fruits, Vegetables, and Plants
-Although some fruits, vegetables, and plants may be brought into the United States without advance permission, provided they are declared, inspected, and found free of pests. Most fruits, vegetables, and plants are prohibited for entry for personal use in passenger baggage and international mail without permits. However, certain plants and ANY plant parts intended for growing (propagative) require a foreign phytosanitary certificate in advance. For information on certificates, contact the USDA/APHIS Plant Protection and Quarantine Permit Unit at https://www.aphis.usda.gov/plant-imports.
+### Fruits, Vegetables, and Plants
 
-Meat and Animal Products and Byproducts
+Although some fruits, vegetables, and plants may be brought into the United States without advance permission, provided they are declared, inspected, and found free of pests. Most fruits, vegetables, and plants are prohibited for entry for personal use in passenger baggage and international mail without permits. However, certain plants and ANY plant parts intended for growing (propagative) require a foreign phytosanitary certificate in advance. For information on certificates, contact the USDA/APHIS Plant Protection and Quarantine Permit Unit at [https://www.aphis.usda.gov/plant-imports](https://www.aphis.usda.gov/plant-imports).
+
+### Meat and Animal Products and Byproducts
+
 Many fresh, dried, and some canned meats and meat byproducts are prohibited entry into the United States from foreign countries because of the continuing threat of foot-and-mouth disease (FMD), African Swine Fever (ASF), bovine spongiform encephalopathy (BSE, or mad cow disease), and other animal diseases. If meat from restricted countries is included as an ingredient in a product (e.g., beef broth), the product is usually prohibited.
 
 Because regulations concerning meat and meat byproducts change frequently, travelers should contact the consulate or local agricultural office in the country of origin for up-to-date information on the disease status of that country.
 
-Animal hunting trophies, game animal carcasses, and hides are severely restricted. To find out specifics and how to arrange to bring them into the United States, contact USDA/APHIS Veterinary Services, National Center for Import and Export at https://www.aphis.usda.gov/animal-product-import/approved-establishment or at https://www.aphis.usda.gov/live-animal-import. The import and export of wild (and endangered) animals is regulated by the U.S. Department of the Interior, Fish and Wildlife Service (FWS). For a list of endangered species check the following: http://www.cites.org.
+Animal hunting trophies, game animal carcasses, and hides are severely restricted. To find out specifics and how to arrange to bring them into the United States, contact USDA/APHIS Veterinary Services, National Center for Import and Export at [https://www.aphis.usda.gov/animal-product-import/approved-establishment](https://www.aphis.usda.gov/animal-product-import/approved-establishment) or at [https://www.aphis.usda.gov/live-animal-import](https://www.aphis.usda.gov/live-animal-import). The import and export of wild (and endangered) animals is regulated by the U.S. Department of the Interior, Fish and Wildlife Service (FWS). For a list of endangered species check the following: [http://www.cites.org](http://www.cites.org/).
 
-Live Animals and Birds
+### Live Animals and Birds
+
 U.S. Customs and Border Protection (CBP) works in coordination with partner government agencies (PGAs) such as the U.S. Fish and Wildlife Service (USFWS), the U.S. Department of Agriculture (USDA), the Centers for Disease Control and Prevention (CDC), along with state, local, tribal, territorial, and international law enforcement agencies to safeguard and deter the introduction of foreign animal diseases, protect animal welfare, and preclude the spread of communicable diseases.
 
-www.cbp.gov/border-security/protecting-agriculture/bringing-pets-and-wildlife-united-states
+[www.cbp.gov/border-security/protecting-agriculture/bringing-pets-and-wildlife-united-states](https://www.cbp.gov/border-security/protecting-agriculture/bringing-pets-and-wildlife-united-states)
 
 You may also access the National Center for Infectious Diseases on the Web - Traveler's Health.
 
-APHIS Veterinary Services
+### APHIS Veterinary Services
+
 The National Center for Import and Export (NCIE), can provide information on the importation of live animals and animal products.
 
 The U.S. Fish and Wildlife Service (USFWS) regulates the import and export of wild and endangered plants and animals and related products. For information, access the USFWS web site at U.S. Fisheries and Wildlife Services.
 
 The Centers for Disease Control and Prevention (CDC) regulates importation of certain animal species and provides specific regulations for nonhuman primates and pets. You may also access the National Center for Infectious Diseases on the web - Traveler's Health.
 
-Other Biological Materials
+### Other Biological Materials
+
 U.S. Customs and Border Protection (CBP) and partner government agencies (PGAs) regulate the importation of biological materials that can pose a threat to agriculture, public health, and natural resources. All biological materials imported into the United States must be documented, labeled, packaged, placarded, and declared in accordance with relevant international, federal, and state regulations. Importers are responsible for knowing and adhering to these regulations, and noncompliance with any regulation may result in importation delays, civil or criminal penalties, and/or seizure of the biological materials.
 
-www.cbp.gov/border-security/protecting-agriculture/importing-biological-materials-united-states
+[www.cbp.gov/border-security/protecting-agriculture/importing-biological-materials-united-states](https://www.cbp.gov/border-security/protecting-agriculture/importing-biological-materials-united-states)
 
-Soil, Sand and Minerals
+### Soil, Sand and Minerals
+
 Soil-borne organisms threaten both plants and animals. If you visited a farm or ranch in a foreign country, agricultural specialists may have to examine and disinfect your shoes or clothing. Vehicles must also be cleaned of any soil. No soil or earth of any kind is allowed into the United States without a permit issued in advance by USDA Plant Protection and Quarantine Permit Unit. Pure sand, such as a small container of decorative beach sand, is usually allowed. Always check with the permit unit in advance for details.
 
-Prohibited and Restricted Items
+### Prohibited and Restricted Items
+
 The products CBP prevent from entering the United States are those that would injure community health, public safety, American workers, children, or domestic plant and animal life, or those that would defeat our national interests. Sometimes the products that cause injury, or have the potential to do so, may seem fairly innocent. But, as you will see from the material that follows, appearances can be deceiving.
 
 Before you leave for your trip abroad, you might want to talk to CBP about the items you plan to bring back to be sure they're not prohibited or restricted. Prohibited means the item is forbidden by law to enter the United States. Examples of prohibited items are dangerous toys, cars that don't protect their occupants in a crash, bush meat, or illegal substances like absinthe and Rohypnol. Restricted means that special licenses or permits are required from a federal agency before the item is allowed to enter the United States. Examples of restricted items include firearms, certain fruits and vegetables, animal products, animal by products, and some animals.
 
-For more information on prohibited and restricted items visit the Prohibited and Restricted Items webpage.
+For more information on prohibited and restricted items visit the [Prohibited and Restricted Items](https://www.cbp.gov/travel/us-citizens/know-before-you-go/prohibited-and-restricted-items) webpage.
 
-Additional resources
-Currency Reporting
-It is legal to transport any amount of currency or other monetary instruments into or out of the United States. However, if you transport, attempt to transport, or cause to be transported (including by mail or other means) currency or other monetary instruments in a combined amount exceeding $10,000 (or its foreign equivalent) at one time from the United States to any foreign country or into the United States from any foreign country, you must file a FinCEN Form 105 (“Report of International Transportation of Currency or Monetary Instruments”) with U.S. Customs and Border Protection (CBP).
+## Additional resources
 
-You may file in paper form or file electronically at FinCEN Form 105 CMIR. International travelers entering the United States must declare if they are carrying currency or monetary instruments in a combined amount over $10,000 on their Customs Declaration Form (CBP Form 6059B) and then file a FinCEN Form 105.
+### Currency Reporting
+
+It is legal to transport any amount of currency or other monetary instruments into or out of the United States. However, if you transport, attempt to transport, or cause to be transported (including by mail or other means) currency or other monetary instruments in a combined amount exceeding $10,000 (or its foreign equivalent) at one time from the United States to any foreign country or into the United States from any foreign country, you must file a [FinCEN Form 105](https://www.fincen.gov/sites/default/files/shared/fin105_cmir.pdf "https://www.fincen.gov/sites/default/files/shared/fin105_cmir.pdf") (“Report of International Transportation of Currency or Monetary Instruments”) with U.S. Customs and Border Protection (CBP).
+
+You may file in paper form or file electronically at [FinCEN Form 105 CMIR](https://fincen105.cbp.dhs.gov/#/). International travelers entering the United States must declare if they are carrying currency or monetary instruments in a combined amount over $10,000 on their Customs Declaration Form (CBP Form 6059B) and then file a FinCEN Form 105.
 
 Members of a family residing in one household entering the United States that submit a joint or family declaration must declare if the members are collectively carrying currency or monetary instruments in a combined amount over $10,000 on their Customs Declaration Form (CBP Form 6059B). Members individually carrying over $10,000 are then required to file a FinCEN Form 105. Members of a family residing in one household that submit a joint or family declaration are prohibited from causing others in the group to carry currency or monetary instruments in the group on their behalf, so that no member carries more than $10,000.
 
 International travelers departing from the United States with currency or monetary instruments in a combined amount over $10,000 are also required to file a FinCEN Form 105 prior to their time of departure.
 
-Information Center
+### Information Center
+
 Need answers? We recommend you first use our CBP Information Center website at help.cbp.gov, which has more than 500 answers about CBP policies and procedures.
 
 The CBP Information Center is open Monday - Friday, 8:30 a.m. - 8:00 p.m. Eastern Time.
 
 Submit your question, compliment, complaint or tip online, or call:
 
-U.S. Visitors: 877-CBP-511
-Visitors outside the U.S.: +1-202-325-8000
-Telecommunications device for the hearing impaired: 7-1-1
+-   U.S. Visitors: 877-CBP-511
+-   Visitors outside the U.S.: +1-202-325-8000
+-   Telecommunications device for the hearing impaired: 7-1-1
+
+Last Modified: Apr 17, 2026
