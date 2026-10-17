@@ -34,7 +34,8 @@ function pool(): Pool {
   return globals.corpusPool;
 }
 
-function ai(): GoogleGenAI {
+/** The shared Gemini client (also used by Scam Check in lib/scam/service.ts). */
+export function ai(): GoogleGenAI {
   globals.corpusAi ??= new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   return globals.corpusAi;
 }
