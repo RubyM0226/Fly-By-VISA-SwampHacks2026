@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cbe0e6"/>
+      <stop offset="0.55" stop-color="#dcebee"/>
+      <stop offset="1" stop-color="#e8f1f1"/>
+    </linearGradient>
+    <filter id="soft" x="-10%" y="-30%" width="120%" height="160%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <filter id="mist" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#sky)"/>
+  <!-- Misty bands -->
+  <ellipse cx="380" cy="430" rx="520" ry="60" fill="#f2f7f7" opacity="0.55" filter="url(#mist)"/>
+  <ellipse cx="1250" cy="700" rx="560" ry="70" fill="#f2f7f7" opacity="0.5" filter="url(#mist)"/>
+  <!-- Rolling cloud banks, flat-bottomed like the hills illustration -->
+  <g filter="url(#soft)">
+    <path d="M-40 190 C 40 120, 150 95, 250 120 C 320 70, 430 70, 500 125 C 560 105, 630 120, 660 190 Z" fill="#e9f2f4" opacity="0.9"/>
+    <path d="M330 200 C 400 140, 500 125, 590 150 C 650 105, 760 100, 830 150 C 880 135, 940 150, 980 200 Z" fill="#ffffff" opacity="0.85"/>
+    <path d="M1080 120 C 1150 80, 1230 75, 1290 100 C 1350 60, 1450 60, 1520 100 C 1570 90, 1620 100, 1660 130 L 1660 150 L 1050 150 Z" fill="#ffffff" opacity="0.7"/>
+    <path d="M1180 560 C 1240 520, 1310 515, 1360 535 C 1410 500, 1500 500, 1550 540 C 1590 530, 1630 545, 1660 575 L 1150 575 Z" fill="#ffffff" opacity="0.6"/>
+    <path d="M-40 820 C 30 780, 110 770, 170 790 C 230 750, 330 755, 380 795 C 420 785, 470 800, 500 830 L -40 830 Z" fill="#ffffff" opacity="0.55"/>
+  </g>
+</svg>
