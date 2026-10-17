@@ -87,7 +87,8 @@ html[data-contrast="high"] {
 /* ------------------------------------------------------------------ */
 html {
   /* Everything is in rem, so this scales the whole page, not just text. */
-  font-size: calc(18px * var(--text-scale));
+  /* 16px is the usual default body size on the web; the steps scale from it. */
+  font-size: calc(16px * var(--text-scale));
   /* Keep focused elements and anchor targets clear of the sticky header. */
   scroll-padding-top: calc(var(--sticky-header-h, 0px) + 0.75rem);
 }

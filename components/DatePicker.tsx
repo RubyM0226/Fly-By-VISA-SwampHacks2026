@@ -3,7 +3,7 @@
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/journey";
-import { ArrowIcon } from "./Icons";
+import { ArrowIcon, ChevronIcon } from "./Icons";
 
 interface Props {
   id: string;
@@ -77,6 +77,17 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
     const tm = target.getUTCMonth();
     moveTo(iso(ty, tm, Math.min(parts(active).d, daysIn(ty, tm))), focus);
   };
+  const jumpTo = (ty: number, tm: number) => moveTo(iso(ty, tm, Math.min(parts(active).d, daysIn(ty, tm))), false);
+
+  // Month and year dropdowns, opened from the month title.
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const minParts = parts(min);
+  const years = Array.from({ length: 5 }, (_, i) => minParts.y + i);
+  const monthNames = Array.from({ length: 12 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2023, i, 1))),
+  );
+  const selectClass =
+    "min-h-12 w-full appearance-none rounded-xl border-2 border-line-strong bg-surface py-2 pl-3 pr-9 text-lg font-semibold text-ink hover:bg-accent-soft";
 
   const monthTitle = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(
     new Date(Date.UTC(y, m, 1)),
@@ -136,9 +147,19 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
         >
           <ArrowIcon className="h-6 w-6 rotate-180" />
         </button>
-        <p id={`${id}-month`} aria-live="polite" className="text-xl font-bold">
-          {monthTitle}
-        </p>
+        <button
+          type="button"
+          onClick={() => setPickerOpen((o) => !o)}
+          aria-expanded={pickerOpen}
+          aria-controls={`${id}-pick`}
+          className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 py-1 text-xl font-bold hover:bg-accent-soft"
+        >
+          <span id={`${id}-month`} aria-live="polite">
+            {monthTitle}
+          </span>
+          <span className="sr-only">, {t("start.chooseMonthYear")}</span>
+          <ChevronIcon className={`h-5 w-5 ${pickerOpen ? "rotate-180" : ""}`} />
+        </button>
         <button
           type="button"
           onClick={() => moveMonths(1, false)}
@@ -148,6 +169,37 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
           <ArrowIcon className="h-6 w-6" />
         </button>
       </div>
+
+      {pickerOpen && (
+        <div id={`${id}-pick`} className="mb-3 grid grid-cols-2 gap-2">
+          <label className="space-y-1">
+            <span className="block text-sm font-bold text-muted">{t("start.monthLabel")}</span>
+            <span className="relative block">
+              <select value={m} onChange={(e) => jumpTo(y, Number(e.target.value))} className={selectClass}>
+                {monthNames.map((name, i) => (
+                  <option key={name} value={i} disabled={y === minParts.y && i < minParts.m}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              <ChevronIcon className="pointer-events-none absolute right-2.5 top-1/2 h-5 w-5 -translate-y-1/2" />
+            </span>
+          </label>
+          <label className="space-y-1">
+            <span className="block text-sm font-bold text-muted">{t("start.yearLabel")}</span>
+            <span className="relative block">
+              <select value={y} onChange={(e) => jumpTo(Number(e.target.value), m)} className={selectClass}>
+                {years.map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+              <ChevronIcon className="pointer-events-none absolute right-2.5 top-1/2 h-5 w-5 -translate-y-1/2" />
+            </span>
+          </label>
+        </div>
+      )}
 
       <div ref={gridRef} role="grid" aria-labelledby={`${id}-month`} onKeyDown={onKeyDown} className="space-y-1">
         <div role="row" className="grid grid-cols-7 gap-1">

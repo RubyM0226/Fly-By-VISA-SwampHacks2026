@@ -9,6 +9,7 @@ import { SettingsSync } from "@/components/SettingsSync";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
+import { SideNav } from "@/components/SideNav";
 
 export const metadata: Metadata = {
   title: "FlyByVisa — your step-by-step path to the U.S.",
@@ -27,10 +28,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SettingsSync />
         <SkipLink />
         <Header />
-        <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 outline-none">
-          {children}
-        </main>
-        <Footer />
+        {/* Nav on the left (bottom bar on phones); the page and footer sit beside it. */}
+        <div className="flex flex-1">
+          <SideNav />
+          <div className="@container flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
+            <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 outline-none">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </div>
       </body>
     </html>
   );

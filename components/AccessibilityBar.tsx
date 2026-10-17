@@ -4,9 +4,8 @@ import { useRef, useState } from "react";
 import { DEFAULT_SETTINGS, settingsStore, useSettings, type Settings } from "@/lib/settings";
 import { tripStore } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
-import { ChevronIcon, GearIcon } from "./Icons";
+import { ChevronIcon, GearIcon, MinusIcon, PlusIcon } from "./Icons";
 import { LanguageSelect } from "./LanguageSelect";
-import { SpeakButton } from "./SpeakButton";
 
 function Segmented<V extends number>({
   label,
@@ -91,8 +90,49 @@ const SWITCHES: { key: keyof Settings; label: UiKey }[] = [
   { key: "showDefinitions", label: "a11y.definitions" },
 ];
 
-/** Language, read aloud and text size up front; everything else under "More". */
-export function AccessibilityBar() {
+const SIZE_LABELS: UiKey[] = ["a11y.size0", "a11y.size1", "a11y.size2", "a11y.size3"];
+const MAX_SIZE = SIZE_LABELS.length - 1;
+
+/** − A +: one step smaller or bigger, same four sizes as before. */
+function TextSizeControl({ value, onChange }: { value: Settings["textSize"]; onChange: (v: Settings["textSize"]) => void }) {
+  const { t } = useT();
+  const step = "inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface";
+  return (
+    <div role="group" aria-label={t("a11y.textSize")} className="inline-flex items-center gap-1">
+      <button
+        type="button"
+        onClick={() => onChange((value - 1) as Settings["textSize"])}
+        disabled={value === 0}
+        aria-label={t("a11y.smaller")}
+        className={step}
+      >
+        <MinusIcon className="h-5 w-5" />
+      </button>
+      <span aria-hidden="true" className="w-8 text-center text-xl font-bold">
+        A
+      </span>
+      <button
+        type="button"
+        onClick={() => onChange((value + 1) as Settings["textSize"])}
+        disabled={value === MAX_SIZE}
+        aria-label={t("a11y.bigger")}
+        className={step}
+      >
+        <PlusIcon className="h-5 w-5" />
+      </button>
+      {/* Says the new size after each press. */}
+      <span className="sr-only" aria-live="polite">
+        {t(SIZE_LABELS[value])}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The top row: logo at the far left, language and text size in the middle,
+ * "More" at the far right. The rest of the settings open under "More".
+ */
+export function AccessibilityBar({ start }: { start?: React.ReactNode }) {
   const { t } = useT();
   const [settings, update] = useSettings();
   const [open, setOpen] = useState(false);
@@ -109,29 +149,20 @@ export function AccessibilityBar() {
         }
       }}
     >
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-3 py-2 sm:px-6">
-        <LanguageSelect />
-        <SpeakButton
-          ownerId="page"
-          label={t("nav.readAloud")}
-          getText={() => document.getElementById("main-content")?.innerText ?? ""}
-        />
-        <div className="flex items-center gap-2">
-          <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
-            {t("a11y.textSize")}
-          </span>
-          <Segmented
-            label={t("a11y.textSize")}
-            value={settings.textSize}
-            onChange={(v) => update({ textSize: v })}
-            className="inline-flex gap-1"
-            options={[
-              { value: 0, text: "A", ariaLabel: t("a11y.size0") },
-              { value: 1, text: "A+", ariaLabel: t("a11y.size1") },
-              { value: 2, text: "A++", ariaLabel: t("a11y.size2") },
-              { value: 3, text: "A+++", ariaLabel: t("a11y.size3") },
-            ]}
-          />
+      {/* Phones: logo and More on the first line, the controls wrap below them. */}
+      <div className="flex flex-wrap items-center gap-2 px-3 py-2 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
+        <div className="order-1 md:justify-self-start">{start}</div>
+        <div className="order-3 flex w-full flex-wrap items-center gap-2 md:order-2 md:w-auto md:justify-center">
+          <LanguageSelect />
+          <div className="flex items-center gap-2">
+            <span aria-hidden="true" className="hidden text-sm font-semibold text-muted sm:inline">
+              {t("a11y.textSize")}
+            </span>
+            <TextSizeControl
+              value={settings.textSize}
+              onChange={(v) => update({ textSize: v })}
+            />
+          </div>
         </div>
         <button
           ref={moreButton}
@@ -139,7 +170,7 @@ export function AccessibilityBar() {
           aria-expanded={open}
           aria-controls="a11y-more"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto inline-flex min-h-12 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3"
+          className="order-2 ml-auto inline-flex min-h-12 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3 md:order-3 md:justify-self-end"
         >
           <GearIcon className="h-5 w-5" />
           <span>{t("a11y.more")}</span>
