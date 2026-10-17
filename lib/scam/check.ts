@@ -138,4 +138,5 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
 export const OFFICIAL_LINKS: { label: Record<Lang, string>; url: string }[] = [
   { label: { en: "Visa fraud warning (U.S. State Department)", hi: "वीज़ा धोखाधड़ी की चेतावनी (अमेरिकी विदेश विभाग)" }, url: LINKS.fraudWarning },
   { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+  { label: { en: "Visitor visa (official page)", hi: "आगंतुक वीज़ा (आधिकारिक पृष्ठ)" }, url: LINKS.visitorVisa },
 ];
