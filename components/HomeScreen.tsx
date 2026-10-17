@@ -13,8 +13,8 @@ import { PlaceSelect } from "./PlaceSelect";
 
 // Globe zoom steps; 1 is the globe's own framing. Starts one step in so the
 // globe fills its space.
-const ZOOM_LEVELS = [0.8, 1, 1.25, 1.5, 1.75, 2];
-const DEFAULT_ZOOM = 2;
+export const ZOOM_LEVELS = [0.8, 1, 1.25, 1.5, 1.75, 2];
+export const DEFAULT_ZOOM = 2;
 
 // aria-disabled, not disabled, so keyboard focus stays on the button at the limit.
 const zoomButton =

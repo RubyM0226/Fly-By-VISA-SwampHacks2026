@@ -37,6 +37,10 @@ export function SideNav() {
   const pathname = usePathname();
   const user = useProfile();
 
+  // The landing page has no nav. Keep its width from tablets up, so the
+  // landing globe sits where the country picker's globe does.
+  if (pathname === "/") return <div aria-hidden="true" className="hidden shrink-0 md:block md:w-56 lg:w-1/4" />;
+
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   const item = (href: string, label: UiKey, Icon: IconType) => (
