@@ -1,15 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
-import { useTrip, tripStore } from "@/lib/trip";
+import { useTrip, tripStore, type Trip } from "@/lib/trip";
 import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
-import { MyDocuments } from "./MyDocuments";
+import { DocumentIcon } from "./Icons";
 
 export function MyPlanScreen() {
   const { t, lang } = useT();
@@ -195,8 +196,17 @@ export function MyPlanScreen() {
             )}
           </div>
 
-          {/* Private file uploads (Vercel Blob) */}
-          <MyDocuments />
+          {/* Private file uploads now live on the Documents tab. */}
+          <div className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-6">
+            <p className="text-lg">{t("myPlan.filesMoved")}</p>
+            <Link
+              href="/documents"
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
+            >
+              <DocumentIcon className="h-6 w-6 shrink-0" />
+              {t("journey.goToDocuments")}
+            </Link>
+          </div>
 
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
@@ -205,8 +215,8 @@ export function MyPlanScreen() {
             onClick={() => {
               // Wipe the browser's memory so the next user starts fresh
               tripStore.set({ 
-                from: undefined as any, 
-                to: undefined as any, 
+                from: undefined as unknown as Trip["from"], 
+                to: undefined as unknown as Trip["to"], 
                 arrival: "", 
                 stayMonths: 1, 
                 done: {} 
