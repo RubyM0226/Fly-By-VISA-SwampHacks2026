@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { getUserJourney, updateJourneyProgress } from "@/app/actions/journey";
+import { getUserJourney, updateJourneyProgress, claimAnonymousJourney } from "@/app/actions/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { CONTENT_LAST_CHECKED } from "@/lib/config";
 import { useToday } from "@/lib/clock";
@@ -24,6 +24,9 @@ export function JourneyScreen() {
   const today = useToday();
   const [openStep, setOpenStep] = useState<OpenStep | null>(null);
   
+  // Gatekeeper to prevent React infinite loops
+  const hasSynced = useRef(false);
+  
   // Auth0 User Session
   const { user } = useUser();
 
@@ -34,18 +37,38 @@ export function JourneyScreen() {
     [ready, today, trip.arrival, trip.stayMonths],
   );
 
-  // 1. Fetch from Tiger Data when they log in
+  // 1. Claim anonymous data, then fetch from Tiger Data
   useEffect(() => {
-    if (user) {
-      getUserJourney().then((data) => {
-        if (data && data.stop_status) {
-          // Merge database state into the local UI state
-          tripStore.set({ done: { ...trip.done, ...data.stop_status } });
+    // Only run if they are logged in AND we haven't synced yet
+    if (user?.sub && !hasSynced.current) {
+      hasSynced.current = true; // Lock the gate!
+
+      const syncDatabase = async () => {
+        // Step A: Claim any pre-login progress
+        const tempId = localStorage.getItem("temp_journey_id");
+        if (tempId) {
+          await claimAnonymousJourney(tempId);
+          localStorage.removeItem("temp_journey_id"); // Clean up
         }
-      });
+
+        // Step B: Fetch the user's official data
+        const data = await getUserJourney();
+        if (data) {
+          // Restore their complete profile AND their checkmarks
+          tripStore.set({ 
+            from: data.profile?.from || "IN",
+            to: data.profile?.to || "US",
+            arrival: data.profile?.arrival || "",
+            stayMonths: data.profile?.stayMonths || 1,
+            purpose: data.profile?.purpose || "family",
+            done: data.stop_status || {} 
+          });
+        }
+      };
+
+      syncDatabase();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user?.sub]); // <-- Depend on the string ID, not the object
 
   // 2. Save to Tiger Data when they click a step
   const handleToggleDone = async (id: StepId) => {
@@ -60,7 +83,7 @@ export function JourneyScreen() {
       await updateJourneyProgress(
         stepIndex + 1, 
         id, 
-        isNowDone ? "completed" : "pending" // Or simply delete the key if unchecking
+        isNowDone ? "completed" : "pending"
       );
     }
   };
@@ -116,6 +139,7 @@ export function JourneyScreen() {
         </p>
       </div>
 
+      {/* One sentence, one big button: always a way forward. */}
       <section
         aria-labelledby="next-title"
         className="flex flex-col gap-4 rounded-2xl border-2 border-accent bg-accent-soft p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
@@ -157,7 +181,7 @@ export function JourneyScreen() {
           statusOf={statusOf}
           open={openStep}
           onOpen={setOpenStep}
-          onToggleDone={handleToggleDone} // <-- Replaced with database function
+          onToggleDone={handleToggleDone} 
         />
       </section>
     </div>

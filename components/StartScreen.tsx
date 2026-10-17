@@ -69,8 +69,15 @@ export function StartScreen() {
     setIsSubmitting(true);
 
     try {
-      // Create the row in Tiger Data
-      const res = await createIntakeJourney();
+      // Create the row in Tiger Data WITH the profile data
+      const res = await createIntakeJourney({
+        from: trip.from,
+        to: trip.to,
+        arrival: trip.arrival,
+        stayMonths: trip.stayMonths,
+        purpose: trip.purpose || "family"
+      });
+      
       if (res?.id) {
         // Stash the UUID locally so Auth0 can claim it upon login
         localStorage.setItem("temp_journey_id", res.id);
