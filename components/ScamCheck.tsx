@@ -1,131 +1,61 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
-import { checkMessage, enforceFloor, MAX_MESSAGE_CHARS, OFFICIAL_LINKS, validateMessage, VERDICT_TEXT, type Verdict } from "@/lib/scam";
-import { faqAnswer, MAX_FOLLOW_UPS, rulesOnlyResponse, type ScamCheckResponse, type Source, type Turn } from "@/lib/scam/api";
+import Link from "next/link";
+import { useEffect, useId, useRef, useState } from "react";
+import { enforceFloor, IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_MESSAGE_CHARS, OFFICIAL_LINKS, validateMessage, VERDICT_TEXT, type Verdict } from "@/lib/scam";
+import { MAX_FOLLOW_UPS, rulesOnlyResponse, type ScamCheckResponse, type Source, type Turn } from "@/lib/scam/api";
 import { EXAMPLES, useScamT, type ScamKey } from "@/lib/scam/strings";
 import { plainText, RichText } from "./Glossary";
 import { SpeakButton } from "./SpeakButton";
-import { AlertIcon, CloseIcon, ExternalIcon } from "./Icons";
+import { AlertIcon, ExternalIcon, QuestionIcon, ShieldIcon } from "./Icons";
 
-// Scam Check, in the left nav: paste a message (or ask about a form) and get
-// a plain verdict, reasons, next steps and official links.
+// Scam Check, its own page: paste a message (or add a screenshot of it) and
+// get a plain verdict, reasons, next steps and official links. It only checks
+// for scams; questions go to Information Lookup.
 //
 // PRIVACY: everything lives in this component's memory. Nothing goes to
-// localStorage, analytics or logs. "Start over" (or a reload) clears it.
+// localStorage, analytics or logs. The screenshot is sent to the server to
+// read its text and is never saved. "Start over" (or a reload) clears it.
 
-const REQUEST_TIMEOUT_MS = 25_000;
+const REQUEST_TIMEOUT_MS = 40_000;
 
 type IconProps = { className?: string };
-const ShieldIcon = ({ className }: IconProps) => (
-  <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden focusable={false} className={className}>
-    <path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z" />
-    <path d="M12 8v4M12 15.5v.01" />
-  </svg>
-);
-const QuestionIcon = ({ className }: IconProps) => (
-  <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden focusable={false} className={className}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5v.7M12 17v.01" />
-  </svg>
-);
 
-// The panel is narrow and scrolls, so a floating glossary tooltip would be
-// cut off. Show the meaning under the word instead.
+// Glossary tooltips would float out of a narrow column. Show the meaning under the word instead.
 const INLINE_TOOLTIPS = "[&_[role=tooltip]]:static [&_[role=tooltip]]:mt-1 [&_[role=tooltip]]:block [&_[role=tooltip]]:w-auto";
 
-// Tablets and up show the panel in the nav; phones open it from the icon rail.
-const WIDE = "(min-width: 768px)";
-function useWide(): boolean {
-  return useSyncExternalStore(
-    (cb) => {
-      const mq = window.matchMedia(WIDE);
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => window.matchMedia(WIDE).matches,
-    () => false,
-  );
-}
-
-/** The Scam Check entry in the side nav: inline from tablets up, a dialog on phones. */
-export function ScamCheckNav() {
-  const { st } = useScamT();
-  const wide = useWide();
+/** The Scam Check page. Open to everyone, signed in or not. */
+export function ScamCheckScreen() {
   const state = useScamState();
-  const dialog = useRef<HTMLDialogElement>(null);
-  const [open, setOpen] = useState(false);
-
-  // Close the phone dialog if the screen grows into the inline layout.
-  useEffect(() => {
-    if (wide && dialog.current?.open) dialog.current.close();
-  }, [wide]);
-
-  if (wide) {
-    return (
-      <div className="flex min-h-40 flex-1 flex-col border-t-2 border-line">
-        {/* Scrolls on its own, so the nav links above never move. */}
-        {/* relative: keeps sr-only text from stretching the nav's own scroll area. */}
-        <div data-scam-scroll className={`relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-3 ${INLINE_TOOLTIPS}`}>
-          <ScamPanel state={state} headingLevel="h2" />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className="p-[8px] pt-0">
-        <button
-          type="button"
-          title={st("title")}
-          aria-haspopup="dialog"
-          aria-expanded={open}
-          onClick={() => {
-            dialog.current?.showModal();
-            setOpen(true);
-          }}
-          className="flex min-h-[48px] w-full items-center justify-center rounded-xl p-[8px] text-ink hover:bg-accent-soft"
-        >
-          <ShieldIcon className="h-6 w-6 shrink-0" />
-          <span className="sr-only">{st("open")}</span>
-        </button>
-      </div>
-      <dialog
-        ref={dialog}
-        aria-label={st("title")}
-        onClose={() => setOpen(false)}
-        className="m-0 h-dvh max-h-none w-full max-w-none bg-surface p-0 text-ink backdrop:bg-black/50"
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex shrink-0 justify-end border-b-2 border-line p-2">
-            <button
-              type="button"
-              onClick={() => dialog.current?.close()}
-              aria-label={st("close")}
-              className="inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong hover:bg-accent-soft"
-            >
-              <CloseIcon className="h-6 w-6" />
-            </button>
-          </div>
-          <div data-scam-scroll className={`relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 ${INLINE_TOOLTIPS}`}>
-            {open && <ScamPanel state={state} headingLevel="h1" />}
-          </div>
-        </div>
-      </dialog>
-    </>
+    <div data-hills-peek className={`mx-auto max-w-3xl pb-6 ${INLINE_TOOLTIPS}`}>
+      <ScamPanel state={state} />
+    </div>
   );
 }
 
 interface Result {
   text: string;
+  /** True when a screenshot was checked. */
+  image: boolean;
   response: ScamCheckResponse;
 }
+
+// Server error code -> message.
+const IMAGE_ERRORS: Record<string, ScamKey> = {
+  "image-unavailable": "imageOff",
+  "no-text": "imageNoText",
+  "image-too-large": "imageBig",
+  "bad-image": "imageBad",
+  "rate-limited": "imageLimit",
+  "image-failed": "imageFailed",
+};
 
 /** All Scam Check state. Kept in memory only. */
 function useScamState() {
   const { st, lang } = useScamT();
   const [text, setText] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [followUpBlocked, setFollowUpBlocked] = useState(false);
@@ -134,50 +64,65 @@ function useScamState() {
   const [announce, setAnnounce] = useState("");
   const [exampleIndex, setExampleIndex] = useState(0);
 
-  async function post(body: object): Promise<ScamCheckResponse | null> {
+  /** `error` is the server's code, or null when it could not be reached. */
+  async function post(body: object | FormData): Promise<{ response: ScamCheckResponse } | { error: string | null }> {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS);
     try {
+      const form = body instanceof FormData;
       const res = await fetch("/api/scam-check", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        headers: form ? undefined : { "Content-Type": "application/json" },
+        body: form ? body : JSON.stringify(body),
         signal: ctrl.signal,
       });
-      if (!res.ok) return null;
-      return (await res.json()) as ScamCheckResponse;
+      if (!res.ok) return { error: ((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? "" };
+      return { response: (await res.json()) as ScamCheckResponse };
     } catch {
-      return null;
+      return { error: null };
     } finally {
       clearTimeout(timer);
     }
   }
 
+  function fail(msg: string) {
+    setError(msg);
+    setAnnounce(msg);
+    setBusy(false);
+  }
+
   async function check() {
     setError(null);
-    const valid = validateMessage(text);
-    if (!valid.ok) {
-      const msg = valid.error === "too-long" ? st("tooLong", { max: MAX_MESSAGE_CHARS }) : st("empty");
-      setError(msg);
-      setAnnounce(msg);
-      return;
-    }
+    const hasText = text.trim().length > 0;
+    const valid = hasText ? validateMessage(text) : null;
+    if (valid && !valid.ok) return fail(valid.error === "too-long" ? st("tooLong", { max: MAX_MESSAGE_CHARS }) : st("empty"));
+    if (!valid && !image) return fail(st("empty"));
+    if (image && !(IMAGE_TYPES as readonly string[]).includes(image.type)) return fail(st("imageBad"));
+    if (image && image.size > MAX_IMAGE_BYTES) return fail(st("imageBig"));
+
     setBusy(true);
     setAnnounce(st("checking"));
-    const fromServer = await post({ text: valid.text, lang, history: [] });
+    const typed = valid?.ok ? valid.text : "";
+    const form = new FormData();
+    if (image) {
+      form.set("text", typed);
+      form.set("lang", lang);
+      form.set("image", image);
+    }
+    const posted = await post(image ? form : { text: typed, lang, history: [] });
+
+    let response: ScamCheckResponse;
+    if ("response" in posted) response = posted.response;
+    else if (image) return fail(st(posted.error === "too-long" ? "tooLong" : (IMAGE_ERRORS[posted.error ?? ""] ?? "imageFailed"), { max: MAX_MESSAGE_CHARS }));
     // Offline or server error: the rules run right here in the browser.
-    const response = fromServer ?? rulesOnlyResponse(valid.text, "offline");
+    else response = rulesOnlyResponse(typed, "offline");
     // Never trust a weaker verdict than our own rules give.
-    response.verdict = enforceFloor(checkMessage(valid.text).floor, response.verdict);
-    setResult({ text: valid.text, response });
+    response.verdict = enforceFloor(response.rules.floor, response.verdict);
+    setResult({ text: typed, image: Boolean(image), response });
     setTurns([]);
     setFollowUpBlocked(false);
     setBusy(false);
-    setAnnounce(
-      response.kind === "message"
-        ? st("announce", { verdict: VERDICT_TEXT[response.verdict].label[lang] })
-        : st("announceQuestion"),
-    );
+    setAnnounce(response.kind === "message" ? st("announce", { verdict: VERDICT_TEXT[response.verdict].label[lang] }) : st("question"));
   }
 
   async function askFollowUp(question: string) {
@@ -186,19 +131,21 @@ function useScamState() {
     if (!valid.ok) return;
     setBusy(true);
     setAnnounce(st("checking"));
-    const res = await post({ text: result.text, lang, history: turns, followUp: valid.text });
+    const posted = await post({ text: result.text, lang, history: turns, followUp: valid.text });
     setBusy(false);
-    if (!res?.followUpAnswer) {
+    const answer = "response" in posted ? posted.response.followUpAnswer : undefined;
+    if (!answer) {
       setFollowUpBlocked(true);
       setAnnounce(st("followNeedsAi"));
       return;
     }
-    setTurns((t) => [...t, { question: valid.text, answer: res.followUpAnswer! }]);
+    setTurns((t) => [...t, { question: valid.text, answer }]);
     setAnnounce(st("announceQuestion"));
   }
 
   function startOver() {
     setText("");
+    setImage(null);
     setResult(null);
     setTurns([]);
     setFollowUpBlocked(false);
@@ -213,37 +160,33 @@ function useScamState() {
     setError(null);
   }
 
-  return { text, setText, result, turns, followUpBlocked, busy, error, announce, check, askFollowUp, startOver, tryExample };
+  return { text, setText, image, setImage, result, turns, followUpBlocked, busy, error, announce, check, askFollowUp, startOver, tryExample };
 }
 
 type ScamState = ReturnType<typeof useScamState>;
 
-function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h1" | "h2" }) {
+function ScamPanel({ state }: { state: ScamState }) {
   const { st } = useScamT();
   const ids = useId();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
-  const Heading = headingLevel;
-  const { text, result, busy, error } = state;
+  const { text, image, result, busy, error } = state;
 
-  // Bring a new result into view by scrolling the panel only (scrollIntoView
-  // would also scroll the nav and the page).
+  // Bring a new result into view.
   useEffect(() => {
-    const el = resultRef.current;
-    const scroller = el?.closest<HTMLElement>("[data-scam-scroll]");
-    if (!el || !scroller) return;
-    scroller.scrollTop += el.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 8;
+    resultRef.current?.scrollIntoView({ block: "start" });
   }, [result]);
 
   const nearLimit = text.length > MAX_MESSAGE_CHARS * 0.8;
 
   return (
-    <section aria-labelledby={`${ids}-title`} className="space-y-3">
-      <Heading id={`${ids}-title`} className="flex items-center gap-2 text-xl font-bold">
-        <ShieldIcon className="h-6 w-6 shrink-0" />
+    <section aria-labelledby={`${ids}-title`} className="space-y-4">
+      <h1 id={`${ids}-title`} className="flex items-center gap-2 text-3xl font-bold">
+        <ShieldIcon className="h-8 w-8 shrink-0" />
         {st("title")}
-      </Heading>
-      <p className="text-base">{st("intro")}</p>
+      </h1>
+      <p className="text-lg">{st("intro")}</p>
 
       <form
         onSubmit={(e) => {
@@ -252,7 +195,7 @@ function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h
         }}
         className="space-y-3"
       >
-        <label htmlFor={`${ids}-input`} className="block text-base font-bold">
+        <label htmlFor={`${ids}-input`} className="block text-lg font-bold">
           {st("inputLabel")}
         </label>
         <textarea
@@ -261,27 +204,61 @@ function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h
           value={text}
           onChange={(e) => state.setText(e.target.value)}
           placeholder={st("placeholder")}
-          rows={5}
+          rows={6}
           maxLength={MAX_MESSAGE_CHARS}
           aria-describedby={`${ids}-privacy${error ? ` ${ids}-error` : ""}${nearLimit ? ` ${ids}-count` : ""}`}
           aria-invalid={error ? true : undefined}
-          className="block w-full resize-y rounded-xl border-2 border-line-strong bg-surface p-3 text-base"
+          className="block w-full resize-y rounded-xl border-2 border-line-strong bg-surface p-3 text-lg"
         />
         {nearLimit && (
           <p id={`${ids}-count`} className="text-sm text-muted">
             {st("count", { n: text.length, max: MAX_MESSAGE_CHARS })}
           </p>
         )}
+
+        <div className="space-y-1">
+          <label htmlFor={`${ids}-image`} className="block text-lg font-bold">
+            {st("imageLabel")}
+          </label>
+          <p id={`${ids}-image-hint`} className="text-base text-muted">
+            {st("imageHint")}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* A real file input stays keyboard- and screen-reader-friendly. */}
+            <input
+              id={`${ids}-image`}
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              aria-describedby={`${ids}-image-hint`}
+              onChange={(e) => state.setImage(e.target.files?.[0] ?? null)}
+              className="min-h-12 max-w-full text-base file:mr-3 file:min-h-12 file:rounded-xl file:border-2 file:border-line-strong file:bg-surface file:px-4 file:py-2 file:font-semibold hover:file:bg-accent-soft"
+            />
+            {image && (
+              <button
+                type="button"
+                onClick={() => {
+                  state.setImage(null);
+                  if (fileRef.current) fileRef.current.value = "";
+                }}
+                className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+              >
+                {st("imageRemove")}
+              </button>
+            )}
+          </div>
+        </div>
+
         {error && (
-          <p id={`${ids}-error`} className="rounded-xl border-2 border-danger bg-danger-soft p-3 text-base font-semibold text-danger">
+          <p id={`${ids}-error`} role="alert" className="rounded-xl border-2 border-danger bg-danger-soft p-3 text-base font-semibold text-danger">
             {error}
           </p>
         )}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="submit"
             disabled={busy}
-            className="min-h-12 w-full rounded-xl bg-accent px-4 py-2 text-base font-bold text-accent-ink hover:opacity-90 disabled:opacity-60"
+            className="min-h-12 rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink hover:opacity-90 disabled:opacity-60 sm:flex-1"
           >
             {busy && !result ? st("checking") : st("check")}
           </button>
@@ -291,12 +268,12 @@ function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h
               state.tryExample();
               inputRef.current?.focus();
             }}
-            className="min-h-12 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-6 py-2 text-lg font-semibold hover:bg-accent-soft sm:flex-1"
           >
             {st("example")}
           </button>
         </div>
-        <p id={`${ids}-privacy`} className="text-sm text-muted">
+        <p id={`${ids}-privacy`} className="text-base text-muted">
           {st("privacy")}
         </p>
       </form>
@@ -307,12 +284,8 @@ function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h
       </p>
 
       {result && (
-        <div ref={resultRef} className="space-y-4">
-          {result.response.kind === "message" ? (
-            <MessageResult result={result} />
-          ) : (
-            <QuestionResult result={result} />
-          )}
+        <div ref={resultRef} className="scroll-mt-24 space-y-4">
+          {result.response.kind === "message" ? <MessageResult result={result} /> : <QuestionResult />}
           <FollowUps state={state} />
           <button
             type="button"
@@ -320,7 +293,7 @@ function ScamPanel({ state, headingLevel }: { state: ScamState; headingLevel: "h
               state.startOver();
               inputRef.current?.focus();
             }}
-            className="min-h-12 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+            className="min-h-12 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft sm:w-auto"
           >
             {st("startOver")}
           </button>
@@ -430,34 +403,19 @@ function MessageResult({ result }: { result: Result }) {
   );
 }
 
-function QuestionResult({ result }: { result: Result }) {
-  const { st, lang } = useScamT();
-  const ids = useId();
-  const { response } = result;
-  const faq = response.ai ? null : faqAnswer(result.text);
-  const answer = response.ai?.summary || faq?.answer[lang] || "";
-  const sources: Source[] = response.ai?.sources.length
-    ? response.ai.sources
-    : faq
-      ? [{ title: faq.source.label[lang], url: faq.source.url }]
-      : [];
-
+/** Not a message to check: point to Information Lookup. */
+function QuestionResult() {
+  const { st } = useScamT();
   return (
-    <>
-      <div className="space-y-2 rounded-2xl border-2 border-accent bg-surface p-3">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 id={`${ids}-q`} className="flex min-w-[9rem] flex-1 items-center gap-2 text-xl font-bold">
-            <QuestionIcon className="h-7 w-7 shrink-0" />
-            {st("aboutQuestion")}
-          </h3>
-          <SpeakButton ownerId={`${ids}-answer`} getText={() => plainText(answer || st("noAnswer"))} />
-        </div>
-        <p className="text-base">{answer ? <RichText text={answer} /> : st("noAnswer")}</p>
-        {response.ai?.summary && <p className="text-sm text-muted">{st("aiExplains")}</p>}
-      </div>
-      <OfficialLinks extra={sources} />
-      <ResultNote result={result} />
-    </>
+    <div className="space-y-2 rounded-2xl border-2 border-accent bg-surface p-4">
+      <p className="flex items-start gap-2 text-lg">
+        <QuestionIcon className="mt-0.5 h-7 w-7 shrink-0" />
+        {st("question")}
+      </p>
+      <Link href="/information-lookup" className="inline-flex min-h-12 items-center font-semibold text-accent underline">
+        {st("questionLink")}
+      </Link>
+    </div>
   );
 }
 
@@ -504,7 +462,8 @@ function FollowUps({ state }: { state: ScamState }) {
   const ids = useId();
   const [question, setQuestion] = useState("");
   const { result, turns, followUpBlocked, busy } = state;
-  if (!result) return null;
+  // Not for screenshots: a follow-up would not have the picture.
+  if (!result || result.image) return null;
 
   // Follow-ups need the AI helper; without it, say so once.
   const aiAvailable = result.response.ai !== null && !followUpBlocked;

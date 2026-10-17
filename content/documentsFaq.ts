@@ -2,7 +2,7 @@ import { LINKS } from "@/lib/config";
 import type { Lang } from "@/lib/settings";
 
 // Common document questions for the India -> U.S. visitor (B-2) visa, for the
-// Important Documents page. Keep answers short and plain: an elderly reader
+// Information Lookup page. Keep answers short and plain: an elderly reader
 // in India, need-to-know only. Facts match content/steps.ts; every answer
 // links to an official page. Hindi is a first draft: have a fluent reader
 // check it. Use [[term|Shown text]] for glossary chips.

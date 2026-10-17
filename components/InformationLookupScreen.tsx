@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { DOC_FAQ, searchDocs, type DocAnswer } from "@/content/documentsFaq";
+import type { AskAnswer, AskTurn } from "@/lib/ask";
 import type { CorpusHit } from "@/lib/corpusSearch";
 import { useT } from "@/lib/i18n";
-import { RichText } from "./Glossary";
+import { plainText, RichText } from "./Glossary";
+import { SpeakButton } from "./SpeakButton";
 import { CloseIcon, ExternalIcon } from "./Icons";
 
 const EXAMPLES: Record<"en" | "hi", string[]> = {
@@ -12,12 +14,45 @@ const EXAMPLES: Record<"en" | "hi", string[]> = {
   hi: ["DS-160", "पासपोर्ट फ़ोटो", "शुल्क रसीद", "निमंत्रण पत्र"],
 };
 
-/** Blurb, search box, then one short answer with its official source. */
-export function DocumentsScreen() {
+type Turn = AskTurn & { sources: AskAnswer["sources"] };
+const MAX_TURNS = 3;
+
+/**
+ * Information Lookup: one box for a question or a document name. Gives one
+ * plain answer from the official pages (AI) with its source, then follow-ups
+ * in the same place. Without the AI helper it shows the local answers.
+ * Kept in memory only.
+ */
+export function InformationLookupScreen() {
   const { t, lang } = useT();
   const [query, setQuery] = useState("");
   // A question picked from a list shows directly, without typing.
   const [picked, setPicked] = useState<DocAnswer | null>(null);
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [asking, setAsking] = useState(false);
+  const [aiOff, setAiOff] = useState(false);
+
+  async function ask() {
+    const question = query.trim();
+    if (!question || asking) return;
+    setAsking(true);
+    setAiOff(false);
+    let result: AskAnswer | null = null;
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, lang, history: turns.slice(-MAX_TURNS).map(({ question, answer }) => ({ question, answer })) }),
+      });
+      if (res.ok) result = ((await res.json()) as { result: AskAnswer | null }).result;
+    } catch {
+      // Offline: the local answers below still work.
+    }
+    setAsking(false);
+    if (!result) return setAiOff(true);
+    setTurns((t) => [...t, { question, ...result }]);
+    pickExample("");
+  }
 
   const results = useMemo(() => searchDocs(query), [query]);
   const answer = picked ?? results[0] ?? null;
@@ -29,20 +64,29 @@ export function DocumentsScreen() {
   const pickExample = (text: string) => {
     setPicked(null);
     setQuery(text);
+    setAiOff(false);
   };
 
   return (
     <div data-hills-peek className="space-y-6 pb-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
+        <h1 className="text-3xl font-bold">{t("nav.infoLookup")}</h1>
         <p className="text-lg">{t("docs.blurb")}</p>
       </div>
 
-      <form role="search" onSubmit={(e) => e.preventDefault()} className="space-y-3">
+      <form
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void ask();
+        }}
+        className="space-y-3"
+      >
         <label htmlFor="doc-search" className="block text-lg font-bold">
           {t("docs.searchLabel")}
         </label>
-        <div className="relative">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="relative flex-1">
           <input
             id="doc-search"
             type="search"
@@ -65,6 +109,14 @@ export function DocumentsScreen() {
               <CloseIcon className="h-5 w-5" />
             </button>
           )}
+          </div>
+          <button
+            type="submit"
+            disabled={asking || !query.trim()}
+            className="min-h-14 rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink hover:opacity-90 disabled:opacity-60"
+          >
+            {asking ? t("docs.asking") : t("docs.ask")}
+          </button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-base text-muted">{t("docs.try")}</span>
@@ -80,6 +132,50 @@ export function DocumentsScreen() {
           ))}
         </div>
       </form>
+
+      {turns.length > 0 && (
+        <section aria-live="polite" className="space-y-4">
+          {turns.map((turn, i) => (
+            <article key={i} className="space-y-3 rounded-2xl border-2 border-accent bg-surface p-5">
+              <p className="text-base">
+                <span className="font-bold text-muted">{t("docs.you")}: </span>
+                {turn.question}
+              </p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-lg">
+                  <RichText text={turn.answer} />
+                </p>
+                <SpeakButton ownerId={`ask-${i}`} getText={() => plainText(turn.answer)} />
+              </div>
+              <p className="text-sm text-muted">{t("docs.aiNote")}</p>
+              {turn.sources.length > 0 && (
+                <ul className="space-y-1">
+                  {turn.sources.map((s) => (
+                    <li key={s.url}>
+                      <span className="text-base text-muted">{t("docs.source")} </span>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center gap-1 font-semibold text-accent underline">
+                        <span lang="en">{s.title}</span>
+                        <ExternalIcon className="h-4 w-4" />
+                        <span className="sr-only">{t("journey.opensNewTab")}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+          <p className="text-base text-muted">{t("docs.followHint")}</p>
+          <button
+            type="button"
+            onClick={() => setTurns([])}
+            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+          >
+            {t("docs.start")}
+          </button>
+        </section>
+      )}
+
+      {aiOff && <p className="rounded-xl border-2 border-line bg-surface p-4 text-base text-muted">{t("docs.aiOff")}</p>}
 
       {/* Announces the answer (or "not found") as people type. */}
       <div aria-live="polite" className="space-y-4">

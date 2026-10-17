@@ -1,4 +1,3 @@
-import { searchDocs, type DocAnswer } from "../../content/documentsFaq";
 import type { Lang } from "../settings";
 import { checkMessage } from "./check";
 import { MAX_MESSAGE_CHARS, validateMessage } from "./text";
@@ -20,7 +19,7 @@ export interface Turn {
 }
 
 export interface ScamCheckRequest {
-  /** The pasted message or the question about a form. */
+  /** The pasted message (or the text read from a screenshot). */
   text: string;
   lang: Lang;
   /** Earlier follow-ups, oldest first. */
@@ -29,6 +28,7 @@ export interface ScamCheckRequest {
   followUp?: string;
 }
 
+/** "question": the text asks something instead of being a message; Scam Check points to Information Lookup. */
 export type Kind = "message" | "question";
 
 export interface Source {
@@ -37,7 +37,7 @@ export interface Source {
 }
 
 export interface AiReview {
-  /** Plain-language summary of the verdict, or the answer to the question. */
+  /** Plain-language summary of the verdict. */
   summary: string;
   /** Extra warning signs the rules did not list. */
   reasons: string[];
@@ -103,11 +103,6 @@ export function looksLikeQuestion(text: string, rules: ScamCheckResult): boolean
   const t = text.trim();
   if (t.length > 300) return false;
   return t.endsWith("?") || QUESTION_START.test(t) || /(?<![\p{L}\p{M}])(kya hai|क्या है|matlab|मतलब)/iu.test(t);
-}
-
-/** A matching answer from the Important Documents page, if there is one. */
-export function faqAnswer(text: string): DocAnswer | null {
-  return searchDocs(text)[0] ?? null;
 }
 
 /** The rules-only answer. Used when the AI helper is off or fails, and by the browser when offline. */
