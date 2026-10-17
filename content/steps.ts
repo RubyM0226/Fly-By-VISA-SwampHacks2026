@@ -1,0 +1,354 @@
+import { LINKS } from "@/lib/config";
+import type { StepId } from "@/lib/journey";
+import type { Lang } from "@/lib/settings";
+
+// Step content for the India -> U.S. B-2 visitor visa journey.
+//
+// Sources for the facts: the U.S. State Department visitor visa page
+// (travel.state.gov) unless marked otherwise. Anything marked VERIFY came from
+// non-official guides and must be checked against the official page.
+//
+// Write for an elderly reader in India: need-to-know only, one short sentence
+// per bullet. Write the English first, then Hindi. Hindi is a first draft:
+// have a fluent reader check it. Use [[term|Shown text]] to make a glossary
+// chip (terms are defined in content/glossary.ts).
+
+export interface StepText {
+  title: string;
+  /** What to do, one short sentence per bullet. */
+  what: string[];
+  documents: string[];
+  cost: string;
+  time: string;
+  /** One-line summary, shown in the "Your next step" card. */
+  simple: string;
+}
+
+export interface StepLink {
+  label: Record<Lang, string>;
+  url: string;
+}
+
+export interface StepContent {
+  id: StepId;
+  text: Record<Lang, StepText>;
+  links: StepLink[];
+}
+
+export const STEPS: StepContent[] = [
+  {
+    id: "ready",
+    text: {
+      en: {
+        title: "Get ready",
+        what: [
+          "Check your passport.",
+          "It must still be valid 6 months after you come home.",
+          "Know why you are going.",
+          "Know how long you will stay.",
+        ],
+        documents: ["Your passport", "Your travel dates"],
+        cost: "No fee.",
+        time: "About 1 week",
+        simple: "Make sure your passport will not expire soon. Know why you are going.",
+      },
+      hi: {
+        title: "तैयारी करें",
+        what: [
+          "अपना पासपोर्ट देखें।",
+          "लौटने के 6 महीने बाद तक वह मान्य होना चाहिए।",
+          "जानें कि आप क्यों जा रहे हैं।",
+          "जानें कि आप कितने समय रुकेंगे।",
+        ],
+        documents: ["आपका पासपोर्ट", "यात्रा की तारीखें"],
+        cost: "कोई शुल्क नहीं।",
+        time: "लगभग 1 सप्ताह",
+        simple: "देखिए कि पासपोर्ट जल्दी खत्म न हो रहा हो। जानिए कि आप क्यों जा रहे हैं।",
+      },
+    },
+    links: [
+      {
+        label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" },
+        url: LINKS.visitorVisa,
+      },
+      {
+        label: { en: "Official Visa Wizard", hi: "आधिकारिक वीज़ा विज़ार्ड" },
+        url: LINKS.visaWizard,
+      },
+    ],
+  },
+  {
+    id: "ds160",
+    text: {
+      en: {
+        title: "Fill in the online form",
+        what: [
+          "Fill in the online form [[ds160|DS-160]].",
+          "Answer every question honestly.",
+          "Upload a photo that follows the rules.",
+          "At the end, print the page with the barcode.",
+          "Take this page to your interview.",
+        ],
+        documents: ["Your passport", "Travel and family details", "A digital photo"],
+        cost: "Free. The visa fee is the next step.",
+        time: "A few hours",
+        simple: "Answer every question honestly. Print the confirmation page at the end.",
+      },
+      hi: {
+        title: "ऑनलाइन फ़ॉर्म भरें",
+        what: [
+          "ऑनलाइन फ़ॉर्म [[ds160|DS-160]] भरें।",
+          "हर सवाल का सच्चा जवाब दें।",
+          "नियमों के अनुसार फ़ोटो अपलोड करें।",
+          "अंत में बारकोड वाला पृष्ठ प्रिंट करें।",
+          "यह पृष्ठ इंटरव्यू में ले जाएँ।",
+        ],
+        documents: ["आपका पासपोर्ट", "यात्रा और परिवार की जानकारी", "डिजिटल फ़ोटो"],
+        cost: "मुफ़्त। वीज़ा शुल्क अगले कदम में है।",
+        time: "कुछ घंटे",
+        simple: "हर सवाल का जवाब सच्चाई से दें। अंत में पुष्टि पृष्ठ प्रिंट करें।",
+      },
+    },
+    links: [
+      { label: { en: "Open the official DS-160 form", hi: "आधिकारिक DS-160 फ़ॉर्म खोलें" }, url: LINKS.ds160 },
+      { label: { en: "Official photo rules", hi: "फ़ोटो के आधिकारिक नियम" }, url: LINKS.photoRules },
+    ],
+  },
+  {
+    id: "book",
+    text: {
+      en: {
+        title: "Pay the fee and book your appointments",
+        what: [
+          "Pay the visa fee.",
+          "Then book your interview at a U.S. office in India.",
+          "You may also need to visit a [[vac|VAC]] first, for fingerprints.",
+          "Book as early as you can. The wait is long.",
+          "Follow the U.S. Embassy website. The steps can change.",
+        ],
+        documents: ["[[ds160|DS-160]] confirmation page", "Payment receipt", "Your passport"],
+        cost: "$185. Other fees may apply.",
+        time: "Booking: about 1 day. Waiting for the interview: usually months.",
+        simple: "Pay, then book. Book as early as you can.",
+      },
+      hi: {
+        title: "शुल्क भरें और अपॉइंटमेंट बुक करें",
+        what: [
+          "वीज़ा शुल्क भरें।",
+          "फिर भारत में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
+          "शायद पहले उंगलियों के निशान के लिए [[vac|VAC]] भी जाना पड़े।",
+          "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
+          "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
+        ],
+        documents: ["[[ds160|DS-160]] पुष्टि पृष्ठ", "भुगतान की रसीद", "आपका पासपोर्ट"],
+        cost: "$185। दूसरे शुल्क भी लग सकते हैं।",
+        time: "बुकिंग: लगभग 1 दिन। इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।",
+        simple: "पहले भुगतान करें, फिर बुक करें। जितना जल्दी हो सके बुक करें।",
+      },
+    },
+    // VERIFY: the two-appointment (VAC + interview) flow and the booking portal
+    // for India come from non-official guides that disagree. Confirm on the
+    // embassy page before the demo.
+    links: [
+      { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ" }, url: LINKS.fees },
+      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+      { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय" }, url: LINKS.waitTimes },
+    ],
+  },
+  {
+    id: "documents",
+    text: {
+      en: {
+        title: "Gather your documents",
+        what: [
+          "Collect the papers the officer may ask for.",
+          "Show that your life is in India: family, home or pension.",
+          "Show that you will come home.",
+          "Show how the trip will be paid for.",
+          "A letter from family in the U.S. is not needed.",
+        ],
+        documents: [
+          "Your passport",
+          "[[ds160|DS-160]] confirmation page",
+          "Fee receipt",
+          "Appointment letters",
+          "Proof of your life in India",
+          "Proof of how you will pay",
+          "A simple trip plan",
+        ],
+        cost: "No fee.",
+        time: "1 to 2 weeks",
+        simple: "Gather papers that show your life is in India and that you will go home after the trip.",
+      },
+      hi: {
+        title: "अपने कागज़ात इकट्ठा करें",
+        what: [
+          "अधिकारी जो कागज़ माँग सकते हैं, वे इकट्ठा करें।",
+          "दिखाएँ कि आपका जीवन भारत में है: परिवार, घर या पेंशन।",
+          "दिखाएँ कि आप वापस लौटेंगे।",
+          "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
+          "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
+        ],
+        documents: [
+          "आपका पासपोर्ट",
+          "[[ds160|DS-160]] पुष्टि पृष्ठ",
+          "शुल्क की रसीद",
+          "अपॉइंटमेंट पत्र",
+          "भारत में आपके जीवन का प्रमाण",
+          "खर्च कैसे उठाएँगे, इसका प्रमाण",
+          "यात्रा की सरल योजना",
+        ],
+        cost: "कोई शुल्क नहीं।",
+        time: "1 से 2 सप्ताह",
+        simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
+      },
+    },
+    links: [
+      { label: { en: "What the officer may ask for (official)", hi: "अधिकारी क्या माँग सकते हैं (आधिकारिक)" }, url: LINKS.visitorVisa },
+    ],
+  },
+  {
+    id: "practice",
+    text: {
+      en: {
+        title: "Practice for the interview",
+        what: [
+          "Practice your answers out loud.",
+          "Who will you visit?",
+          "How long will you stay?",
+          "Why will you come home?",
+          "Answer honestly, in your own words. Keep it short.",
+        ],
+        documents: ["Your trip plan", "Your papers from the last step"],
+        cost: "Free.",
+        time: "A few evenings",
+        simple: "Practice saying your answers out loud.",
+      },
+      hi: {
+        title: "इंटरव्यू की तैयारी करें",
+        what: [
+          "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
+          "आप किससे मिलेंगे?",
+          "आप कितने समय रुकेंगे?",
+          "आप घर क्यों लौटेंगे?",
+          "सच्चाई से, अपने शब्दों में, छोटा जवाब दें।",
+        ],
+        documents: ["आपकी यात्रा की योजना", "पिछले कदम के कागज़ात"],
+        cost: "मुफ़्त।",
+        time: "कुछ शामें",
+        simple: "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
+      },
+    },
+    links: [
+      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+    ],
+  },
+  {
+    id: "travel",
+    text: {
+      en: {
+        title: "Book your travel",
+        what: [
+          "Wait until you have your visa and your passport is back.",
+          "Then book your flights.",
+          "Do not buy tickets before you have the visa.",
+          "Think about travel insurance.",
+        ],
+        documents: ["Passport with the visa", "Flight details", "Insurance papers, if you buy it"],
+        cost: "Prices vary.",
+        time: "A few days",
+        simple: "Buy tickets only after you have your visa.",
+      },
+      hi: {
+        title: "यात्रा बुक करें",
+        what: [
+          "वीज़ा मिलने और पासपोर्ट वापस आने तक रुकें।",
+          "फिर उड़ानें बुक करें।",
+          "वीज़ा मिलने से पहले टिकट न खरीदें।",
+          "यात्रा बीमा के बारे में सोचें।",
+        ],
+        documents: ["वीज़ा वाला पासपोर्ट", "उड़ान की जानकारी", "बीमा के कागज़, अगर लें"],
+        cost: "कीमतें अलग-अलग होती हैं।",
+        time: "कुछ दिन",
+        simple: "वीज़ा मिलने के बाद ही टिकट खरीदें।",
+      },
+    },
+    links: [{ label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" }, url: LINKS.visitorVisa }],
+  },
+  {
+    id: "arrive",
+    text: {
+      en: {
+        title: "Arrive in the U.S.",
+        what: [
+          "Keep your passport, visa and trip details ready.",
+          "A U.S. border officer ([[cbp|CBP]]) checks you at the airport.",
+          "The officer decides if you can enter, and for how long.",
+          "A visa does not guarantee entry.",
+          "Your leave date is on your [[i94|I-94]] record.",
+        ],
+        documents: ["Passport with the visa", "Address where you will stay", "Your trip details"],
+        cost: "No fee.",
+        time: "Arrival day",
+        simple: "Keep your papers ready. The officer decides how long you can stay.",
+      },
+      hi: {
+        title: "अमेरिका पहुँचें",
+        what: [
+          "पासपोर्ट, वीज़ा और यात्रा की जानकारी तैयार रखें।",
+          "हवाई अड्डे पर अमेरिकी सीमा अधिकारी ([[cbp|CBP]]) आपकी जाँच करते हैं।",
+          "अधिकारी तय करते हैं कि आप प्रवेश कर सकते हैं या नहीं, और कितने समय के लिए।",
+          "वीज़ा से प्रवेश की गारंटी नहीं मिलती।",
+          "लौटने की तारीख आपके [[i94|I-94]] रिकॉर्ड में होती है।",
+        ],
+        documents: ["वीज़ा वाला पासपोर्ट", "ठहरने की जगह का पता", "आपकी यात्रा की जानकारी"],
+        cost: "कोई शुल्क नहीं।",
+        time: "पहुँचने का दिन",
+        simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
+      },
+    },
+    links: [
+      { label: { en: "CBP: information for visitors", hi: "CBP: आगंतुकों के लिए जानकारी" }, url: LINKS.cbpVisitors },
+      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
+    ],
+  },
+  {
+    id: "return",
+    text: {
+      en: {
+        title: "Return on time",
+        what: [
+          "Leave the U.S. by the date on your [[i94|I-94]] record.",
+          "Do not work during your visit.",
+          "Staying too long can cancel your visa.",
+          "Want to stay longer? Read the rules before that date.",
+        ],
+        documents: ["Your [[i94|I-94]] record", "Your return ticket"],
+        cost: "Asking to stay longer may cost a fee. Ask [[uscis|USCIS]].",
+        time: "Plan this before you leave home",
+        simple: "Go home on time. Do not work.",
+      },
+      hi: {
+        title: "समय पर लौटें",
+        what: [
+          "[[i94|I-94]] रिकॉर्ड की तारीख तक अमेरिका छोड़ दें।",
+          "यात्रा के दौरान काम न करें।",
+          "ज़्यादा रुकने से वीज़ा रद्द हो सकता है।",
+          "ज़्यादा रुकना है? उस तारीख से पहले नियम पढ़ें।",
+        ],
+        documents: ["आपका [[i94|I-94]] रिकॉर्ड", "वापसी का टिकट"],
+        cost: "ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है। [[uscis|USCIS]] से पूछें।",
+        time: "घर से निकलने से पहले योजना बनाएँ",
+        simple: "समय पर घर लौटें। काम न करें।",
+      },
+    },
+    links: [
+      { label: { en: "USCIS: extend your stay", hi: "USCIS: ठहराव बढ़ाना" }, url: LINKS.uscisExtend },
+      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
+    ],
+  },
+];
+
+export const STEP_BY_ID: Record<StepId, StepContent> = Object.fromEntries(
+  STEPS.map((s) => [s.id, s]),
+) as Record<StepId, StepContent>;

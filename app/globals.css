@@ -1,0 +1,388 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens. Every colour lives here so contrast modes can swap    */
+/* them. Check any new pair at 4.5:1 or better.                         */
+/* ------------------------------------------------------------------ */
+:root {
+  --text-scale: 1;
+  --leading: 1.6;
+  --weight: 400;
+
+  /* Palette from the misty-hills illustration: pale sky, sage and
+     forest greens, a teal-blue ridge, and a soft lime hill. */
+  --bg: #dcebee;
+  --surface: #f9fbfa;
+  --ink: #1b2b30;
+  --muted: #3e5258;
+  --line: #c6d9d7;
+  --line-strong: #56716f;
+  --accent: #285d4a;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcebe2;
+  --warm: #eef0cf;
+  --warm-ink: #4a5110;
+  --danger: #9b1c1c;
+  --danger-soft: #f8e3e1;
+  --focus: #1d4ed8;
+
+  /* Footer hills */
+  --hill-ridge: #5f8d99;
+  --hill-sage: #7ea487;
+  --hill-lime: #c4d38c;
+  --hill-forest: #2f5a45;
+  --footer-ink: #ffffff;
+  --footer-link: #e6efb4;
+
+  /* Backgrounds. Set to none in high contrast. */
+  --sky: url("/textures/sky.svg");
+  --grain: url("/textures/grain.svg");
+  --grain-opacity: 0.05;
+
+  color-scheme: light;
+}
+
+html[data-contrast="high"] {
+  --bg: #000000;
+  --surface: #000000;
+  --ink: #ffffff;
+  --muted: #ffffff;
+  --line: #ffffff;
+  --line-strong: #ffffff;
+  --accent: #ffd400;
+  --accent-ink: #000000;
+  --accent-soft: #1a1a1a;
+  --warm: #1a1a1a;
+  --warm-ink: #ffd400;
+  --danger: #ff9a9a;
+  --danger-soft: #1a1a1a;
+  --focus: #00e5ff;
+  --hill-forest: #000000;
+  --footer-ink: #ffffff;
+  --footer-link: #ffd400;
+  --sky: none;
+  --grain: none;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-warm: var(--warm);
+  --color-warm-ink: var(--warm-ink);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: "Noto Sans Variable", "Noto Sans Devanagari Variable", system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Accessibility settings (set on <html> by SettingsSync)               */
+/* ------------------------------------------------------------------ */
+html {
+  /* Everything is in rem, so this scales the whole page, not just text. */
+  font-size: calc(18px * var(--text-scale));
+  /* Keep focused elements and anchor targets clear of the sticky header. */
+  scroll-padding-top: calc(var(--sticky-header-h, 0px) + 0.75rem);
+}
+html[data-text-size="1"] { --text-scale: 1.2; }
+html[data-text-size="2"] { --text-scale: 1.4; }
+html[data-text-size="3"] { --text-scale: 1.7; }
+
+/* Devanagari needs more vertical room than Latin. */
+html[lang="hi"] { --leading: 1.8; }
+html[data-spacing="1"] { --leading: 1.9; }
+html[data-spacing="1"] body { letter-spacing: 0.02em; word-spacing: 0.08em; }
+html[data-spacing="2"] { --leading: 2.2; }
+html[data-spacing="2"] body { letter-spacing: 0.04em; word-spacing: 0.16em; }
+
+html[data-bold="true"] { --weight: 600; }
+
+html[data-dyslexia="true"] body {
+  font-family: "OpenDyslexic", "Noto Sans Variable", "Noto Sans Devanagari Variable", system-ui, sans-serif;
+}
+
+html[data-mono="true"] { filter: grayscale(1); }
+
+html[data-underline="true"] a:not([data-button]) { text-decoration: underline; text-underline-offset: 0.2em; }
+html[data-highlight="true"] a:not([data-button]) {
+  background: var(--warm);
+  color: var(--warm-ink);
+  padding: 0 0.2em;
+  border-radius: 0.2em;
+}
+
+html[data-motion="paused"] *,
+html[data-motion="paused"] *::before,
+html[data-motion="paused"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  /* Full-bleed sections use 100vw, which includes the scrollbar; never let that
+     cause sideways scrolling. clip (not hidden) keeps the sticky header working. */
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: var(--leading);
+  font-weight: var(--weight);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sky, grain and footer hills                                          */
+/* ------------------------------------------------------------------ */
+/* The sky sits behind everything and stays put while the page scrolls. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--sky) center top / cover no-repeat, var(--bg);
+  pointer-events: none;
+}
+
+/* Barely-there grain on the sky and on surfaces. It sits on backgrounds
+   only, never over text. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--grain);
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+}
+.bg-surface,
+.bg-accent-soft,
+.bg-warm {
+  background-image: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)), var(--grain);
+  background-blend-mode: normal, soft-light;
+}
+html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-image: none; }
+
+.site-footer {
+  position: relative;
+  color: var(--footer-ink);
+}
+.site-footer__hills { display: block; width: 100%; height: clamp(6rem, 16vw, 13rem); }
+.site-footer__body {
+  background-color: var(--hill-forest);
+  margin-top: -1px;
+}
+/* One grain layer over hills and body so they read as one painted piece. */
+.site-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.site-footer a { color: var(--footer-link); }
+html[data-contrast="high"] .site-footer__hills { display: none; }
+html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+
+
+/* ------------------------------------------------------------------ */
+/* Screen-to-screen journey                                             */
+/* ------------------------------------------------------------------ */
+/* Forward pushes the old screen out to the left while the next rolls in
+   from the right, like a slide "push". Back plays the same in reverse. */
+:root {
+  --journey-ms: 700ms;
+  --journey-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+::view-transition { pointer-events: none; }
+/* Only the screens move; the sky and footer swap in place. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }
+
+::view-transition-old(.journey-forward) { animation: var(--journey-ms) var(--journey-ease) both journey-out-left; }
+::view-transition-new(.journey-forward) { animation: var(--journey-ms) var(--journey-ease) both journey-in-right; }
+::view-transition-old(.journey-back) { animation: var(--journey-ms) var(--journey-ease) both journey-out-right; }
+::view-transition-new(.journey-back) { animation: var(--journey-ms) var(--journey-ease) both journey-in-left; }
+
+@keyframes journey-out-left { to { transform: translateX(-100vw); } }
+@keyframes journey-in-right { from { transform: translateX(100vw); } }
+@keyframes journey-out-right { to { transform: translateX(100vw); } }
+@keyframes journey-in-left { from { transform: translateX(-100vw); } }
+
+/* The header stays put as a fixed reference while the screens roll. */
+::view-transition-group(site-header) { animation: none; z-index: 100; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+
+/* Continue turns into a plane: the button melts away, the plane appears,
+   then it banks up and off to the right. */
+.launch-plane-icon { opacity: 0; transform: scale(0.4); }
+.launch-btn[data-launching] { animation: launch-btn 900ms cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+.launch-btn[data-launching] .launch-label { animation: launch-label 220ms ease-out forwards; }
+.launch-btn[data-launching] .launch-plane-icon { animation: launch-plane-in 260ms ease-out 100ms forwards; }
+@keyframes launch-btn {
+  30% { background-color: transparent; color: var(--accent); transform: none; }
+  100% { background-color: transparent; color: var(--accent); transform: translate(60vw, -55vh) rotate(-25deg); }
+}
+@keyframes launch-label { to { opacity: 0; transform: scale(0.8); } }
+@keyframes launch-plane-in { to { opacity: 1; transform: scale(1) rotate(-15deg); } }
+
+/* Once the screens start rolling, the plane keeps flying above them. */
+::view-transition-group(launch-plane) { animation: none; z-index: 110; }
+::view-transition-old(launch-plane) { animation: 600ms cubic-bezier(0.5, 0, 0.75, 0) both launch-fly-off; }
+@keyframes launch-fly-off { to { transform: translate(60vw, -55vh) rotate(-10deg); opacity: 0; } }
+
+/* Reduced motion (system setting or our own "Pause animations"): switch screens instantly. */
+html[data-motion="paused"]::view-transition-old(*),
+html[data-motion="paused"]::view-transition-new(*),
+html[data-motion="paused"]::view-transition-group(*) {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Roadmap: a winding trail of pills, with details sliding in beside it */
+/* ------------------------------------------------------------------ */
+.roadmap-stage {
+  container-type: inline-size;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  --path-w: 24rem;
+  --amp: 4rem; /* how far the trail sways left and right */
+}
+/* Centred on its own; slides to the left when a step is open. */
+.roadmap-path {
+  flex: none;
+  width: var(--path-w);
+  padding: 0.75rem 0 1.5rem;
+  transform: translateX(calc((100cqw - var(--path-w)) / 2));
+  transition: transform 500ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.roadmap-stage[data-open] .roadmap-path { transform: none; }
+
+.roadmap-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(calc(var(--wind) * var(--amp)));
+}
+.roadmap-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 0 0.6rem;
+}
+.roadmap-dots > span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--line-strong);
+  opacity: 0.6;
+  transform: translateX(calc(var(--shift) * var(--amp)));
+}
+
+.roadmap-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 15rem;
+  max-width: calc(100% - 2 * var(--amp));
+  min-height: 3.5rem;
+  padding: 0.6rem 1.25rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  --pill-edge: var(--line-strong);
+  box-shadow: 0 5px 0 var(--pill-edge);
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out, background-color 200ms;
+}
+.roadmap-pill:hover { background: var(--accent-soft); }
+.roadmap-pill:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--pill-edge); }
+.roadmap-pill[data-status="current"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  --pill-edge: var(--accent);
+}
+/* The "you are here" pulse sits on its own layer so the pill keeps its edge. */
+.roadmap-pill[data-status="current"] { position: relative; }
+.roadmap-pill[data-status="current"]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: flybyvisa-pulse 2.4s ease-in-out infinite;
+}
+.roadmap-pill[data-status="done"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  --pill-edge: color-mix(in srgb, var(--accent) 65%, black);
+}
+/* The open step gets a ring, with a gap so it shows on green pills too. */
+.roadmap-pill[aria-expanded="true"] {
+  box-shadow: 0 5px 0 var(--pill-edge), 0 0 0 5px var(--bg), 0 0 0 8px var(--accent);
+}
+
+.roadmap-panel {
+  flex: 1;
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--sticky-header-h, 0px) + 1rem);
+  max-height: calc(100dvh - var(--sticky-header-h, 0px) - 2rem);
+  overflow-y: auto;
+  border-radius: 1rem;
+  animation: roadmap-panel-in 450ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes roadmap-panel-in {
+  from { opacity: 0; transform: translateX(3rem); }
+}
+
+/* Narrow screens: the trail fills the width, and an open step takes its place. */
+@container (max-width: 48rem) {
+  .roadmap-path { width: 100%; transform: none; --amp: 1.75rem; }
+  .roadmap-stage[data-open] .roadmap-path { display: none; }
+  .roadmap-panel { position: static; max-height: none; overflow: visible; }
+}
+
+/* A soft pulse for the "you are here" marker. Disabled by the rules above. */
+@keyframes flybyvisa-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  50% { box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+.pulse-ring { animation: flybyvisa-pulse 2.4s ease-in-out infinite; }
