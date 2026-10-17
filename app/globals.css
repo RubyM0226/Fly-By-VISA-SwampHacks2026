@@ -34,6 +34,14 @@
   --footer-ink: #ffffff;
   --footer-link: #e6efb4;
 
+  /* Glossary category edges (left border of each term card). Each is
+     3:1 or better against --surface and --accent-soft. Never the only cue:
+     every card also names its category. */
+  --glossary-cat-visas: var(--accent);
+  --glossary-cat-forms: #3f5f8a;
+  --glossary-cat-agencies: #8a5a2b;
+  --glossary-cat-process: var(--warm-ink);
+
   /* Backgrounds. Set to none in high contrast. */
   --sky: url("/textures/sky.svg");
   --grain: url("/textures/grain.svg");
@@ -63,6 +71,12 @@ html[data-contrast="high"] {
   --sky: none;
   --grain: none;
   color-scheme: dark;
+  /* Category edges: one bright colour; the category name on each card
+     tells them apart. */
+  --glossary-cat-visas: #ffd400;
+  --glossary-cat-forms: #ffd400;
+  --glossary-cat-agencies: #ffd400;
+  --glossary-cat-process: #ffd400;
 }
 
 @theme inline {
@@ -80,6 +94,8 @@ html[data-contrast="high"] {
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --font-sans: "Noto Sans Variable", "Noto Sans Devanagari Variable", system-ui, sans-serif;
+  /* Home headline only. Loaded with next/font in app/layout.tsx. */
+  --font-headline: var(--font-headline-latin), var(--font-headline-devanagari), Georgia, serif;
 }
 
 /* ------------------------------------------------------------------ */
@@ -108,6 +124,10 @@ html[data-bold="true"] { --weight: 600; }
 html[data-dyslexia="true"] body {
   font-family: "OpenDyslexic", "Noto Sans Variable", "Noto Sans Devanagari Variable", system-ui, sans-serif;
 }
+/* The serif headline gives way to the dyslexia-friendly font too. */
+html[data-dyslexia="true"] .font-headline { font-family: inherit; }
+/* Fraunces' soft axis rounds the serifs a little: warmer, still plain. */
+.font-headline { font-variation-settings: "SOFT" 100; }
 
 html[data-mono="true"] { filter: grayscale(1); }
 
@@ -183,7 +203,7 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { backgro
   position: relative;
   color: var(--footer-ink);
 }
-.site-footer__hills { display: block; width: 100%; height: clamp(6rem, 16vw, 13rem); }
+.site-footer__hills { display: block; width: 100%; height: var(--hills-h); pointer-events: none; }
 .site-footer__body {
   background-color: var(--hill-forest);
   margin-top: -1px;
@@ -200,7 +220,24 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { backgro
 }
 .site-footer a { color: var(--footer-link); }
 html[data-contrast="high"] .site-footer__hills { display: none; }
-html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); }
+html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); margin-top: 0; }
+
+/* Pages marked data-hills-peek (home, Important Documents, Location Map)
+   fill the first screen down to where the footer hills begin, so the top of
+   the hills shows without scrolling and the dark footer stays below the
+   fold. Longer content just pushes the hills down; they never cover it. */
+:root {
+  --hills-h: clamp(6rem, 16vw, 13rem);
+  /* The light top three-quarters, above the dark front hill. */
+  --hills-peek: calc(var(--hills-h) * 0.75);
+}
+/* No hills in high contrast, so keep the footer fully below the fold. */
+html[data-contrast="high"] { --hills-peek: 0px; }
+main:has([data-hills-peek]) {
+  min-height: calc(100dvh - var(--sticky-header-h, 0px) - var(--hills-peek));
+  padding-bottom: 0;
+}
+body:has([data-hills-peek]) .site-footer { margin-top: 0; }
 
 :focus-visible {
   outline: 3px solid var(--focus);

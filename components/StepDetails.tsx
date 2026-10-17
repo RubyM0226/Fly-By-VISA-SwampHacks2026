@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
@@ -84,6 +85,15 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, o
           <p className="rounded-xl bg-warm p-3 text-lg font-semibold text-warm-ink">
             {t("journey.interviewSlot", { date: formatDate(interviewDate, lang) })}
           </p>
+        )}
+        {step.action && (
+          <Link
+            href={step.action.href}
+            className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
+          >
+            {step.action.label[lang]}
+            <ArrowIcon className="h-6 w-6" />
+          </Link>
         )}
 
         <div>

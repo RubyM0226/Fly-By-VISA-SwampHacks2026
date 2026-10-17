@@ -4,12 +4,21 @@ import { useMemo, useState } from "react";
 import { normalize } from "@/content/documentsFaq";
 import { GLOSSARY, GLOSSARY_CATEGORIES, type GlossaryCategory, type GlossaryEntry } from "@/content/glossary";
 import { useT } from "@/lib/i18n";
-import { CloseIcon } from "./Icons";
+import { BuildingIcon, CloseIcon, DocumentIcon, PassportIcon, PlaneIcon } from "./Icons";
 import { SpeakButton } from "./SpeakButton";
 
 type Item = GlossaryEntry & { key: string };
 
 const ENTRIES: Item[] = Object.entries(GLOSSARY).map(([key, e]) => ({ key, ...e }));
+
+// Each category's icon and edge colour (tokens in globals.css). The icon is
+// decorative; the category name is always shown as text too.
+const CATEGORY_STYLE: Record<GlossaryCategory, { Icon: (p: { className?: string }) => React.ReactElement; edge: string }> = {
+  visas: { Icon: PassportIcon, edge: "border-l-(--glossary-cat-visas)" },
+  forms: { Icon: DocumentIcon, edge: "border-l-(--glossary-cat-forms)" },
+  agencies: { Icon: BuildingIcon, edge: "border-l-(--glossary-cat-agencies)" },
+  process: { Icon: PlaneIcon, edge: "border-l-(--glossary-cat-process)" },
+};
 const squash = (text: string) => normalize(text).replace(/\s+/g, "");
 
 /** Every word, grouped by category and sorted A–Z, with a filter box. */
@@ -104,12 +113,14 @@ export function GlossaryScreen() {
 function Category({ cat, items }: { cat: GlossaryCategory; items: Item[] }) {
   const { t, lang } = useT();
   const title = t(`glossary.cat.${cat}`);
+  const { Icon, edge } = CATEGORY_STYLE[cat];
   const readText = [title, ...items.map((e) => `${e.term[lang]}. ${e.definition[lang]}`)].join(". ");
 
   return (
     <section aria-labelledby={`cat-${cat}`} className="space-y-3">
       <div className="flex items-center gap-2">
-        <h2 id={`cat-${cat}`} className="text-2xl font-bold">
+        <h2 id={`cat-${cat}`} className="flex items-center gap-2 text-2xl font-bold">
+          <Icon className="h-7 w-7 shrink-0 text-accent" />
           {title}
         </h2>
         <SpeakButton ownerId={`glossary-${cat}`} getText={() => readText} />
@@ -119,10 +130,15 @@ function Category({ cat, items }: { cat: GlossaryCategory; items: Item[] }) {
           <div
             key={e.key}
             id={e.key}
-            className="space-y-1 rounded-xl border-2 border-line-strong bg-surface p-4 target:border-accent target:bg-accent-soft"
+            className={`space-y-1 rounded-xl border border-l-[6px] border-line bg-surface p-4 shadow-sm target:border-y-accent target:border-r-accent target:bg-accent-soft ${edge}`}
           >
             <dt className="text-xl font-bold">{e.term[lang]}</dt>
             <dd className="text-lg">{e.definition[lang]}</dd>
+            {/* The category in words, so the coloured edge is never the only cue. */}
+            <dd className="flex items-center gap-1.5 pt-1 text-sm font-semibold text-muted">
+              <Icon className="h-4 w-4 shrink-0" />
+              {title}
+            </dd>
           </div>
         ))}
       </dl>
