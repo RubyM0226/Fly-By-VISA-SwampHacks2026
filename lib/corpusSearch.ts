@@ -10,7 +10,16 @@ import { GoogleGenAI } from "@google/genai";
 const EMBED_MODEL = "gemini-embedding-001";
 const EMBED_DIMS = 768;
 // Below this cosine similarity a chunk is usually off topic.
-const MIN_SCORE = 0.6;
+const MIN_SCORE = 0.61;
+// Short queries ("passport") carry too little meaning for the embedding on its
+// own, so they score about the same against every chunk that mentions the
+// word. Asking the full question in the app's context ranks the right
+// sections first. Expanded scores run higher, so they get their own cutoff.
+const SHORT_QUERY_WORDS = 3;
+const PER_PAGE = 2;
+const MIN_SCORE_EXPANDED = 0.65;
+const expand = (q: string) => `What does someone applying for a U.S. B-2 visitor visa need to know about: ${q}`;
+
 // After a key fails, skip it for this long instead of paying a failed call per search.
 const KEY_COOLDOWN_MS = 10 * 60_000;
 
@@ -84,30 +93,54 @@ async function embedQuery(query: string): Promise<number[]> {
  * search; if no Gemini key works (for example, both free daily quotas are used
  * up), falls back to keyword search so the page still shows results.
  */
-export async function searchCorpus(query: string, limit = 3): Promise<CorpusHit[]> {
+export async function searchCorpus(query: string, limit = 4): Promise<CorpusHit[]> {
+  // Expanding makes every query look on topic ("...visa need to know about: pizza"),
+  // so only expand when the words actually appear in the official pages.
+  const short = query.trim().split(/\s+/).length <= SHORT_QUERY_WORDS;
+  const expanded = short && (await mentionedInCorpus(query));
+
   let vector: number[];
   try {
-    vector = await embedQuery(query);
+    vector = await embedQuery(expanded ? expand(query) : query);
   } catch {
     console.warn("no Gemini key available, using keyword search");
     return keywordSearch(query, limit);
   }
 
-  // Take the best chunk from each page, then the best pages overall.
+  // Best chunks overall, at most PER_PAGE from any one page: a page can show two
+  // close matches (passport validity and expired passports), but one big page
+  // can't fill the list. An expanded query only keeps chunks that mention one of
+  // its words: the added context ("B-2 visitor visa") otherwise pulls in general
+  // visa passages.
   const { rows } = await pool().query(
     `SELECT title, url, saved_on, content, score FROM (
-       SELECT DISTINCT ON (source_url)
-              title, source_url AS url, saved_on::text AS saved_on, content,
-              1 - (embedding <=> $1::vector) AS score
+       SELECT title, source_url AS url, saved_on::text AS saved_on, content,
+              1 - (embedding <=> $1::vector) AS score,
+              row_number() OVER (PARTITION BY source_url ORDER BY embedding <=> $1::vector) AS rank_in_page
        FROM chunks
-       ORDER BY source_url, embedding <=> $1::vector
-     ) best
-     WHERE score >= $2
+       WHERE NOT $4::boolean OR ${DOC_TEXT} @@ ${anyWord("$5")}
+     ) ranked
+     WHERE score >= $2 AND rank_in_page <= $6
      ORDER BY score DESC
      LIMIT $3`,
-    [JSON.stringify(vector), MIN_SCORE, limit]
+    [JSON.stringify(vector), expanded ? MIN_SCORE_EXPANDED : MIN_SCORE, limit, expanded, query, PER_PAGE]
   );
   return rows.map(toHit);
+}
+
+/** Matches any of the query's words, English stemming ("fees" -> "fee"). */
+const anyWord = (param: string) => `replace(plainto_tsquery('english', ${param})::text, '&', '|')::tsquery`;
+const ANY_WORD = anyWord("$1");
+const DOC_TEXT = `to_tsvector('english', title || ' ' || content)`;
+
+/** True if any (non-filler) word of the query appears in some chunk. */
+async function mentionedInCorpus(query: string): Promise<boolean> {
+  const { rowCount } = await pool().query(
+    `WITH q AS (SELECT ${ANY_WORD} AS tsq)
+     SELECT 1 FROM chunks, q WHERE q.tsq::text <> '' AND ${DOC_TEXT} @@ q.tsq LIMIT 1`,
+    [query]
+  );
+  return !!rowCount;
 }
 
 /**
@@ -117,15 +150,13 @@ export async function searchCorpus(query: string, limit = 3): Promise<CorpusHit[
  */
 async function keywordSearch(query: string, limit: number): Promise<CorpusHit[]> {
   const { rows } = await pool().query(
-    `WITH q AS (
-       SELECT replace(plainto_tsquery('english', $1)::text, '&', '|')::tsquery AS tsq
-     )
+    `WITH q AS (SELECT ${ANY_WORD} AS tsq)
      SELECT title, url, saved_on, content, score FROM (
        SELECT DISTINCT ON (source_url)
               title, source_url AS url, saved_on::text AS saved_on, content,
-              ts_rank_cd(to_tsvector('english', title || ' ' || content), q.tsq) AS score
+              ts_rank_cd(${DOC_TEXT}, q.tsq) AS score
        FROM chunks, q
-       WHERE q.tsq::text <> '' AND to_tsvector('english', title || ' ' || content) @@ q.tsq
+       WHERE q.tsq::text <> '' AND ${DOC_TEXT} @@ q.tsq
        ORDER BY source_url, score DESC
      ) best
      ORDER BY score DESC
