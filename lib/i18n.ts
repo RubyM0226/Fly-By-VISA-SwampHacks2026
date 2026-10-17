@@ -144,6 +144,7 @@ const en = {
   "a11y.cleared": "Your saved answers were erased.",
   "a11y.on": "On",
   "a11y.off": "Off",
+  "a11y.more": "More",
 
   "glossary.open": "Show meaning of {term}",
 
@@ -296,6 +297,7 @@ const hi: Record<UiKey, string> = {
   "a11y.cleared": "आपके सहेजे हुए जवाब मिटा दिए गए।",
   "a11y.on": "चालू",
   "a11y.off": "बंद",
+  "a11y.more": "और",
 
   "glossary.open": "{term} का अर्थ दिखाएँ",
 
