@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { STEP_BY_ID } from "@/content/steps";
 import { useT } from "@/lib/i18n";
 import { STEP_ORDER, type Journey, type StepId } from "@/lib/journey";
-import { useSettings } from "@/lib/settings";
-import { CheckIcon, PinIcon } from "./Icons";
+import { ArrowIcon, CheckIcon, PinIcon } from "./Icons";
 import { StepDetails, type StepStatus } from "./StepDetails";
 
 export interface OpenStep {
@@ -22,91 +21,162 @@ interface Props {
   onToggleDone: (id: StepId) => void;
 }
 
-// Sideways sway of each stop, in units of --amp: a gentle S-curve like a trail.
-const wind = (i: number) => Math.round(Math.sin((i * Math.PI) / 4) * 100) / 100;
-
 /**
- * The roadmap as a winding trail of pill buttons. Picking a pill slides the
- * trail aside and opens that step's details next to it (or in its place on
- * narrow screens).
+ * The roadmap as a horizontal carousel of pills joined by a line. The current
+ * step starts in the middle; arrows, swiping or picking a pill moves along.
+ * Picking a pill centres it and opens its details below.
  */
 export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: Props) {
   const { t, lang } = useT();
-  const [settings] = useSettings();
-  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLOListElement>(null);
   const pills = useRef<Partial<Record<StepId, HTMLButtonElement | null>>>({});
+  const [centered, setCentered] = useState(0);
 
-  const narrow = () => (stageRef.current?.offsetWidth ?? 0) < 48 * parseFloat(getComputedStyle(document.documentElement).fontSize);
-  const scrollTo = (el: Element | null | undefined) =>
-    el?.scrollIntoView({ behavior: settings.pauseMotion ? "auto" : "smooth", block: "start" });
+  const currentIndex = Math.max(
+    0,
+    STEP_ORDER.findIndex((id) => statusOf(id) === "current"),
+  );
+
+  // Where a smooth scroll is heading, so quick arrow presses keep moving on
+  // instead of reading a position that is still on its way.
+  const target = useRef<number | null>(null);
+
+  // Scroll so step i sits in the middle. The track's CSS decides smooth or
+  // instant (instant when motion is reduced).
+  const center = useCallback((i: number, instant = false) => {
+    const track = trackRef.current;
+    const stop = track?.children[i] as HTMLElement | undefined;
+    if (!track || !stop) return;
+    const left = stop.offsetLeft + stop.offsetWidth / 2 - track.clientWidth / 2;
+    // Already there: no scroll will happen, so nothing to wait for.
+    target.current = instant || Math.abs(track.scrollLeft - left) < 1 ? null : i;
+    setCentered(i);
+    track.scrollTo({ left, behavior: instant ? "instant" : undefined });
+  }, []);
+
+  // Start with the current step in the middle (only on first show; after
+  // that, where the strip sits is up to the user).
+  const startIndex = useRef(currentIndex);
+  useLayoutEffect(() => {
+    center(startIndex.current, true);
+    setCentered(startIndex.current);
+  }, [center]);
+
+  // Opening a step (from a pill or "Show details") brings it to the middle.
+  useEffect(() => {
+    if (open) center(STEP_ORDER.indexOf(open.id));
+  }, [open, center]);
+
+  // Keep track of which step is in the middle, for the arrows. While an arrow
+  // or pick is scrolling, keep its destination until the scroll settles.
+  function onScroll() {
+    const track = trackRef.current;
+    if (!track || target.current !== null) return;
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    Array.from(track.children).forEach((el, i) => {
+      const s = el as HTMLElement;
+      const d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    });
+    setCentered(best);
+  }
 
   function pick(id: StepId) {
-    if (open?.id === id) return;
+    if (open?.id === id) {
+      center(STEP_ORDER.indexOf(id));
+      return;
+    }
     onOpen({ id, focus: !open });
-    if (narrow()) requestAnimationFrame(() => scrollTo(stageRef.current));
   }
 
   function close() {
     const id = open?.id;
     onOpen(null);
-    if (!id) return;
-    requestAnimationFrame(() => {
-      const pill = pills.current[id];
-      pill?.focus({ preventScroll: true });
-      if (narrow()) pill?.scrollIntoView({ block: "center" });
-    });
+    if (id) requestAnimationFrame(() => pills.current[id]?.focus({ preventScroll: true }));
   }
 
   const openPlan = open ? journey.steps.find((s) => s.id === open.id) : undefined;
+  const last = STEP_ORDER.length - 1;
 
   return (
     <div
-      ref={stageRef}
-      className="roadmap-stage"
-      data-open={open ? "" : undefined}
       onKeyDown={(e) => {
         if (e.key === "Escape" && open) close();
       }}
     >
-      <ol className="roadmap-path" aria-label={t("journey.roadmap")}>
-        {STEP_ORDER.map((id, i) => {
-          const status = statusOf(id);
-          const here = wind(i);
-          const next = i < STEP_ORDER.length - 1 ? wind(i + 1) : null;
-          return (
-            <li key={id} className="roadmap-stop" style={{ "--wind": here } as React.CSSProperties}>
-              {status === "current" && (
-                <p aria-hidden="true" className="mb-2 inline-flex items-center gap-1 rounded-full bg-warm px-3 py-0.5 text-sm font-bold text-warm-ink">
-                  <PinIcon className="h-4 w-4" />
-                  {t("status.current")}
-                </p>
-              )}
-              <button
-                ref={(el) => {
-                  pills.current[id] = el;
-                }}
-                type="button"
-                data-status={status}
-                aria-expanded={open?.id === id}
-                aria-controls={open?.id === id ? "step-details" : undefined}
-                onClick={() => pick(id)}
-                className="roadmap-pill"
-              >
-                {status === "done" && <CheckIcon className="h-5 w-5 shrink-0" />}
-                <span>{STEP_BY_ID[id].text[lang].title}</span>
-                <span className="sr-only">, {t(`status.${status}`)}</span>
-              </button>
-              {next !== null && (
-                <span aria-hidden="true" className="roadmap-dots">
-                  {[1, 2, 3].map((k) => (
-                    <span key={k} style={{ "--shift": ((next - here) * k) / 4 } as React.CSSProperties} />
-                  ))}
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+      <div className="roadmap-carousel">
+        <button
+          type="button"
+          data-side="left"
+          className="roadmap-arrow"
+          aria-label={t("journey.earlier")}
+          disabled={centered <= 0}
+          onClick={() => center(Math.max(0, (target.current ?? centered) - 1))}
+        >
+          <ArrowIcon className="h-6 w-6 rotate-180" />
+        </button>
+
+        <ol
+          ref={trackRef}
+          className="roadmap-track"
+          aria-label={t("journey.roadmap")}
+          onScroll={onScroll}
+          onScrollEnd={() => {
+            target.current = null;
+            onScroll();
+          }}
+        >
+          {STEP_ORDER.map((id, i) => {
+            const status = statusOf(id);
+            return (
+              <li key={id} className="roadmap-stop" data-status={status}>
+                <div className="roadmap-tag-slot">
+                  {status === "current" && (
+                    <p aria-hidden="true" className="mb-2 inline-flex items-center gap-1 rounded-full bg-warm px-3 py-0.5 text-sm font-bold text-warm-ink">
+                      <PinIcon className="h-4 w-4" />
+                      {t("status.current")}
+                    </p>
+                  )}
+                </div>
+                <div className="roadmap-pill-row">
+                  <button
+                    ref={(el) => {
+                      pills.current[id] = el;
+                    }}
+                    type="button"
+                    data-status={status}
+                    aria-expanded={open?.id === id}
+                    aria-controls={open?.id === id ? "step-details" : undefined}
+                    onClick={() => pick(id)}
+                    onFocus={() => center(i)}
+                    className="roadmap-pill"
+                  >
+                    {status === "done" && <CheckIcon className="h-5 w-5 shrink-0" />}
+                    <span>{STEP_BY_ID[id].text[lang].title}</span>
+                    <span className="sr-only">, {t(`status.${status}`)}</span>
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        <button
+          type="button"
+          data-side="right"
+          className="roadmap-arrow"
+          aria-label={t("journey.later")}
+          disabled={centered >= last}
+          onClick={() => center(Math.min(last, (target.current ?? centered) + 1))}
+        >
+          <ArrowIcon className="h-6 w-6" />
+        </button>
+      </div>
 
       {open && openPlan && (
         <div id="step-details" key={open.id} className="roadmap-panel">
