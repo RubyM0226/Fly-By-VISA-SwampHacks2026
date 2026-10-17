@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PlaceholderScreen } from "@/components/PlaceholderScreen";
+import { LocationMapScreen } from "@/components/LocationMapScreen";
 
 export const metadata: Metadata = { title: "Location Map — FlyByVisa" };
 
 export default function LocationMapPage() {
-  return <PlaceholderScreen title="nav.map" />;
+  return <LocationMapScreen />;
 }
