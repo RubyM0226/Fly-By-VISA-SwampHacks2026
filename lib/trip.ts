@@ -12,8 +12,12 @@ export interface Trip {
   done: Record<string, boolean>;
   /** IATA code, e.g. "DEL" */
   homeAirport: string;
+  /** City name, e.g. "New Delhi" */
+  homeCity: string;
   /** IATA code, e.g. "JFK" */
   destAirport: string;
+  /** City name, e.g. "New York" */
+  destCity: string;
 }
 
 export const DEFAULT_TRIP: Trip = {
@@ -24,7 +28,9 @@ export const DEFAULT_TRIP: Trip = {
   arrival: "",
   done: {},
   homeAirport: "DEL",
+  homeCity: "New Delhi",
   destAirport: "JFK",
+  destCity: "New York",
 };
 
 export const tripStore = createPersistedStore<Trip>("flybyvisa:trip", DEFAULT_TRIP);

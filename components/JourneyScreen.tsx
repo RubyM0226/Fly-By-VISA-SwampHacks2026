@@ -54,10 +54,14 @@ export function JourneyScreen() {
         // Step B: Fetch the user's official data
         const data = await getUserJourney();
         if (data) {
-          // Restore their complete profile AND their checkmarks
+          // Restore their complete profile, cities, airports AND their checkmarks
           tripStore.set({ 
             from: data.profile?.from || "IN",
+            homeCity: data.profile?.homeCity || "New Delhi",
+            homeAirport: data.profile?.homeAirport || "DEL",
             to: data.profile?.to || "US",
+            destCity: data.profile?.destCity || "New York",
+            destAirport: data.profile?.destAirport || "JFK",
             arrival: data.profile?.arrival || "",
             stayMonths: data.profile?.stayMonths || 1,
             purpose: data.profile?.purpose || "family",
@@ -122,16 +126,15 @@ export function JourneyScreen() {
     });
   }
 
-  // The details box is always open: on the step you picked, else the current one
-  // (the last one once everything is done).
-  const open: OpenStep = openStep ?? { id: currentId ?? STEP_ORDER[STEP_ORDER.length - 1], focus: false };
-
   const currentPlan = currentId ? journey.steps.find((s) => s.id === currentId) : undefined;
 
   return (
     <div className="space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
+        <p className="text-xl font-semibold text-slate-800">
+          Route: {trip.homeCity || "New Delhi"} ({trip.homeAirport || "DEL"}) → {trip.destCity || "New York"} ({trip.destAirport || "JFK"})
+        </p>
         <p className="text-xl text-muted">
           {t("journey.summary", { date: formatDate(journey.arrival, lang), n: trip.stayMonths })}
         </p>
@@ -139,11 +142,6 @@ export function JourneyScreen() {
           {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}{" "}
           <Link href="/start" transitionTypes={BACK} className="inline-flex min-h-12 items-center font-semibold text-accent underline">
             {t("journey.edit")}
-          </Link>
-        </p>
-        <p>
-          <Link href="/my-plan" className="inline-flex min-h-12 items-center font-semibold text-accent underline">
-            {t("journey.profileLink")}
           </Link>
         </p>
       </div>
@@ -188,7 +186,7 @@ export function JourneyScreen() {
         <RoadmapPath
           journey={journey}
           statusOf={statusOf}
-          open={open}
+          open={openStep ?? { id: currentId ?? STEP_ORDER[0], focus: false }}
           onOpen={setOpenStep}
           onToggleDone={handleToggleDone} 
         />
