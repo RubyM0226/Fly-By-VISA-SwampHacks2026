@@ -21,7 +21,7 @@ interface HomeInfo {
 }
 
 export const HOME: Record<OriginCode, HomeInfo> = {
-  IN: { name: { en: "India", hi: "भारत" }, vac: "VAC", links: {}, replace: {} },
+  IN: { name: { en: "India", hi: "India" }, vac: "VAC", links: {}, replace: {} },
   GB: {
     name: { en: "the United Kingdom", hi: "United Kingdom" },
     vac: "VAC",
@@ -40,7 +40,7 @@ export const HOME: Record<OriginCode, HomeInfo> = {
       "Many people in {home} first visit a [[vac|{vac}]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.":
         "In the United Kingdom there is usually no separate fingerprint visit. Your fingerprints and photo are taken at the U.S. Embassy in London on the day of your interview. Bring your passport and appointment letter.",
       "{home} में कई लोग पहले [[vac|{vac}]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।":
-        "United Kingdom में आमतौर पर उंगलियों के निशान के लिए अलग से नहीं जाना पड़ता। London में अमेरिकी दूतावास में इंटरव्यू के दिन ही उंगलियों के निशान और फ़ोटो लिए जाते हैं। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
+        "United Kingdom में आमतौर पर उंगलियों के निशान के लिए अलग से नहीं जाना पड़ता। London में U.S. Embassy में इंटरव्यू के दिन ही उंगलियों के निशान और फ़ोटो लिए जाते हैं। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
     },
   },
   MX: {

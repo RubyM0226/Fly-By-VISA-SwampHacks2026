@@ -64,9 +64,9 @@ export const DOC_FAQ: DocAnswer[] = [
     question: { en: "What is the appointment letter?", hi: "अपॉइंटमेंट पत्र क्या है?" },
     answer: {
       en: "When you book your interview, you get a confirmation. Print it and bring it on the day. Booking steps can change, so follow the U.S. Embassy website.",
-      hi: "इंटरव्यू बुक करने पर एक पुष्टि मिलती है। उसे प्रिंट करें और उस दिन साथ ले जाएँ। बुकिंग के तरीके बदल सकते हैं, इसलिए अमेरिकी दूतावास की वेबसाइट देखें।",
+      hi: "इंटरव्यू बुक करने पर एक पुष्टि मिलती है। उसे प्रिंट करें और उस दिन साथ ले जाएँ। बुकिंग के तरीके बदल सकते हैं, इसलिए U.S. Embassy की वेबसाइट देखें।",
     },
-    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा" }, url: LINKS.embassyIndia },
   },
   {
     id: "vac",
@@ -76,7 +76,7 @@ export const DOC_FAQ: DocAnswer[] = [
       en: "Many people in {home} first visit a [[vac|{vac}]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.",
       hi: "{home} में कई लोग पहले [[vac|{vac}]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
     },
-    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा" }, url: LINKS.embassyIndia },
   },
   {
     id: "supporting",
@@ -104,7 +104,7 @@ export const DOC_FAQ: DocAnswer[] = [
     question: { en: "Do I need an invitation letter from my family?", hi: "क्या परिवार का निमंत्रण पत्र ज़रूरी है?" },
     answer: {
       en: "No. A letter from family in the U.S. is not required. The officer decides by looking at your own life and plans.",
-      hi: "नहीं। अमेरिका में परिवार का पत्र ज़रूरी नहीं है। अधिकारी आपके अपने जीवन और योजनाओं को देखकर फ़ैसला करते हैं।",
+      hi: "नहीं। U.S. में परिवार का पत्र ज़रूरी नहीं है। अधिकारी आपके अपने जीवन और योजनाओं को देखकर फ़ैसला करते हैं।",
     },
     source: { label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" }, url: LINKS.visitorVisa },
   },
@@ -114,7 +114,7 @@ export const DOC_FAQ: DocAnswer[] = [
     question: { en: "What is the I-94?", hi: "I-94 क्या है?" },
     answer: {
       en: "The [[i94|I-94]] is your arrival record. The officer at the U.S. airport decides how long you can stay. The I-94 shows the date you must leave.",
-      hi: "[[i94|I-94]] आपका आगमन रिकॉर्ड है। अमेरिकी हवाई अड्डे पर अधिकारी तय करते हैं कि आप कितने समय रुक सकते हैं। I-94 में लौटने की तारीख होती है।",
+      hi: "[[i94|I-94]] आपका आगमन रिकॉर्ड है। U.S. हवाई अड्डे पर अधिकारी तय करते हैं कि आप कितने समय रुक सकते हैं। I-94 में लौटने की तारीख होती है।",
     },
     source: { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
   },

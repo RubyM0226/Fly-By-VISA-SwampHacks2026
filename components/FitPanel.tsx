@@ -82,9 +82,10 @@ export function ShortestWaitBadge() {
 }
 
 /** Can the traveler arrive by their date? Plus the five U.S. offices compared. */
-export function FitPanel({ journey }: { journey: Journey }) {
+/** `home`: the traveler's home country (a caregiver's browser may hold none). */
+export function FitPanel({ journey, home }: { journey: Journey; home?: string }) {
   const { t, lang } = useT();
-  const { name: homeName } = useHome();
+  const { name: homeName } = useHome(home);
   const best = journey.best;
   const bestName = t(`post.${best.id}`);
 

@@ -135,7 +135,7 @@ const ENTRIES = {
     // VERIFY: insurance is not required for a B-2 visa.
     description: {
       en: "Travel health insurance is not required for the visa, but U.S. hospital care is very expensive. If you buy it, keep the policy papers here.",
-      hi: "वीज़ा के लिए यात्रा स्वास्थ्य बीमा ज़रूरी नहीं है, पर अमेरिका में अस्पताल का इलाज बहुत महंगा है। अगर आप लें, तो पॉलिसी के कागज़ यहाँ रखें।",
+      hi: "वीज़ा के लिए यात्रा स्वास्थ्य बीमा ज़रूरी नहीं है, पर U.S. में अस्पताल का इलाज बहुत महंगा है। अगर आप लें, तो पॉलिसी के कागज़ यहाँ रखें।",
     },
     upload: true,
     blank: { type: "none" },
@@ -147,7 +147,7 @@ const ENTRIES = {
     // VERIFY: I-94 is electronic for air arrivals and downloadable from i94.cbp.dhs.gov.
     description: {
       en: "Your arrival record. It is made online when you enter the U.S. You can download it from the official website a few days later.",
-      hi: "आपके पहुँचने का रिकॉर्ड। यह अमेरिका में प्रवेश करते समय ऑनलाइन बनता है। कुछ दिन बाद आप इसे आधिकारिक वेबसाइट से डाउनलोड कर सकते हैं।",
+      hi: "आपके पहुँचने का रिकॉर्ड। यह U.S. में प्रवेश करते समय ऑनलाइन बनता है। कुछ दिन बाद आप इसे आधिकारिक वेबसाइट से डाउनलोड कर सकते हैं।",
     },
     upload: true,
     blank: { type: "online", url: LINKS.i94 },

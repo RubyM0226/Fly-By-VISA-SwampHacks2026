@@ -141,7 +141,7 @@ export const SIGNALS: Signal[] = [
     weight: 5,
     explanation: {
       en: "Someone says they are from the U.S. Embassy or Consulate but wants you on WhatsApp, Telegram or a personal number. Real officials do not do this.",
-      hi: "कोई खुद को अमेरिकी दूतावास या कांसुलेट का बताता है, पर WhatsApp, Telegram या निजी नंबर पर बात करना चाहता है। असली अधिकारी ऐसा नहीं करते।",
+      hi: "कोई खुद को U.S. Embassy या कांसुलेट का बताता है, पर WhatsApp, Telegram या निजी नंबर पर बात करना चाहता है। असली अधिकारी ऐसा नहीं करते।",
     },
     match: (v) => {
       const office = "embassy|consulate|state department|uscis|visa (?:office|department|section)|immigration (?:office|department)|दूतावास|एम्बेसी|कांसुलेट";
@@ -250,7 +250,7 @@ export const SIGNALS: Signal[] = [
     weight: 1,
     explanation: {
       en: "It has a link that is not a U.S. government website. U.S. government sites end in .gov. Do not type your details on other sites.",
-      hi: "इसमें ऐसा लिंक है जो अमेरिकी सरकार की वेबसाइट नहीं है। अमेरिकी सरकारी साइटें .gov पर खत्म होती हैं। दूसरी साइटों पर अपनी जानकारी न डालें।",
+      hi: "इसमें ऐसा लिंक है जो U.S. सरकार की वेबसाइट नहीं है। U.S. सरकारी साइटें .gov पर खत्म होती हैं। दूसरी साइटों पर अपनी जानकारी न डालें।",
     },
     match: (v) => findLinks(v).filter((l) => !l.host.endsWith(".gov")).map((l) => l.phrase),
   },

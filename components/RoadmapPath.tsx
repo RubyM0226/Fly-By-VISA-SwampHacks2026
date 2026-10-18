@@ -17,7 +17,10 @@ interface Props {
   statusOf: (id: StepId) => StepStatus;
   open: OpenStep;
   onOpen: (open: OpenStep) => void;
-  onToggleDone: (id: StepId) => void;
+  /** Left out on a caregiver's read-only copy: no Mark as done or to-do ticking. */
+  onToggleDone?: (id: StepId) => void;
+  /** The traveler's home country, for country-specific step text. */
+  home?: string;
 }
 
 /**
@@ -25,7 +28,7 @@ interface Props {
  * step starts in the middle; arrows, swiping or picking a pill moves along.
  * Picking a pill centres it and opens its details below.
  */
-export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: Props) {
+export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone, home }: Props) {
   const stepOrder = STEPS_BY_PURPOSE[journey.visaType];
   const { t, lang } = useT();
   const trackRef = useRef<HTMLOListElement>(null);
@@ -172,7 +175,8 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
             plan={openPlan}
             status={statusOf(open.id)}
             interviewDate={journey.best.interviewDate}
-            onToggleDone={() => onToggleDone(open.id)}
+            onToggleDone={onToggleDone && (() => onToggleDone(open.id))}
+            home={home}
             earlierUndone={stepOrder.slice(0, stepOrder.indexOf(open.id)).some((id) => statusOf(id) !== "done")}
             autoFocus={open.focus}
           />

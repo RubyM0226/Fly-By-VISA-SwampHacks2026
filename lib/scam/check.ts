@@ -98,7 +98,7 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
         "इस संदेश में न पैसे दें, न जवाब दें, न कोई लिंक खोलें।",
         "अपना पासपोर्ट, OTP, आधार या बैंक की जानकारी किसी को न दें।",
         "कुछ भी करने से पहले किसी भरोसेमंद परिवार वाले से बात करें।",
-        "सिर्फ़ अमेरिकी सरकार के आधिकारिक पृष्ठ देखें, जो .gov पर खत्म होते हैं।",
+        "सिर्फ़ U.S. सरकार के आधिकारिक पृष्ठ देखें, जो .gov पर खत्म होते हैं।",
       ],
     },
   },
@@ -112,7 +112,7 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
       ],
       hi: [
         "अभी न पैसे दें, न कोई जानकारी दें।",
-        "जो लिखा है उसे अमेरिकी सरकार के आधिकारिक पृष्ठों (.gov) पर जाँचें।",
+        "जो लिखा है उसे U.S. सरकार के आधिकारिक पृष्ठों (.gov) पर जाँचें।",
         "किसी भरोसेमंद परिवार वाले के साथ इसे देखें।",
       ],
     },
@@ -128,7 +128,7 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
       hi: [
         "हमें साफ़ चेतावनी के संकेत नहीं मिले, पर इसका मतलब यह नहीं कि संदेश असली है।",
         "पैसे देने या कोई जानकारी देने से पहले नीचे दिए आधिकारिक पृष्ठों पर खुद जाँचें।",
-        "अमेरिकी सरकार कभी गिफ्ट कार्ड, किसी व्यक्ति को UPI या नकद में पैसे नहीं माँगती।",
+        "U.S. सरकार कभी गिफ्ट कार्ड, किसी व्यक्ति को UPI या नकद में पैसे नहीं माँगती।",
       ],
     },
   },
@@ -136,9 +136,9 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
 
 /** Official pages to check against. Shown with every verdict, and required for "cant-tell". */
 export const OFFICIAL_LINKS: { label: Record<Lang, string>; url: string }[] = [
-  { label: { en: "Visa fraud warning (U.S. State Department)", hi: "वीज़ा धोखाधड़ी की चेतावनी (अमेरिकी विदेश विभाग)" }, url: LINKS.fraudWarning },
-  { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
-  { label: { en: "U.S. Embassy in the United Kingdom: visas", hi: "United Kingdom में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyUK },
-  { label: { en: "U.S. Embassy in Mexico: visas", hi: "Mexico में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyMexico },
+  { label: { en: "Visa fraud warning (U.S. State Department)", hi: "वीज़ा धोखाधड़ी की चेतावनी (U.S. विदेश विभाग)" }, url: LINKS.fraudWarning },
+  { label: { en: "U.S. Embassy in India: visas", hi: "India में U.S. Embassy: वीज़ा" }, url: LINKS.embassyIndia },
+  { label: { en: "U.S. Embassy in the United Kingdom: visas", hi: "United Kingdom में U.S. Embassy: वीज़ा" }, url: LINKS.embassyUK },
+  { label: { en: "U.S. Embassy in Mexico: visas", hi: "Mexico में U.S. Embassy: वीज़ा" }, url: LINKS.embassyMexico },
   { label: { en: "Visitor visa (official page)", hi: "आगंतुक वीज़ा (आधिकारिक पृष्ठ)" }, url: LINKS.visitorVisa },
 ];

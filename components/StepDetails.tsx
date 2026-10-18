@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { DOCUMENTS } from "@/content/documents";
 import type { StepContent } from "@/content/steps";
@@ -12,6 +13,7 @@ import { useTrip } from "@/lib/trip";
 import { plainText, RichText } from "./Glossary";
 import { AlertIcon, ArrowIcon, CheckIcon, DocumentIcon, ExternalIcon, PinIcon } from "./Icons";
 import { SelectedFlightBox } from "./SelectedFlightBox";
+import { helperHome } from "./SideNav";
 import { SpeakButton } from "./SpeakButton";
 
 export type StepStatus = "done" | "current" | "upcoming";
@@ -21,7 +23,10 @@ interface Props {
   plan: StepPlan;
   status: StepStatus;
   interviewDate: string;
-  onToggleDone: () => void;
+  /** Left out on a caregiver's read-only copy: no Mark as done, no to-do ticking. */
+  onToggleDone?: () => void;
+  /** The traveler's home country (a caregiver's browser may hold none). */
+  home?: string;
   /** Some step before this one is not done yet (marking this one done then shows a warning). */
   earlierUndone: boolean;
   /** Move focus to the heading when shown (keyboard and screen-reader users land here). */
@@ -29,11 +34,14 @@ interface Props {
 }
 
 /** Everything about one step, shown beside the roadmap when its pill is picked. */
-export function StepDetails({ step: rawStep, plan, status, interviewDate, onToggleDone, earlierUndone, autoFocus }: Props) {
+export function StepDetails({ step: rawStep, plan, status, interviewDate, onToggleDone, earlierUndone, home, autoFocus }: Props) {
+  const readOnly = !onToggleDone;
+  // On a helper link, "View my documents" opens the shared documents page, not the traveler's own.
+  const docsBase = helperHome(usePathname()) ?? "";
   const { t, lang } = useT();
   const [todos, setTodos] = useTodos();
   const [trip] = useTrip();
-  const { loc } = useHome();
+  const { loc } = useHome(home);
   const step = loc(rawStep);
   const text = step.text[lang];
   const documents = step.documents.map((id) => loc(DOCUMENTS[id]));
@@ -49,7 +57,7 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
     const markingDone = status !== "done";
     setJustStamped(markingDone);
     setSkippedAhead(markingDone && earlierUndone);
-    onToggleDone();
+    onToggleDone?.();
   }
 
   useEffect(() => {
@@ -105,7 +113,7 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
         </div>
         {hasUploads && (
           <Link
-            href={`/documents#docs-${step.id}`}
+            href={`${docsBase}/documents#docs-${step.id}`}
             data-button
             className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover"
           >
@@ -122,7 +130,7 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
             {t("journey.interviewSlot", { date: formatDate(interviewDate, lang) })}
           </p>
         )}
-        {step.action && (
+        {step.action && !readOnly && (
           <div className="col-span-full flex flex-wrap gap-3">
             <Link
               href={step.action.href}
@@ -135,31 +143,42 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
         )}
 
         {/* The flight picked on the Flights page, if any. */}
-        {step.id === "travel" && trip.selectedFlight && <SelectedFlightBox flight={trip.selectedFlight} />}
+        {/* This browser's pick, so not on a caregiver's copy. */}
+        {!readOnly && step.id === "travel" && trip.selectedFlight && <SelectedFlightBox flight={trip.selectedFlight} />}
 
         <div className="min-w-0 @3xl:row-span-2 @6xl:row-span-1">
           <h4 className="mb-1 text-lg font-bold">{t("journey.whatToDo")}:</h4>
-          {/* Ticks are saved in this browser only (lib/todos.ts). */}
-          <ul className="space-y-1 text-lg">
-            {text.what.map((line, i) => {
-              const key = todoKey(step.id, i);
-              return (
-                <li key={key}>
-                  <label className="flex min-h-12 cursor-pointer items-start gap-3 py-1.5">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(todos[key])}
-                      onChange={(e) => setTodos({ [key]: e.target.checked })}
-                      className="mt-0.5 h-6 w-6 shrink-0 cursor-pointer accent-(--accent)"
-                    />
-                    <span>
-                      <RichText text={line} />
-                    </span>
-                  </label>
+          {/* Ticks are saved in this browser only (lib/todos.ts), so a caregiver's copy has plain bullets. */}
+          {readOnly ? (
+            <ul className="list-disc space-y-1 pl-6 text-lg">
+              {text.what.map((line) => (
+                <li key={line}>
+                  <RichText text={line} />
                 </li>
-              );
-            })}
-          </ul>
+              ))}
+            </ul>
+          ) : (
+            <ul className="space-y-1 text-lg">
+              {text.what.map((line, i) => {
+                const key = todoKey(step.id, i);
+                return (
+                  <li key={key}>
+                    <label className="flex min-h-12 cursor-pointer items-start gap-3 py-1.5">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(todos[key])}
+                        onChange={(e) => setTodos({ [key]: e.target.checked })}
+                        className="mt-0.5 h-6 w-6 shrink-0 cursor-pointer accent-(--accent)"
+                      />
+                      <span>
+                        <RichText text={line} />
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         <div className="min-w-0">
@@ -218,32 +237,34 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
           </ul>
         </div>
 
-        <div className="col-span-full flex flex-wrap items-center gap-3 border-t-2 border-line pt-4">
-          {/* Left of the button. Always rendered, so screen readers hear it when it fills in. */}
-          <p role="status" className={skippedAhead && status === "done" ? "flex items-center gap-2 text-lg font-semibold text-warm-ink" : "sr-only"}>
-            {skippedAhead && status === "done" && (
-              <>
-                <AlertIcon className="h-6 w-6 shrink-0" />
-                {t("journey.earlierNotDone")}
-              </>
-            )}
-          </p>
-          <button
-            type="button"
-            onClick={toggleDone}
-            className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-2 text-lg font-bold ${
-              status === "done"
-                ? "border-2 border-line-strong bg-surface text-ink hover:bg-hover"
-                : "bg-accent text-accent-ink"
-            }`}
-          >
-            {status !== "done" && <CheckIcon className="h-5 w-5" />}
-            {status === "done" ? t("journey.undo") : t("journey.markDone")}
-          </button>
-          <p role="status" className="sr-only">
-            {status === "done" && justStamped ? t("journey.markedDone") : ""}
-          </p>
-        </div>
+        {!readOnly && (
+          <div className="col-span-full flex flex-wrap items-center gap-3 border-t-2 border-line pt-4">
+            {/* Left of the button. Always rendered, so screen readers hear it when it fills in. */}
+            <p role="status" className={skippedAhead && status === "done" ? "flex items-center gap-2 text-lg font-semibold text-warm-ink" : "sr-only"}>
+              {skippedAhead && status === "done" && (
+                <>
+                  <AlertIcon className="h-6 w-6 shrink-0" />
+                  {t("journey.earlierNotDone")}
+                </>
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={toggleDone}
+              className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-2 text-lg font-bold ${
+                status === "done"
+                  ? "border-2 border-line-strong bg-surface text-ink hover:bg-hover"
+                  : "bg-accent text-accent-ink"
+              }`}
+            >
+              {status !== "done" && <CheckIcon className="h-5 w-5" />}
+              {status === "done" ? t("journey.undo") : t("journey.markDone")}
+            </button>
+            <p role="status" className="sr-only">
+              {status === "done" && justStamped ? t("journey.markedDone") : ""}
+            </p>
+          </div>
+        )}
       </div>
     </article>
   );
