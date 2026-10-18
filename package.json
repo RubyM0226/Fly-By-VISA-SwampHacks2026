@@ -9,6 +9,7 @@
     "lint": "eslint",
     "eval": "tsx scripts/eval/run-eval.ts",
     "test:templates": "tsx scripts/test-templates.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
     "test:scam": "tsx scripts/test-scam.ts && tsx scripts/test-redact.ts && tsx scripts/test-scam-ai.ts"
   },
   "dependencies": {
