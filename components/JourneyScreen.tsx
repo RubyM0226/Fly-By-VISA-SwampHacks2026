@@ -228,17 +228,13 @@ export function JourneyView({ trip, own }: { trip: Trip; own?: OwnControls }) {
               <ArrowIcon className="h-6 w-6" />
             </Link>
           )}
-          {/* Read-only: Print takes Change my answers' place, in its style. */}
+          {/* Same style as Change my answers; the column stretches both to one width. */}
           <button
             type="button"
             onClick={() => window.print()}
-            className={
-              own
-                ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-2 text-lg font-semibold hover:bg-hover"
-                : "inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
-            }
+            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
           >
-            {t("journey.print")}
+            {t(own ? "journey.print" : "journey.printTraveler")}
           </button>
         </div>
       </section>
