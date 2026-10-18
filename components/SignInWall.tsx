@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useT } from "@/lib/i18n";
 
 /** Grey stand-in blocks that look like a page, blurred. Not real content. */
@@ -20,8 +21,12 @@ function FakePage() {
   );
 }
 
-/** The signed-out view of a gated page: a blurred page with a sign-in card on top. */
-export function SignInWall({ returnTo }: { returnTo: string }) {
+/**
+ * The locked view of a gated page: a blurred page with a card on top. Signed
+ * out, the card asks them to sign in. `needsPlan`: signed in but no saved
+ * journey yet, so the card sends them to start their plan instead.
+ */
+export function SignInWall({ returnTo, needsPlan = false }: { returnTo: string; needsPlan?: boolean }) {
   const { t } = useT();
   return (
     <div className="relative min-h-[60vh]">
@@ -29,17 +34,27 @@ export function SignInWall({ returnTo }: { returnTo: string }) {
       <div className="absolute inset-0 flex items-start justify-center px-2 pt-10 sm:items-center sm:pt-0">
         <section aria-labelledby="gate-title" className="w-full max-w-md space-y-3 rounded-2xl border-2 border-accent bg-surface p-6 text-center shadow-lg">
           <h1 id="gate-title" className="text-2xl font-bold">
-            {t("gate.title")}
+            {t(needsPlan ? "gate.plan.title" : "gate.title")}
           </h1>
-          <p className="text-lg">{t("gate.body")}</p>
-          {/* Auth0's login needs a full page load, not a client-side Link. */}
-          <a
-            href={`/auth/login?returnTo=${encodeURIComponent(returnTo)}`}
-            data-button
-            className="inline-flex min-h-14 items-center rounded-xl bg-accent px-8 py-3 text-xl font-bold text-accent-ink"
-          >
-            {t("gate.button")}
-          </a>
+          <p className="text-lg">{t(needsPlan ? "gate.plan.body" : "gate.body")}</p>
+          {needsPlan ? (
+            <Link
+              href="/start"
+              data-button
+              className="inline-flex min-h-14 items-center rounded-xl bg-accent px-8 py-3 text-xl font-bold text-accent-ink"
+            >
+              {t("gate.plan.button")}
+            </Link>
+          ) : (
+            // Auth0's login needs a full page load, not a client-side Link.
+            <a
+              href={`/auth/login?returnTo=${encodeURIComponent(returnTo)}`}
+              data-button
+              className="inline-flex min-h-14 items-center rounded-xl bg-accent px-8 py-3 text-xl font-bold text-accent-ink"
+            >
+              {t("gate.button")}
+            </a>
+          )}
         </section>
       </div>
     </div>

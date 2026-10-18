@@ -16,6 +16,8 @@ import { useSettings } from "@/lib/settings";
 import { useHome } from "@/lib/homeCountry";
 import { ArrowIcon, ExternalIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
+import { JourneyPrompts } from "./JourneyPrompts";
+import { PrintablePlan } from "./PrintablePlan";
 import { RoadmapPath, type OpenStep } from "./RoadmapPath";
 import type { StepStatus } from "./StepDetails";
 import { BACK } from "./ScreenTransition";
@@ -32,7 +34,9 @@ export function JourneyScreen() {
   const hasSynced = useRef(false);
   
   // Auth0 User Session
-  const { user } = useUser();
+  const { user, isLoading: userLoading } = useUser();
+  // Read only: decides whether to suggest signing in.
+  const signedOut = !userLoading && !user;
 
   const home = isOrigin(trip.from) ? trip.from : null;
   const ready = Boolean(today && trip.arrival && home && trip.to === "US");
@@ -179,16 +183,28 @@ export function JourneyScreen() {
             </div>
           </dl>
         </div>
-        <Link
-          href={editHref}
-          transitionTypes={user ? undefined : BACK}
-          data-button
-          className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
-        >
-          {t("journey.edit")}
-          <ArrowIcon className="h-6 w-6" />
-        </Link>
+        <div className="flex shrink-0 flex-col gap-3">
+          <Link
+            href={editHref}
+            transitionTypes={user ? undefined : BACK}
+            data-button
+            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
+          >
+            {t("journey.edit")}
+            <ArrowIcon className="h-6 w-6" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-2 text-lg font-semibold hover:bg-hover"
+          >
+            {t("journey.print")}
+          </button>
+        </div>
       </section>
+
+      <PrintablePlan profile={trip} done={trip.done} today={today} />
+      <JourneyPrompts journey={journey} signedOut={signedOut} editHref={editHref} />
 
       {/* One sentence, one big button: always a way forward. */}
       <section

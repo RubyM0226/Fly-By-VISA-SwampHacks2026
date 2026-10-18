@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { useId, useState } from "react";
 import { LINKS } from "@/lib/config";
-import { ASSUMPTIONS, formatDate, WAIT_TIMES_AS_OF, type Fit, type Journey } from "@/lib/journey";
+import { fitReason } from "@/lib/fitReason";
+import { formatDate, WAIT_TIMES_AS_OF, type Fit, type Journey, type PostResult } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
 import { useHome } from "@/lib/homeCountry";
 import { AlertIcon, CheckIcon, ClockIcon, ExternalIcon } from "./Icons";
@@ -12,13 +15,57 @@ const FIT_STYLE: Record<Fit, string> = {
   atRisk: "border-danger bg-danger-soft text-danger",
 };
 
-export function FitBadge({ fit }: { fit: Fit }) {
-  const { t } = useT();
+/**
+ * The office's status. Hover, keyboard focus or a tap shows why, from its own
+ * numbers, in a box like a glossary word's. Escape hides it.
+ */
+/** `alignRight`: the badge sits at a right edge, so the reason opens leftward. */
+export function FitBadge({ post, alignRight = false }: { post: PostResult; alignRight?: boolean }) {
+  const { t, lang } = useT();
+  const [hover, setHover] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const id = useId();
+  const fit = post.fit;
   const Icon = fit === "onTrack" ? CheckIcon : fit === "tight" ? ClockIcon : AlertIcon;
+  const open = hover || focus || pinned;
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-base font-bold ${FIT_STYLE[fit]}`}>
-      <Icon className="h-5 w-5" />
-      {t(`fit.${fit}`)}
+    <span
+      className="relative inline-flex"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          setPinned(false);
+          setHover(false);
+          setFocus(false);
+        }
+      }}
+    >
+      <button
+        type="button"
+        aria-describedby={id}
+        aria-expanded={open}
+        onClick={() => setPinned((p) => !p)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => {
+          setFocus(false);
+          setPinned(false);
+        }}
+        className={`inline-flex min-h-11 cursor-help items-center gap-1.5 rounded-full border-2 px-3 py-1 text-base font-bold ${FIT_STYLE[fit]}`}
+      >
+        <Icon className="h-5 w-5" />
+        <span className="underline decoration-dotted decoration-2 underline-offset-4">{t(`fit.${fit}`)}</span>
+      </button>
+      {/* Always in the DOM so screen readers get the reason through aria-describedby. */}
+      <span
+        id={id}
+        role="tooltip"
+        hidden={!open}
+        className={`absolute ${alignRight ? "right-0" : "left-0"} top-full z-20 mt-1 w-[min(18rem,80vw)] rounded-lg border-2 border-line-strong bg-surface p-3 text-base font-normal text-ink shadow-lg`}
+      >
+        {fitReason(t, lang, post)}
+      </span>
     </span>
   );
 }
@@ -47,7 +94,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
         <h2 id="fit-title" className="text-2xl font-bold">
           {t("fit.yourDate", { date: formatDate(journey.arrival, lang) })}
         </h2>
-        <FitBadge fit={best.fit} />
+        <FitBadge post={best} />
       </div>
 
       {/* One fact per line: label, then the value. */}
@@ -70,7 +117,12 @@ export function FitPanel({ journey }: { journey: Journey }) {
         </div>
       </dl>
 
-      <HowWeWorkedItOut journey={journey} />
+      {/* The full walk-through lives on the Help page (components/PlanMath.tsx). */}
+      <p className="text-right">
+        <Link href="/guide#plan-status" className="inline-flex min-h-12 items-center text-base font-semibold text-accent underline">
+          {t("fit.how.title")}
+        </Link>
+      </p>
 
       {best.fit !== "onTrack" && <p className="text-lg font-semibold">{t(`fit.${best.fit}.tip`)}</p>}
       <p className="text-base text-muted">{t("fit.emergency")}</p>
@@ -83,9 +135,12 @@ export function FitPanel({ journey }: { journey: Journey }) {
               key={p.id}
               className={`space-y-2 rounded-xl border-2 p-4 ${i === 0 ? "border-accent" : "border-line-strong"}`}
             >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-lg font-bold">{t(`post.${p.id}`)}</p>
-                <FitBadge fit={p.fit} />
+              {/* No wrap: the badge stays at the right, where its reason opens leftward. */}
+              <div className="flex items-start justify-between gap-2">
+                <p className="min-w-0 text-lg font-bold">{t(`post.${p.id}`)}</p>
+                <span className="shrink-0">
+                  <FitBadge post={p} alignRight />
+                </span>
               </div>
               <p className="text-base">{p.waitMonths === 1 ? t("fit.waitOne") : t("fit.wait", { n: p.waitMonths })}</p>
               <p className="text-base">{t("fit.interview", { date: formatDate(p.interviewDate, lang) })}</p>
@@ -113,62 +168,5 @@ export function FitPanel({ journey }: { journey: Journey }) {
         </a>
       </p>
     </section>
-  );
-}
-
-/** Plain-language walk-through of the "days to spare / too late" math, using the traveler's own dates. */
-function HowWeWorkedItOut({ journey }: { journey: Journey }) {
-  const { t, lang } = useT();
-  const best = journey.best;
-  const A = ASSUMPTIONS;
-  const d = (iso: string) => formatDate(iso, lang);
-  const gap = Math.abs(best.slackDays);
-  const days = gap === 1 ? t("fit.how.day") : t("fit.how.days", { n: gap });
-  const months = best.waitMonths === 1 ? t("fit.how.month") : t("fit.how.months", { n: best.waitMonths });
-  const late = best.slackDays < 0;
-
-  return (
-    <details className="rounded-xl border-2 border-line p-4">
-      <summary className="min-h-12 cursor-pointer text-xl font-bold">{t("fit.how.title")}</summary>
-      <div className="mt-3 space-y-4 text-lg leading-relaxed">
-        <p>{t("fit.how.intro")}</p>
-        <div>
-          <h3 className="font-bold">{t("fit.how.s1.title")}</h3>
-          <p>
-            {t("fit.how.s1.body", {
-              today: d(journey.today),
-              book: A.daysUntilBooking,
-              office: t(`post.${best.id}`),
-              months,
-              interview: d(best.interviewDate),
-            })}
-          </p>
-        </div>
-        <div>
-          <h3 className="font-bold">{t("fit.how.s2.title")}</h3>
-          <p>
-            {t("fit.how.s2.body", {
-              arrival: d(journey.arrival),
-              visa: A.daysAfterInterviewForVisa,
-              buffer: A.daysBeforeArrivalBuffer,
-              total: A.daysAfterInterviewForVisa + A.daysBeforeArrivalBuffer,
-              latest: d(best.latestInterviewDate),
-            })}
-          </p>
-        </div>
-        <div>
-          <h3 className="font-bold">{t("fit.how.s3.title")}</h3>
-          <p className={late ? "font-semibold text-danger" : ""}>
-            {t(late ? "fit.how.s3.late" : "fit.how.s3.spare", {
-              interview: d(best.interviewDate),
-              latest: d(best.latestInterviewDate),
-              days,
-            })}
-          </p>
-        </div>
-        <p>{t("fit.how.badge")}</p>
-        <p className="text-base text-muted">{t("fit.how.note")}</p>
-      </div>
-    </details>
   );
 }
