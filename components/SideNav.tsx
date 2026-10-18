@@ -16,6 +16,12 @@ const itemClass = (active: boolean) =>
   }`;
 const labelClass = "sr-only md:not-sr-only";
 
+/** A caregiver's home (/help/[token]) when on a helper-link page, else null. */
+export function helperHome(pathname: string): string | null {
+  const m = /^\/help\/([^/]+)/.exec(pathname);
+  return m ? `/help/${m[1]}` : null;
+}
+
 function NavItem({ href, label, Icon, active }: { href: string; label: string; Icon: IconType; active: boolean }) {
   return (
     <li>
@@ -42,17 +48,34 @@ export function SideNav() {
   if (pathname === "/") return null;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const navClass =
+    "sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 flex flex-col overflow-y-auto border-r-2 border-line bg-surface md:w-48";
+  const listClass = "flex shrink-0 flex-col gap-2 p-[8px] md:p-2";
+
+  // Caregivers on a helper link get their own token-scoped nav: never the
+  // traveler's Dashboard, Account or sign-in, even if this browser is signed in.
+  const home = helperHome(pathname);
+  if (home) {
+    return (
+      <nav aria-label={t("nav.main")} className={navClass}>
+        <ul className={listClass}>
+          <NavItem href={home} label={t("nav.sharedPlan")} Icon={PlanIcon} active={pathname === home} />
+          {/* Phase 1B: the caregiver "Documents" item goes here. */}
+        </ul>
+        <ul className={`mt-auto ${listClass}`}>
+          <NavItem href={`${home}/account`} label={t("nav.account")} Icon={UserIcon} active={isActive(`${home}/account`)} />
+        </ul>
+      </nav>
+    );
+  }
 
   const item = (href: string, label: UiKey, Icon: IconType) => (
     <NavItem href={href} label={t(label)} Icon={Icon} active={isActive(href)} />
   );
 
   return (
-    <nav
-      aria-label={t("nav.main")}
-      className="sticky top-[var(--sticky-header-h,0px)] z-30 h-[calc(100dvh-var(--sticky-header-h,0px))] w-[64px] shrink-0 flex flex-col overflow-y-auto border-r-2 border-line bg-surface md:w-48"
-    >
-      <ul className="flex shrink-0 flex-col gap-2 p-[8px] md:p-2">
+    <nav aria-label={t("nav.main")} className={navClass}>
+      <ul className={listClass}>
         {user ? (
           item("/journey", "nav.dashboard", PlanIcon)
         ) : (
@@ -71,6 +94,7 @@ export function SideNav() {
         {item("/glossary", "nav.glossary", BookIcon)}
         {item("/scam-check", "nav.scam", ShieldIcon)}
       </ul>
+      {user && <ul className={`mt-auto ${listClass}`}>{item("/account", "nav.account", UserIcon)}</ul>}
     </nav>
   );
 }

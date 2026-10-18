@@ -1,11 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/config";
 import { useT } from "@/lib/i18n";
 import { LogoIcon } from "./Icons";
 import { AccessibilityBar } from "./AccessibilityBar";
+import { helperHome } from "./SideNav";
+
+function LogoLink({ compact, href }: { compact: boolean; href: string }) {
+  const { t, lang } = useT();
+  return (
+    <Link
+      href={href}
+      className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap text-xl font-bold text-accent"
+      aria-label={`${APP_NAME[lang]}, ${t("nav.home")}`}
+    >
+      <LogoIcon className="h-7 w-7 shrink-0" />
+      {/* On the narrowest screens only the icon shows. */}
+      {!compact && <span>{APP_NAME[lang]}</span>}
+    </Link>
+  );
+}
+
+// Caregivers go back to the shared plan, never to the traveler's pages.
+function HomeLink({ compact }: { compact: boolean }) {
+  return <LogoLink compact={compact} href={helperHome(usePathname()) ?? "/"} />;
+}
 
 interface UserProfile {
   name?: string;
@@ -14,7 +36,6 @@ interface UserProfile {
 
 /** One sticky row: logo, accessibility controls, Auth0 controls. */
 export function Header() {
-  const { t, lang } = useT();
   const ref = useRef<HTMLElement>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -50,15 +71,9 @@ export function Header() {
     <header ref={ref} className="sticky top-0 z-40" style={{ viewTransitionName: "site-header" }}>
       <AccessibilityBar
         start={(compact) => (
-          <Link
-            href="/"
-            className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap text-xl font-bold text-accent"
-            aria-label={`${APP_NAME[lang]}, ${t("nav.home")}`}
-          >
-            <LogoIcon className="h-7 w-7 shrink-0" />
-            {/* On the narrowest screens only the icon shows. */}
-            {!compact && <span>{APP_NAME[lang]}</span>}
-          </Link>
+          <Suspense fallback={<LogoLink compact={compact} href="/" />}>
+            <HomeLink compact={compact} />
+          </Suspense>
         )}
       />
     </header>
