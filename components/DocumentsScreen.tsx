@@ -276,6 +276,10 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
   const addedCount = UPLOAD_DOC_IDS.filter((id) => filesFor(id).length > 0).length;
   const count = files?.length ?? 0;
   const docName = (id: DocId) => loc(DOCUMENTS[id].name[lang]);
+  const docDescription = (id: DocId) => {
+    const d = DOCUMENTS[id].description;
+    return d ? loc(d[lang]) : "";
+  };
 
   const statusMessage = (where: Where) => (
     <p
@@ -321,7 +325,18 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
       </button>
     );
 
-  function blankInfo(blank: Blank | undefined) {
+  /** The note beside "Add my copy" ("*Fill this in online."). None when you just use your own papers. */
+  function blankNote(blank: Blank | undefined) {
+    if (blank?.type !== "online" && blank?.type !== "template") return null;
+    return (
+      <p className="text-base italic text-muted">
+        *{t(blank.type === "online" ? "documents.blank.online" : "documents.blank.templateHint")}
+      </p>
+    );
+  }
+
+  /** Below the card: the official page, or our template and what it is. */
+  function blankLinks(blank: Blank | undefined) {
     if (!blank) return null;
     if (blank.type === "template") {
       return (
@@ -334,19 +349,13 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         </div>
       );
     }
+    if (!blank.url) return null;
     return (
-      <div className="space-y-1">
-        <p className="text-base text-muted">
-          {t(blank.type === "online" ? "documents.blank.online" : "documents.blank.none")}
-        </p>
-        {blank.url && (
-          <a href={blank.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
-            {t(blank.type === "online" ? "documents.blank.onlineLink" : "documents.blank.noneLink")}
-            <ExternalIcon className="h-4 w-4" />
-            <span className="sr-only">{t("journey.opensNewTab")}</span>
-          </a>
-        )}
-      </div>
+      <a href={blank.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        {t(blank.type === "online" ? "documents.blank.onlineLink" : "documents.blank.noneLink")}
+        <ExternalIcon className="h-4 w-4" />
+        <span className="sr-only">{t("journey.opensNewTab")}</span>
+      </a>
     );
   }
 
@@ -410,7 +419,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
             (id) =>
               `${plainText(docName(id))}: ${
                 known ? t(filesFor(id).length > 0 ? "documents.added" : "documents.missing") : ""
-              }.`,
+              }. ${docDescription(id)}`,
           ),
         ].join(" ");
         return (
@@ -418,7 +427,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
             key={stepId}
             id={`docs-${stepId}`}
             aria-labelledby={`docs-title-${stepId}`}
-            className="scroll-mt-24 space-y-4 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
+            className="@container scroll-mt-24 space-y-4 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
           >
             <div className="flex flex-wrap items-center gap-2">
               <h2 id={`docs-title-${stepId}`} tabIndex={-1} className="text-2xl font-bold text-accent outline-none">
@@ -426,23 +435,31 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
               </h2>
               <SpeakButton ownerId={`docs-${stepId}`} getText={() => readText} />
             </div>
-            <ul className="space-y-3">
+            {/* Several papers: side by side. Container rem breakpoints grow with the
+                text size, so larger text falls back to fewer columns (as in StepDetails). */}
+            <ul className={docs.length > 1 ? "grid items-start gap-3 @3xl:grid-cols-2 @6xl:grid-cols-3" : "space-y-3"}>
               {docs.map((docId) => {
                 const where = `${stepId}-${docId}`;
                 const mine = filesFor(docId);
                 const has = mine.length > 0;
+                const blank = loc(DOCUMENTS[docId].blank);
+                const description = docDescription(docId);
                 return (
-                  <li key={docId} className="space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
+                  <li key={docId} className="min-w-0 space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
                     <div className="space-y-1">
-                      <h3 id={`doc-${where}`} tabIndex={-1} className="text-xl font-bold outline-none">
-                        <RichText text={docName(docId)} />
-                      </h3>
-                      {known && (
-                        <p className={`flex items-center gap-1.5 text-lg font-semibold ${has ? "text-accent" : "text-muted"}`}>
-                          {has ? <CheckIcon className="h-5 w-5 shrink-0" /> : <CircleIcon className="h-5 w-5 shrink-0" />}
-                          {t(has ? "documents.added" : "documents.missing")}
-                        </p>
-                      )}
+                      {/* Title, then whether a copy is added, on one line. */}
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <h3 id={`doc-${where}`} tabIndex={-1} className="text-xl font-bold outline-none">
+                          <RichText text={docName(docId)} />
+                        </h3>
+                        {known && (
+                          <p className={`inline-flex items-center gap-1.5 self-center text-lg font-semibold ${has ? "text-accent" : "text-muted"}`}>
+                            {has ? <CheckIcon className="h-5 w-5 shrink-0" /> : <CircleIcon className="h-5 w-5 shrink-0" />}
+                            {t(has ? "documents.added" : "documents.missing")}
+                          </p>
+                        )}
+                      </div>
+                      {description && <p className="text-base">{description}</p>}
                     </div>
 
                     {mine.map((f) => (
@@ -466,20 +483,26 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
                       </div>
                     ))}
 
-                    {known && !has && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => pickFor(where, docId)}
-                        className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink disabled:opacity-60"
-                      >
-                        {t("documents.addCopy")}
-                        <span className="sr-only"> {plainText(docName(docId))}</span>
-                      </button>
+                    {/* "Add my copy" with its note beside it (the note alone once a copy is added). */}
+                    {((known && !has) || blankNote(blank)) && (
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        {known && !has && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => pickFor(where, docId)}
+                            className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink disabled:opacity-60"
+                          >
+                            {t("documents.addCopy")}
+                            <span className="sr-only"> {plainText(docName(docId))}</span>
+                          </button>
+                        )}
+                        {blankNote(blank)}
+                      </div>
                     )}
 
                     {statusMessage(where)}
-                    {blankInfo(loc(DOCUMENTS[docId].blank))}
+                    {blankLinks(blank)}
                   </li>
                 );
               })}
