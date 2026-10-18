@@ -132,6 +132,11 @@ const en = {
   "helperAccount.stopViewing": "Stop viewing this plan",
   "helperAccount.ownAccount": "Sign in / Sign up for your own account",
   "helperAccount.comingSoon": "Coming soon",
+  "helperDocs.title": "Documents for the traveler",
+  "helperDocs.lead": "These are the visa papers of the traveler who shared this plan with you.",
+  "helperDocs.note":
+    "You are handling someone else's documents. You can open their files and add new ones. You cannot replace or delete their files.",
+  "files.err.unavailable": "The traveler's files are not available yet. They need to log in to their own account first.",
 
   "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "landing.about":
@@ -464,7 +469,7 @@ const hi: Record<UiKey, string> = {
   "documents.otherLead": "पहले जोड़ी गई फ़ाइलें, और ऐसे संदेश जो आपको ठगी लगते हैं।",
   "myPlan.filesMoved": "आपकी फ़ाइलें अब दस्तावेज़ पृष्ठ पर रखी जाती हैं, हर कदम के ज़रूरी कागज़ों के साथ।",
   "journey.goToDocuments": "मेरे दस्तावेज़ पर जाएँ",
-  // DRAFT: the Account strings below need a native Hindi reader.
+  // DRAFT: the Account, helperDocs and files.err.unavailable strings below need a native Hindi reader.
   "nav.account": "खाता",
   "nav.sharedPlan": "साझा योजना",
   "account.addCollaborator": "सहयोगी जोड़ें",
@@ -474,6 +479,11 @@ const hi: Record<UiKey, string> = {
   "helperAccount.stopViewing": "यह योजना देखना बंद करें",
   "helperAccount.ownAccount": "अपने खाते के लिए साइन इन / साइन अप करें",
   "helperAccount.comingSoon": "जल्द आ रहा है",
+  "helperDocs.title": "यात्री के दस्तावेज़",
+  "helperDocs.lead": "ये उस यात्री के वीज़ा कागज़ हैं जिन्होंने यह योजना आपके साथ साझा की है।",
+  "helperDocs.note":
+    "आप किसी और के दस्तावेज़ संभाल रहे हैं। आप उनकी फ़ाइलें खोल सकते हैं और नई जोड़ सकते हैं। आप उनकी फ़ाइलें बदल या मिटा नहीं सकते।",
+  "files.err.unavailable": "यात्री की फ़ाइलें अभी उपलब्ध नहीं हैं। पहले उन्हें अपने खाते में लॉग इन करना होगा।",
 
   // DRAFT: needs a native Hindi reader.
   "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",

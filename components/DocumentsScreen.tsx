@@ -24,7 +24,9 @@ import { SpeakButton } from "./SpeakButton";
 // The Documents tab: private uploads for signed-in people, kept in a private
 // Vercel Blob store (see app/api/uploads). Files are grouped by the roadmap
 // step that needs them; files with no document (older ones, possible scams)
-// show under "Other files". Only mount this behind the sign-in gate.
+// show under "Other files". Only mount this behind the sign-in gate, or with a
+// helperToken for a caregiver: then it uses the token routes (app/api/helper),
+// and can view and add files but never replace or delete them.
 
 const CONSENT_KEY = "flybyvisa-files-consent";
 const MB = Math.round(MAX_UPLOAD_BYTES / (1024 * 1024));
@@ -50,10 +52,10 @@ async function errorCode(res: Response): Promise<UploadError> {
   return res.status === 401 ? "unauthorized" : "server";
 }
 
-/** The signed-in person's files, or null when they could not be loaded. */
-async function fetchFiles(): Promise<UploadedFile[] | null> {
+/** The files at an uploads API, or null when they could not be loaded. */
+async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
   try {
-    const res = await fetch("/api/uploads", { cache: "no-store" });
+    const res = await fetch(base, { cache: "no-store" });
     if (!res.ok) return null;
     const body = (await res.json()) as { files: UploadedFile[] };
     return body.files;
@@ -79,14 +81,17 @@ const dangerButton =
   "inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-5 py-2 text-lg font-semibold text-danger hover:bg-danger-soft disabled:opacity-60";
 const linkClass = "inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline";
 
-export function DocumentsScreen() {
+export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) {
   const { t, lang } = useT();
+  const caregiver = helperToken !== undefined;
+  const base = caregiver ? `/api/helper/${encodeURIComponent(helperToken)}/uploads` : "/api/uploads";
   const [files, setFiles] = useState<UploadedFile[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [kind, setKind] = useState<UploadKind>("immigration");
   const savedConsent = useSyncExternalStore(noopSubscribe, readConsent, () => false);
   const [consentChoice, setConsentChoice] = useState<boolean | null>(null);
-  const consent = consentChoice ?? savedConsent;
+  // The consent tick is the traveler's own; a caregiver sees a note instead.
+  const consent = caregiver || (consentChoice ?? savedConsent);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>({ where: "", text: "", problem: false });
   const [target, setTarget] = useState<DeleteTarget>(null);
@@ -110,17 +115,17 @@ export function DocumentsScreen() {
     }
   }, []);
 
-  const refresh = useCallback(async () => apply(await fetchFiles()), [apply]);
+  const refresh = useCallback(async () => apply(await fetchFiles(base)), [apply, base]);
 
   useEffect(() => {
     let active = true;
-    void fetchFiles().then((loaded) => {
+    void fetchFiles(base).then((loaded) => {
       if (active) apply(loaded);
     });
     return () => {
       active = false;
     };
-  }, [apply]);
+  }, [apply, base]);
 
   // "Go to my documents" links to #docs-<step>. This screen streams in after the
   // sign-in check, so the browser's own jump can miss: scroll and focus once here.
@@ -175,7 +180,7 @@ export function DocumentsScreen() {
       body.append("kind", opts.kind);
       if (opts.docId) body.append("docId", opts.docId);
       if (opts.replaces) body.append("replaces", opts.replaces);
-      const res = await fetch("/api/uploads", { method: "POST", body });
+      const res = await fetch(base, { method: "POST", body });
       if (!res.ok) {
         say(opts.where, errorText(await errorCode(res)), true);
         return false;
@@ -273,7 +278,7 @@ export function DocumentsScreen() {
 
   const openLink = (f: UploadedFile) => (
     <a
-      href={`/api/uploads/file?pathname=${encodeURIComponent(f.pathname)}`}
+      href={`${base}/file?pathname=${encodeURIComponent(f.pathname)}`}
       target="_blank"
       rel="noopener noreferrer"
       data-button
@@ -286,12 +291,13 @@ export function DocumentsScreen() {
     </a>
   );
 
-  const deleteButton = (f: UploadedFile, where: Where) => (
-    <button type="button" disabled={busy} onClick={() => setTarget({ kind: "one", file: f, where })} className={dangerButton}>
-      {t("files.delete")}
-      <span className="sr-only"> {f.name}</span>
-    </button>
-  );
+  const deleteButton = (f: UploadedFile, where: Where) =>
+    !caregiver && (
+      <button type="button" disabled={busy} onClick={() => setTarget({ kind: "one", file: f, where })} className={dangerButton}>
+        {t("files.delete")}
+        <span className="sr-only"> {f.name}</span>
+      </button>
+    );
 
   function blankInfo(blank: Blank | undefined) {
     if (!blank) return null;
@@ -325,21 +331,27 @@ export function DocumentsScreen() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{t("nav.documents")}</h1>
-        <p className="text-lg text-muted">{t("documents.lead")}</p>
+        <h1 className="text-3xl font-bold">{t(caregiver ? "helperDocs.title" : "nav.documents")}</h1>
+        <p className="text-lg text-muted">{t(caregiver ? "helperDocs.lead" : "documents.lead")}</p>
       </div>
 
       <section aria-label={t("files.title")} className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6">
-        <p className="text-lg">{t("files.lead")}</p>
-        <label className="flex cursor-pointer items-start gap-3 text-lg">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={(e) => onConsent(e.target.checked)}
-            className="mt-1 h-6 w-6 shrink-0 accent-[var(--accent)]"
-          />
-          <span>{t("files.consent")}</span>
-        </label>
+        {caregiver ? (
+          <p className="text-lg font-semibold">{t("helperDocs.note")}</p>
+        ) : (
+          <>
+            <p className="text-lg">{t("files.lead")}</p>
+            <label className="flex cursor-pointer items-start gap-3 text-lg">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => onConsent(e.target.checked)}
+                className="mt-1 h-6 w-6 shrink-0 accent-[var(--accent)]"
+              />
+              <span>{t("files.consent")}</span>
+            </label>
+          </>
+        )}
         <p className="text-base text-muted">{t("files.formats", { mb: MB, n: MAX_FILES_PER_USER })}</p>
         {files === null && <p className="text-lg text-muted">{t("files.loading")}</p>}
         {loadFailed && <p className="text-lg font-semibold text-danger">{t("files.loadError")}</p>}
@@ -405,15 +417,17 @@ export function DocumentsScreen() {
                         {fileDetails(f)}
                         <div className="flex flex-wrap gap-3">
                           {openLink(f)}
-                          <button
-                            type="button"
-                            disabled={busy}
-                            onClick={() => pickFor(where, docId, f.pathname)}
-                            className={outlineButton}
-                          >
-                            {t("documents.replace")}
-                            <span className="sr-only"> {f.name}</span>
-                          </button>
+                          {!caregiver && (
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => pickFor(where, docId, f.pathname)}
+                              className={outlineButton}
+                            >
+                              {t("documents.replace")}
+                              <span className="sr-only"> {f.name}</span>
+                            </button>
+                          )}
                           {deleteButton(f, where)}
                         </div>
                       </div>
@@ -515,7 +529,7 @@ export function DocumentsScreen() {
         )}
       </section>
 
-      {files && files.length > 1 && (
+      {!caregiver && files && files.length > 1 && (
         <button type="button" disabled={busy} onClick={() => setTarget({ kind: "all" })} className={dangerButton}>
           {t("files.deleteAll")}
         </button>

@@ -45,6 +45,7 @@ export const UPLOAD_ERRORS = [
   "too_large",
   "too_many",
   "not_found",
+  "unavailable",
   "server",
 ] as const;
 export type UploadError = (typeof UPLOAD_ERRORS)[number];

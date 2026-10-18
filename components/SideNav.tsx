@@ -60,7 +60,7 @@ export function SideNav() {
       <nav aria-label={t("nav.main")} className={navClass}>
         <ul className={listClass}>
           <NavItem href={home} label={t("nav.sharedPlan")} Icon={PlanIcon} active={pathname === home} />
-          {/* Phase 1B: the caregiver "Documents" item goes here. */}
+          <NavItem href={`${home}/documents`} label={t("nav.documents")} Icon={DocumentIcon} active={isActive(`${home}/documents`)} />
         </ul>
         <ul className={`mt-auto ${listClass}`}>
           <NavItem href={`${home}/account`} label={t("nav.account")} Icon={UserIcon} active={isActive(`${home}/account`)} />
