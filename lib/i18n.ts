@@ -446,6 +446,7 @@ const en = {
   "prompt.signIn.body": "Create an account or sign in to save your plan. Then you can come back to it any time.",
   "prompt.signIn.button": "Sign in / Sign up",
   "journey.print": "Print my plan",
+  "journey.printTraveler": "Print traveler's plan",
   "print.title": "Visa plan",
   "print.titleName": "Visa plan for {name}",
   "print.interview": "Expected interview: about {date}, {office}",
@@ -1038,6 +1039,8 @@ const hi: Record<UiKey, string> = {
   "prompt.signIn.body": "अपनी योजना सहेजने के लिए खाता बनाएँ या साइन इन करें। फिर आप कभी भी इस पर लौट सकते हैं।",
   "prompt.signIn.button": "साइन इन / साइन अप",
   "journey.print": "मेरी योजना प्रिंट करें",
+  // DRAFT: needs a native Hindi reader.
+  "journey.printTraveler": "यात्री की योजना प्रिंट करें",
   "print.title": "वीज़ा योजना",
   "print.titleName": "{name} की वीज़ा योजना",
   "print.interview": "संभावित इंटरव्यू: लगभग {date}, {office}",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { LINKS } from "@/lib/config";
 import { fitReason } from "@/lib/fitReason";
 import { formatDate, WAIT_TIMES_AS_OF, type Fit, type Journey, type PostResult } from "@/lib/journey";
@@ -19,10 +19,10 @@ const FIT_STYLE: Record<Fit, string> = {
 
 /**
  * The office's status. Hover, keyboard focus or a tap shows why, from its own
- * numbers, in a box like a glossary word's. Escape hides it.
+ * numbers, in a box like a glossary word's. Escape, or focus moving elsewhere
+ * (a Dashboard prompt opening), hides it.
  */
-/** `alignRight`: the badge sits at a right edge, so the reason opens leftward. */
-export function FitBadge({ post, alignRight = false }: { post: PostResult; alignRight?: boolean }) {
+export function FitBadge({ post }: { post: PostResult }) {
   const { t, lang } = useT();
   const [hover, setHover] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -31,8 +31,19 @@ export function FitBadge({ post, alignRight = false }: { post: PostResult; align
   const fit = post.fit;
   const Icon = fit === "onTrack" ? CheckIcon : fit === "tight" ? ClockIcon : AlertIcon;
   const open = hover || focus || pinned;
+  const ref = useRef<HTMLSpanElement>(null);
+  // Safari does not focus a tapped button, so blur alone would leave it pinned.
+  useEffect(() => {
+    if (!pinned) return;
+    const unpin = (e: FocusEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setPinned(false);
+    };
+    document.addEventListener("focusin", unpin);
+    return () => document.removeEventListener("focusin", unpin);
+  }, [pinned]);
   return (
     <span
+      ref={ref}
       className="relative inline-flex"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -64,7 +75,7 @@ export function FitBadge({ post, alignRight = false }: { post: PostResult; align
         id={id}
         role="tooltip"
         hidden={!open}
-        className={`absolute ${alignRight ? "right-0" : "left-0"} top-full z-20 mt-1 w-[min(18rem,80vw)] rounded-lg border-2 border-line-strong bg-surface p-3 text-base font-normal text-ink shadow-lg`}
+        className="absolute left-0 top-full z-20 mt-1 w-[min(18rem,80vw,100cqw)] rounded-lg border-2 border-line-strong bg-surface p-3 text-base font-normal text-ink shadow-lg"
       >
         {fitReason(t, lang, post)}
       </span>
@@ -134,19 +145,16 @@ export function FitPanel({ journey, home }: { journey: Journey; home?: string })
 
       <div className="space-y-3">
         <h3 className="text-xl font-bold">{t("fit.compare", { home: homeName })}</h3>
-        <ul className="grid gap-3 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-5">
+        {/* Cards never narrower than 14rem (scales with text size); one per row when that does not fit. */}
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(14rem,100%),1fr))] gap-3">
           {journey.posts.map((p, i) => (
             <li
               key={p.id}
-              className={`space-y-2 rounded-xl border-2 p-4 ${i === 0 ? "border-accent" : "border-line-strong"}`}
+              className={`@container space-y-2 rounded-xl border-2 p-4 ${i === 0 ? "border-accent" : "border-line-strong"}`}
             >
-              {/* No wrap: the badge stays at the right, where its reason opens leftward. */}
-              <div className="flex items-start justify-between gap-2">
-                <p className="min-w-0 text-lg font-bold">{t(`post.${p.id}`)}</p>
-                <span className="shrink-0">
-                  <FitBadge post={p} alignRight />
-                </span>
-              </div>
+              {/* Name on its own line; the badge's reason is capped to the card's width (100cqw). */}
+              <p className="text-lg font-bold">{t(`post.${p.id}`)}</p>
+              <FitBadge post={p} />
               <p className="text-base">{p.waitMonths === 1 ? t("fit.waitOne") : t("fit.wait", { n: p.waitMonths })}</p>
               <p className="text-base">{t("fit.interview", { date: formatDate(p.interviewDate, lang) })}</p>
               {i === 0 && (

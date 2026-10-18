@@ -564,6 +564,8 @@ export const es: Record<UiKey, string> = {
   "prompt.signIn.body": "Cree una cuenta o inicie sesión para guardar su plan. Así podrá volver a él cuando quiera.",
   "prompt.signIn.button": "Iniciar sesión / Registrarse",
   "journey.print": "Imprimir mi plan",
+  // DRAFT: needs a fluent Spanish reader.
+  "journey.printTraveler": "Imprimir el plan del viajero",
   "print.title": "Plan de visa",
   "print.titleName": "Plan de visa de {name}",
   "print.interview": "Entrevista esperada: alrededor del {date}, {office}",
