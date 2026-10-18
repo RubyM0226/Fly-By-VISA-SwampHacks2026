@@ -319,7 +319,7 @@ export const STEPS: StepContent[] = [
     ],
   }, {
     id: "i20",
-    documents: [], 
+    documents: ["i20Form"], 
     links: [],
     text: {
       en: {
@@ -344,7 +344,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "sevis",
-    documents: [],
+    documents: ["sevisReceipt"],
     links: [
       { 
         url: "https://www.fmjfee.com/i901fee/index.html", 
@@ -376,7 +376,7 @@ export const STEPS: StepContent[] = [
   },
   {
     id: "petition",
-    documents: [],
+    documents: ["i797Notice"],
     links: [],
     text: {
       en: {

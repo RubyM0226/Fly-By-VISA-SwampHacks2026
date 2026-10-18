@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DOC_GROUPS, DOCUMENTS, UPLOAD_DOC_IDS, type Blank, type DocId } from "@/content/documents";
 import { STEP_BY_ID } from "@/content/steps";
+import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
+import { useTrip } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
 import { todayISO } from "@/lib/clock";
 import { formatDate } from "@/lib/journey";
@@ -93,6 +95,7 @@ const linkClass = "inline-flex min-h-12 items-center gap-1 text-lg font-semibold
 
 export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) {
   const { t, lang } = useT();
+  const [trip] = useTrip(); // <-- ADD THIS LINE
   const caregiver = helperToken !== undefined;
   const base = caregiver ? `/api/helper/${encodeURIComponent(helperToken)}/uploads` : "/api/uploads";
   const [files, setFiles] = useState<UploadedFile[] | null>(null);
@@ -266,7 +269,13 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   const known = files !== null && !loadFailed;
   const filesFor = (docId: DocId) => (files ?? []).filter((f) => f.docId === docId);
   const otherFiles = (files ?? []).filter((f) => f.docId === null);
-  const addedCount = UPLOAD_DOC_IDS.filter((id) => filesFor(id).length > 0).length;
+  
+  // Filter document groups and requirements to match the user's specific visa type
+  const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
+  const myDocGroups = DOC_GROUPS.filter(group => stepOrder.includes(group.stepId));
+  const myUniqueDocIds = [...new Set(myDocGroups.flatMap((g) => g.docs))];
+  
+  const addedCount = myUniqueDocIds.filter((id) => filesFor(id).length > 0).length;
   const count = files?.length ?? 0;
   const docName = (id: DocId) => DOCUMENTS[id].name[lang];
 
@@ -385,7 +394,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
         {statusMessage("all")}
         {known && (
           <p className="text-lg font-semibold">
-            {t("documents.summary", { n: addedCount, total: UPLOAD_DOC_IDS.length })}
+            {t("documents.summary", { n: addedCount, total: myUniqueDocIds.length })}
             <span className="ml-2 text-base font-normal text-muted">
               {t("files.count", { n: count, max: MAX_FILES_PER_USER })}
             </span>
@@ -396,7 +405,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
       {/* One hidden picker shared by every "Add my copy" and "Replace" button. */}
       <input ref={docInputRef} type="file" accept={ACCEPT_ATTRIBUTE} hidden onChange={onDocPicked} />
 
-      {DOC_GROUPS.map(({ stepId, docs }) => {
+      {myDocGroups.map(({ stepId, docs }) => {
         const title = STEP_BY_ID[stepId].text[lang].title;
         const readText = [
           `${title}.`,

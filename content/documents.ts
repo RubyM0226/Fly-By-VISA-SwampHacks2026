@@ -97,6 +97,20 @@ const ENTRIES = {
     name: { en: "Your [[i94|I-94]] record", hi: "आपका [[i94|I-94]] रिकॉर्ड" },
     upload: true,
     blank: { type: "online", url: LINKS.i94 },
+  },i20Form: {
+    name: { en: "Form I-20 (Signed)", hi: "फॉर्म I-20 (हस्ताक्षरित)" },
+    upload: true,
+    blank: { type: "none" },
+  },
+  sevisReceipt: {
+    name: { en: "SEVIS I-901 Fee Receipt", hi: "SEVIS I-901 शुल्क रसीद" },
+    upload: true,
+    blank: { type: "online", url: "https://www.fmjfee.com/i901fee/index.html" },
+  },
+  i797Notice: {
+    name: { en: "I-797 Approval Notice", hi: "I-797 स्वीकृति नोटिस" },
+    upload: true,
+    blank: { type: "none" },
   },
   returnTicket: {
     name: { en: "Your return ticket", hi: "वापसी का टिकट" },
