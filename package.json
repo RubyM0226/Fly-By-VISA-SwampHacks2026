@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "eval": "tsx scripts/eval/run-eval.ts",
     "test:scam": "tsx scripts/test-scam.ts && tsx scripts/test-redact.ts && tsx scripts/test-scam-ai.ts"
   },
   "dependencies": {
