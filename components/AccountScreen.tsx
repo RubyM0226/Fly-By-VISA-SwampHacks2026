@@ -147,7 +147,13 @@ export function AccountScreen() {
 
               <div className="space-y-1">
                 <p className="text-sm font-bold uppercase tracking-wide text-muted">Reason for Visit</p>
-                <p className="text-lg font-medium text-slate-800">Tourism / Business (B1/B2)</p>
+                <p className="text-lg font-medium text-slate-800 capitalize">
+                  {trip.purpose === "study"
+                    ? "Study (F-1 Visa)"
+                    : trip.purpose === "work"
+                    ? "Work (H-1B Visa)"
+                    : "Tourism / Family (B1/B2)"}
+                </p>
               </div>
             </div>
 
