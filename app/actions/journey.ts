@@ -3,18 +3,9 @@
 import { auth0 } from "@/lib/auth0";
 import sql from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { cleanProfile, type JourneyProfile } from "@/lib/tripProfile";
 
-export interface JourneyProfile {
-  from: string;
-  fromCity: string;
-  homeAirport: string;
-  to: string;
-  toCity: string;
-  destAirport: string;
-  arrival: string;
-  stayMonths: number;
-  purpose: string;
-}
+export type { JourneyProfile };
 
 export async function getUserJourney() {
   const session = await auth0.getSession();
@@ -79,7 +70,7 @@ export async function createIntakeJourney(profileData: JourneyProfile) {
           UPDATE journeys 
           SET current_stop = 1, 
               stop_status = '{}'::jsonb, 
-              profile = ${sql.json(profileData as any)}, 
+              profile = ${sql.json(profileData)}, 
               updated_at = CURRENT_TIMESTAMP
           WHERE user_id = ${userId}
         `;
@@ -89,7 +80,7 @@ export async function createIntakeJourney(profileData: JourneyProfile) {
 
     const result = await sql`
       INSERT INTO journeys (user_id, current_stop, stop_status, profile)
-      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData as any)})
+      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData)})
       RETURNING id
     `;
     
@@ -115,5 +106,38 @@ export async function claimAnonymousJourney(journeyId: string) {
   } catch (error) {
     console.error("Failed to claim journey:", error);
     return { success: false };
+  }
+}
+/**
+ * Saves edited trip answers for a signed-in user. Changes only the profile:
+ * current_stop and stop_status (their checked-off steps) are kept.
+ */
+export async function updateJourneyProfile(input: JourneyProfile) {
+  const session = await auth0.getSession();
+  if (!session?.user) return { ok: false as const, error: "signedOut" as const };
+
+  // UTC date: the browser's "tomorrow" (its earliest choice) is never before it, in any time zone.
+  const checked = cleanProfile(input, new Date().toISOString().slice(0, 10));
+  if (!checked.ok) return checked;
+
+  try {
+    const updated = await sql`
+      UPDATE journeys
+      SET profile = ${sql.json(checked.profile)},
+          updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = ${session.user.sub}
+      RETURNING id
+    `;
+    if (updated.length === 0) {
+      // Signed in before finishing the intake: start their journey now.
+      await sql`
+        INSERT INTO journeys (user_id, current_stop, stop_status, profile)
+        VALUES (${session.user.sub}, 1, '{}'::jsonb, ${sql.json(checked.profile)})
+      `;
+    }
+    return { ok: true as const, profile: checked.profile };
+  } catch (error) {
+    console.error("Failed to update journey profile:", error);
+    return { ok: false as const, error: "save" as const };
   }
 }
