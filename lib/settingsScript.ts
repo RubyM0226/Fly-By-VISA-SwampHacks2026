@@ -10,7 +10,7 @@ export const SETTINGS_KEY = "flybyvisa:settings";
 export const PRE_HYDRATION_SCRIPT = `(function(){try{
 var s=JSON.parse(localStorage.getItem("${SETTINGS_KEY}")||"{}");
 var d=document.documentElement;
-if(s.lang==="hi"||s.lang==="en")d.lang=s.lang;
+if(s.lang==="hi"||s.lang==="en"||s.lang==="es")d.lang=s.lang;
 d.dataset.textSize=String(s.textSize||0);
 d.dataset.contrast=s.highContrast?"high":"normal";
 d.dataset.mono=String(!!s.monochrome);

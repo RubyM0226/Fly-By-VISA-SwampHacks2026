@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { askInformation, MAX_ASK_CHARS, MAX_ASK_TURNS, type AskTurn } from "@/lib/ask";
 import { makeLimiter } from "@/lib/rateLimit";
+import { isLang } from "@/lib/locale";
 
 // POST /api/ask { question, lang, history } -> { result: { answer, sources } | null }
 // result is null when the AI helper is off, failed or is busy; the page then
@@ -26,6 +27,6 @@ export async function POST(request: NextRequest) {
   }
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "local";
-  const result = rateLimited(ip) ? null : await askInformation(question, history, body.lang === "hi" ? "hi" : "en");
+  const result = rateLimited(ip) ? null : await askInformation(question, history, isLang(body.lang) ? body.lang : "en");
   return Response.json({ result }, { headers: { "Cache-Control": "no-store" } });
 }

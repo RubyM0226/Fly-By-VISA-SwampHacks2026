@@ -1,7 +1,6 @@
 // Seed data for the flight finder. Same rules as lib/journey.ts: facts live
 // here with a date and a source. needsCheck = confirm before the demo.
 
-import type { OriginCode } from "./countries";
 import type { Lang } from "./settings";
 
 export interface Airport {
@@ -9,48 +8,28 @@ export interface Airport {
   city: Record<Lang, string>;
 }
 
-// Official names stay in English in every language for the UK and Mexico.
-export const HOME_AIRPORTS_BY_COUNTRY: Record<OriginCode, Airport[]> = {
-  IN: [
-    { code: "DEL", city: { en: "Delhi", hi: "दिल्ली" } },
-    { code: "BOM", city: { en: "Mumbai", hi: "मुंबई" } },
-    { code: "BLR", city: { en: "Bengaluru", hi: "बेंगलुरु" } },
-    { code: "HYD", city: { en: "Hyderabad", hi: "हैदराबाद" } },
-    { code: "MAA", city: { en: "Chennai", hi: "चेन्नई" } },
-    { code: "CCU", city: { en: "Kolkata", hi: "कोलकाता" } },
-  ],
-  GB: [
-    { code: "LHR", city: { en: "London", hi: "London" } },
-    { code: "MAN", city: { en: "Manchester", hi: "Manchester" } },
-    { code: "BHX", city: { en: "Birmingham", hi: "Birmingham" } },
-    { code: "EDI", city: { en: "Edinburgh", hi: "Edinburgh" } },
-    { code: "GLA", city: { en: "Glasgow", hi: "Glasgow" } },
-  ],
-  MX: [
-    { code: "MEX", city: { en: "Mexico City", hi: "Mexico City" } },
-    { code: "GDL", city: { en: "Guadalajara", hi: "Guadalajara" } },
-    { code: "MTY", city: { en: "Monterrey", hi: "Monterrey" } },
-    { code: "CUN", city: { en: "Cancún", hi: "Cancún" } },
-    { code: "TIJ", city: { en: "Tijuana", hi: "Tijuana" } },
-  ],
-};
-
-/** Every home airport, all countries. */
-export const HOME_AIRPORTS: Airport[] = Object.values(HOME_AIRPORTS_BY_COUNTRY).flat();
+export const HOME_AIRPORTS: Airport[] = [
+  { code: "DEL", city: { en: "Delhi", hi: "दिल्ली", es: "Delhi" } },
+  { code: "BOM", city: { en: "Mumbai", hi: "मुंबई", es: "Bombay (Mumbai)" } },
+  { code: "BLR", city: { en: "Bengaluru", hi: "बेंगलुरु", es: "Bangalore (Bengaluru)" } },
+  { code: "HYD", city: { en: "Hyderabad", hi: "हैदराबाद", es: "Hyderabad" } },
+  { code: "MAA", city: { en: "Chennai", hi: "चेन्नई", es: "Chennai" } },
+  { code: "CCU", city: { en: "Kolkata", hi: "कोलकाता", es: "Calcuta (Kolkata)" } },
+];
 
 export const US_AIRPORTS: Airport[] = [
-  { code: "JFK", city: { en: "New York", hi: "न्यूयॉर्क" } },
-  { code: "EWR", city: { en: "Newark (near New York)", hi: "नेवार्क (न्यूयॉर्क के पास)" } },
-  { code: "ORD", city: { en: "Chicago", hi: "शिकागो" } },
-  { code: "SFO", city: { en: "San Francisco", hi: "सैन फ़्रांसिस्को" } },
-  { code: "IAD", city: { en: "Washington, D.C.", hi: "वॉशिंगटन डी.सी." } },
-  { code: "IAH", city: { en: "Houston", hi: "ह्यूस्टन" } },
-  { code: "DFW", city: { en: "Dallas", hi: "डैलस" } },
-  { code: "ATL", city: { en: "Atlanta", hi: "अटलांटा" } },
-  { code: "LAX", city: { en: "Los Angeles", hi: "लॉस एंजेलिस" } },
-  { code: "SEA", city: { en: "Seattle", hi: "सिएटल" } },
-  { code: "BOS", city: { en: "Boston", hi: "बोस्टन" } },
-  { code: "MCO", city: { en: "Orlando", hi: "ऑरलैंडो" } },
+  { code: "JFK", city: { en: "New York", hi: "न्यूयॉर्क", es: "Nueva York" } },
+  { code: "EWR", city: { en: "Newark (near New York)", hi: "नेवार्क (न्यूयॉर्क के पास)", es: "Newark (cerca de Nueva York)" } },
+  { code: "ORD", city: { en: "Chicago", hi: "शिकागो", es: "Chicago" } },
+  { code: "SFO", city: { en: "San Francisco", hi: "सैन फ़्रांसिस्को", es: "San Francisco" } },
+  { code: "IAD", city: { en: "Washington, D.C.", hi: "वॉशिंगटन डी.सी.", es: "Washington, D. C." } },
+  { code: "IAH", city: { en: "Houston", hi: "ह्यूस्टन", es: "Houston" } },
+  { code: "DFW", city: { en: "Dallas", hi: "डैलस", es: "Dallas" } },
+  { code: "ATL", city: { en: "Atlanta", hi: "अटलांटा", es: "Atlanta" } },
+  { code: "LAX", city: { en: "Los Angeles", hi: "लॉस एंजेलिस", es: "Los Ángeles" } },
+  { code: "SEA", city: { en: "Seattle", hi: "सिएटल", es: "Seattle" } },
+  { code: "BOS", city: { en: "Boston", hi: "बोस्टन", es: "Boston" } },
+  { code: "MCO", city: { en: "Orlando", hi: "ऑरलैंडो", es: "Orlando" } },
 ];
 
 /** Common layover airports -> country code. */
@@ -67,10 +46,7 @@ const IN_EXTRA = ["AMD", "COK", "GOI", "PNQ", "TRV", "LKO", "ATQ", "JAI"];
 export function countryOfAirport(code: string): string | null {
   if (HUB_COUNTRY[code]) return HUB_COUNTRY[code];
   if (US_AIRPORTS.some((a) => a.code === code) || US_EXTRA.includes(code)) return "US";
-  if (IN_EXTRA.includes(code)) return "IN";
-  for (const [country, airports] of Object.entries(HOME_AIRPORTS_BY_COUNTRY)) {
-    if (airports.some((a) => a.code === code)) return country;
-  }
+  if (HOME_AIRPORTS.some((a) => a.code === code) || IN_EXTRA.includes(code)) return "IN";
   return null;
 }
 
@@ -81,17 +57,6 @@ export function countryOfAirport(code: string): string | null {
  * check = we are not sure; tell the user to check with the airline
  */
 export type TransitRule = "none" | "visa" | "check";
-
-/**
- * The transit rule for a layover, for a traveler from `home`. The COUNTRY_INFO
- * rules are written for an Indian passport, so other travelers get "check"
- * except in their own country or the U.S.
- */
-export function transitFor(country: string | null, home: string): TransitRule {
-  if (country && (country === home || country === "US")) return "none";
-  if (home !== "IN") return "check";
-  return (country ? COUNTRY_INFO[country]?.transit : undefined) ?? "check";
-}
 
 export interface CountryInfo {
   name: Record<Lang, string>;
@@ -110,31 +75,29 @@ export const ADVISORIES_CHECKED = "2026-10-17";
 // The "none" rows for UK and Schengen rely on their exemptions for
 // people holding a valid U.S. visa.
 export const COUNTRY_INFO: Record<string, CountryInfo> = {
-  IN: { name: { en: "India", hi: "भारत" }, transit: "none", advisory: null, needsCheck: false },
-  US: { name: { en: "United States", hi: "अमेरिका" }, transit: "none", advisory: null, needsCheck: false },
-  AE: { name: { en: "United Arab Emirates", hi: "संयुक्त अरब अमीरात" }, transit: "none", advisory: 3, needsCheck: true },
-  QA: { name: { en: "Qatar", hi: "क़तर" }, transit: "none", advisory: 3, needsCheck: true },
-  GB: { name: { en: "United Kingdom", hi: "ब्रिटेन" }, transit: "none", advisory: 2, needsCheck: true },
-  DE: { name: { en: "Germany", hi: "जर्मनी" }, transit: "none", advisory: 2, needsCheck: true },
-  FR: { name: { en: "France", hi: "फ़्रांस" }, transit: "none", advisory: 2, needsCheck: true },
-  NL: { name: { en: "Netherlands", hi: "नीदरलैंड" }, transit: "none", advisory: 2, needsCheck: true },
-  CH: { name: { en: "Switzerland", hi: "स्विट्ज़रलैंड" }, transit: "none", advisory: 1, needsCheck: true },
-  AT: { name: { en: "Austria", hi: "ऑस्ट्रिया" }, transit: "none", advisory: 1, needsCheck: true },
-  IT: { name: { en: "Italy", hi: "इटली" }, transit: "none", advisory: 2, needsCheck: true },
-  FI: { name: { en: "Finland", hi: "फ़िनलैंड" }, transit: "none", advisory: 1, needsCheck: true },
-  TR: { name: { en: "Türkiye", hi: "तुर्की" }, transit: "none", advisory: 2, needsCheck: true },
-  IE: { name: { en: "Ireland", hi: "आयरलैंड" }, transit: "check", advisory: 1, needsCheck: true },
-  CA: { name: { en: "Canada", hi: "कनाडा" }, transit: "visa", advisory: 1, needsCheck: true },
-  SG: { name: { en: "Singapore", hi: "सिंगापुर" }, transit: "none", advisory: 1, needsCheck: true },
-  HK: { name: { en: "Hong Kong", hi: "हांगकांग" }, transit: "none", advisory: 2, needsCheck: true },
-  JP: { name: { en: "Japan", hi: "जापान" }, transit: "none", advisory: 1, needsCheck: true },
-  KR: { name: { en: "South Korea", hi: "दक्षिण कोरिया" }, transit: "none", advisory: 1, needsCheck: true },
-  CN: { name: { en: "China", hi: "चीन" }, transit: "check", advisory: 2, needsCheck: true },
-  SA: { name: { en: "Saudi Arabia", hi: "सऊदी अरब" }, transit: "check", advisory: 3, needsCheck: true },
-  KW: { name: { en: "Kuwait", hi: "कुवैत" }, transit: "check", advisory: 3, needsCheck: true },
-  BH: { name: { en: "Bahrain", hi: "बहरीन" }, transit: "check", advisory: 3, needsCheck: true },
-  OM: { name: { en: "Oman", hi: "ओमान" }, transit: "check", advisory: 3, needsCheck: true },
-  ET: { name: { en: "Ethiopia", hi: "इथियोपिया" }, transit: "check", advisory: 3, needsCheck: true },
-  // VERIFY: Mexico's advisory is set per state; 2 is the country-wide level as we last saw it.
-  MX: { name: { en: "Mexico", hi: "Mexico" }, transit: "check", advisory: 2, needsCheck: true },
+  IN: { name: { en: "India", hi: "भारत", es: "India" }, transit: "none", advisory: null, needsCheck: false },
+  US: { name: { en: "United States", hi: "अमेरिका", es: "Estados Unidos" }, transit: "none", advisory: null, needsCheck: false },
+  AE: { name: { en: "United Arab Emirates", hi: "संयुक्त अरब अमीरात", es: "Emiratos Árabes Unidos" }, transit: "none", advisory: 3, needsCheck: true },
+  QA: { name: { en: "Qatar", hi: "क़तर", es: "Catar" }, transit: "none", advisory: 3, needsCheck: true },
+  GB: { name: { en: "United Kingdom", hi: "ब्रिटेन", es: "Reino Unido" }, transit: "none", advisory: 2, needsCheck: true },
+  DE: { name: { en: "Germany", hi: "जर्मनी", es: "Alemania" }, transit: "none", advisory: 2, needsCheck: true },
+  FR: { name: { en: "France", hi: "फ़्रांस", es: "Francia" }, transit: "none", advisory: 2, needsCheck: true },
+  NL: { name: { en: "Netherlands", hi: "नीदरलैंड", es: "Países Bajos" }, transit: "none", advisory: 2, needsCheck: true },
+  CH: { name: { en: "Switzerland", hi: "स्विट्ज़रलैंड", es: "Suiza" }, transit: "none", advisory: 1, needsCheck: true },
+  AT: { name: { en: "Austria", hi: "ऑस्ट्रिया", es: "Austria" }, transit: "none", advisory: 1, needsCheck: true },
+  IT: { name: { en: "Italy", hi: "इटली", es: "Italia" }, transit: "none", advisory: 2, needsCheck: true },
+  FI: { name: { en: "Finland", hi: "फ़िनलैंड", es: "Finlandia" }, transit: "none", advisory: 1, needsCheck: true },
+  TR: { name: { en: "Türkiye", hi: "तुर्की", es: "Turquía (Türkiye)" }, transit: "none", advisory: 2, needsCheck: true },
+  IE: { name: { en: "Ireland", hi: "आयरलैंड", es: "Irlanda" }, transit: "check", advisory: 1, needsCheck: true },
+  CA: { name: { en: "Canada", hi: "कनाडा", es: "Canadá" }, transit: "visa", advisory: 1, needsCheck: true },
+  SG: { name: { en: "Singapore", hi: "सिंगापुर", es: "Singapur" }, transit: "none", advisory: 1, needsCheck: true },
+  HK: { name: { en: "Hong Kong", hi: "हांगकांग", es: "Hong Kong" }, transit: "none", advisory: 2, needsCheck: true },
+  JP: { name: { en: "Japan", hi: "जापान", es: "Japón" }, transit: "none", advisory: 1, needsCheck: true },
+  KR: { name: { en: "South Korea", hi: "दक्षिण कोरिया", es: "Corea del Sur" }, transit: "none", advisory: 1, needsCheck: true },
+  CN: { name: { en: "China", hi: "चीन", es: "China" }, transit: "check", advisory: 2, needsCheck: true },
+  SA: { name: { en: "Saudi Arabia", hi: "सऊदी अरब", es: "Arabia Saudita" }, transit: "check", advisory: 3, needsCheck: true },
+  KW: { name: { en: "Kuwait", hi: "कुवैत", es: "Kuwait" }, transit: "check", advisory: 3, needsCheck: true },
+  BH: { name: { en: "Bahrain", hi: "बहरीन", es: "Baréin" }, transit: "check", advisory: 3, needsCheck: true },
+  OM: { name: { en: "Oman", hi: "ओमान", es: "Omán" }, transit: "check", advisory: 3, needsCheck: true },
+  ET: { name: { en: "Ethiopia", hi: "इथियोपिया", es: "Etiopía" }, transit: "check", advisory: 3, needsCheck: true },
 };
