@@ -45,6 +45,8 @@ interface Props {
   onPick: (code: CountryCode) => void;
   /** Camera zoom; 1 is the normal view, larger is closer. */
   zoom: number;
+  /** Landing page: decorative. Drag to spin only; no route, pins, labels or picking. */
+  landing: boolean;
 }
 
 export function GlobeLoader(props: Props) {

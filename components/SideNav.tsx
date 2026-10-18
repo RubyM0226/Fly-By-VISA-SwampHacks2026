@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT, type UiKey } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
-import { BookIcon, DocumentIcon, MapIcon, PlaneIcon, PlanIcon, SearchIcon, ShieldIcon, UserIcon } from "./Icons";
+import { BookIcon, DocumentIcon, MapIcon, PlaneIcon, PlanIcon, QuestionIcon, SearchIcon, ShieldIcon, UserIcon } from "./Icons";
 
 type IconType = (props: { className?: string }) => React.ReactElement;
 
@@ -63,6 +63,7 @@ export function SideNav() {
           <NavItem href={`${home}/documents`} label={t("nav.documents")} Icon={DocumentIcon} active={isActive(`${home}/documents`)} />
         </ul>
         <ul className={`mt-auto ${listClass}`}>
+          <NavItem href={`${home}/guide`} label={t("nav.help")} Icon={QuestionIcon} active={isActive(`${home}/guide`)} />
           <NavItem href={`${home}/account`} label={t("nav.account")} Icon={UserIcon} active={isActive(`${home}/account`)} />
         </ul>
       </nav>
@@ -94,7 +95,11 @@ export function SideNav() {
         {item("/glossary", "nav.glossary", BookIcon)}
         {item("/scam-check", "nav.scam", ShieldIcon)}
       </ul>
-      {user && <ul className={`mt-auto ${listClass}`}>{item("/account", "nav.account", UserIcon)}</ul>}
+      {/* Help sits right above Account, at the bottom. */}
+      <ul className={`mt-auto ${listClass}`}>
+        {item("/guide", "nav.help", QuestionIcon)}
+        {user && item("/account", "nav.account", UserIcon)}
+      </ul>
     </nav>
   );
 }

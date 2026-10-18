@@ -18,6 +18,8 @@ import type { Lang } from "@/lib/settings";
 
 export interface StepText {
   title: string;
+  /** Short label for the roadmap pill (one or two words). The card keeps the full title. */
+  pill: string;
   /** What to do, one short sentence per bullet. */
   what: string[];
   /** One short fact per bullet. Leave out when there is nothing useful to say; the section is then hidden. */
@@ -49,6 +51,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Get ready",
+        pill: "Prepare",
         what: [
           "Check your passport.",
           "It must still be valid 6 months after you come home.",
@@ -60,6 +63,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "तैयारी करें",
+        pill: "तैयारी",
         what: [
           "अपना पासपोर्ट देखें।",
           "लौटने के 6 महीने बाद तक वह मान्य होना चाहिए।",
@@ -71,6 +75,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Prepárese",
+        pill: "Preparación",
         what: [
           "Revise su pasaporte.",
           "Debe seguir vigente 6 meses después de que regrese a casa.",
@@ -98,6 +103,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Fill in the online form",
+        pill: "Form",
         what: [
           "Fill in the online form [[ds160|DS-160]].",
           "Answer every question honestly.",
@@ -111,6 +117,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "ऑनलाइन फ़ॉर्म भरें",
+        pill: "फ़ॉर्म",
         what: [
           "ऑनलाइन फ़ॉर्म [[ds160|DS-160]] भरें।",
           "हर सवाल का सच्चा जवाब दें।",
@@ -124,6 +131,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Llene el formulario en línea",
+        pill: "Formulario",
         what: [
           "Llene el formulario en línea [[ds160|DS-160]].",
           "Responda todas las preguntas con sinceridad.",
@@ -147,6 +155,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Pay the fee and book your appointments",
+        pill: "Appointments",
         what: [
           "Pay the visa fee.",
           "Then book your interview at a U.S. office in {home}.",
@@ -160,12 +169,13 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "शुल्क भरें और अपॉइंटमेंट बुक करें",
+        pill: "अपॉइंटमेंट",
         what: [
           "वीज़ा शुल्क भरें।",
-          "फिर {home} में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
+          "फिर {home} में किसी U.S. कार्यालय में इंटरव्यू बुक करें।",
           "शायद पहले उंगलियों के निशान के लिए [[vac|{vac}]] भी जाना पड़े।",
           "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
-          "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
+          "U.S. Embassy की वेबसाइट देखें। तरीके बदल सकते हैं।",
         ],
         cost: ["वीज़ा शुल्क: $185।", "दूसरे शुल्क भी लग सकते हैं।"],
         time: ["बुकिंग: लगभग 1 दिन।", "इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।"],
@@ -173,12 +183,13 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Pague la tarifa y reserve sus citas",
+        pill: "Citas",
         what: [
           "Pague la tarifa de la visa.",
-          "Luego reserve su entrevista en una oficina de EE. UU. en India.",
+          "Luego reserve su entrevista en una oficina de U.S. en India.",
           "Quizás deba ir primero a un [[vac|{vac}]], para las huellas digitales.",
           "Reserve lo antes posible. La espera es larga.",
-          "Siga el sitio web de la Embajada de EE. UU. Los pasos pueden cambiar.",
+          "Siga el sitio web de la U.S. Embassy Los pasos pueden cambiar.",
         ],
         cost: ["Tarifa de la visa: $185.", "Pueden aplicarse otras tarifas."],
         time: ["Reservar: aproximadamente 1 día.", "Esperar la entrevista: normalmente meses."],
@@ -190,7 +201,7 @@ export const STEPS: StepContent[] = [
     // embassy page before the demo.
     links: [
       { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ", es: "Página oficial de tarifas" }, url: LINKS.fees },
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "U.S. Embassy en {home}: visas" }, url: LINKS.embassyIndia },
       { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय", es: "Tiempos de espera oficiales" }, url: LINKS.waitTimes },
     ],
   },
@@ -200,6 +211,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Gather your documents",
+        pill: "Documents",
         what: [
           "Collect the papers the officer may ask for.",
           "Show that your life is in {home}: family, home or pension.",
@@ -212,24 +224,26 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपने कागज़ात इकट्ठा करें",
+        pill: "कागज़ात",
         what: [
           "अधिकारी जो कागज़ माँग सकते हैं, वे इकट्ठा करें।",
           "दिखाएँ कि आपका जीवन {home} में है: परिवार, घर या पेंशन।",
           "दिखाएँ कि आप वापस लौटेंगे।",
           "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
-          "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
+          "U.S. में परिवार का पत्र ज़रूरी नहीं है।",
         ],
         time: ["1 से 2 सप्ताह।"],
         simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन {home} में है और आप यात्रा के बाद लौटेंगे।",
       },
       es: {
         title: "Reúna sus documentos",
+        pill: "Documentos",
         what: [
           "Reúna los papeles que el oficial puede pedir.",
           "Demuestre que su vida está en {home}: familia, vivienda o pensión.",
           "Demuestre que va a regresar a casa.",
           "Demuestre cómo se pagará el viaje.",
-          "No hace falta una carta de familiares en EE. UU.",
+          "No hace falta una carta de familiares en U.S.",
         ],
         time: ["De 1 a 2 semanas."],
         simple: "Reúna papeles que muestren que su vida está en {home} y que volverá a casa después del viaje.",
@@ -245,6 +259,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Practice for the interview",
+        pill: "Interview",
         what: [
           "Practice your answers out loud.",
           "Who will you visit?",
@@ -257,6 +272,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "इंटरव्यू की तैयारी करें",
+        pill: "इंटरव्यू",
         what: [
           "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
           "आप किससे मिलेंगे?",
@@ -269,6 +285,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Practique para la entrevista",
+        pill: "Entrevista",
         what: [
           "Practique sus respuestas en voz alta.",
           "¿A quién va a visitar?",
@@ -281,7 +298,7 @@ export const STEPS: StepContent[] = [
       },
     },
     links: [
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "U.S. Embassy en {home}: visas" }, url: LINKS.embassyIndia },
     ],
   },
   {
@@ -290,6 +307,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Book your flight",
+        pill: "Flight",
         what: [
           "Wait until you have your visa and your passport is back.",
           "Then compare flights with the button above.",
@@ -301,6 +319,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपनी उड़ान बुक करें",
+        pill: "उड़ान",
         what: [
           "वीज़ा मिलने और पासपोर्ट वापस आने तक रुकें।",
           "फिर ऊपर दिए बटन से उड़ानों की तुलना करें।",
@@ -312,6 +331,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Reserve su vuelo",
+        pill: "Vuelo",
         what: [
           "Espere hasta tener su visa y que le devuelvan el pasaporte.",
           "Luego compare vuelos con el botón de arriba.",
@@ -333,7 +353,8 @@ export const STEPS: StepContent[] = [
     documents: ["passportWithVisa", "stayAddress", "tripDetails"],
     text: {
       en: {
-        title: "Arrive in the U.S.",
+        title: "Arrive in the US and go through customs",
+        pill: "Arrival",
         what: [
           "Keep your passport, visa and trip details ready.",
           "A U.S. border officer ([[cbp|CBP]]) checks you at the airport.",
@@ -344,10 +365,12 @@ export const STEPS: StepContent[] = [
         simple: "Keep your papers ready. The officer decides how long you can stay.",
       },
       hi: {
-        title: "अमेरिका पहुँचें",
+        // DRAFT: needs a native Hindi reader.
+        title: "U.S. पहुँचें और कस्टम्स से गुज़रें",
+        pill: "पहुँचना",
         what: [
           "पासपोर्ट, वीज़ा और यात्रा की जानकारी तैयार रखें।",
-          "हवाई अड्डे पर अमेरिकी सीमा अधिकारी ([[cbp|CBP]]) आपकी जाँच करते हैं।",
+          "हवाई अड्डे पर U.S. सीमा अधिकारी ([[cbp|CBP]]) आपकी जाँच करते हैं।",
           "अधिकारी तय करते हैं कि आप प्रवेश कर सकते हैं या नहीं, और कितने समय के लिए।",
           "वीज़ा से प्रवेश की गारंटी नहीं मिलती।",
           "लौटने की तारीख आपके [[i94|I-94]] रिकॉर्ड में होती है।",
@@ -355,10 +378,12 @@ export const STEPS: StepContent[] = [
         simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
       },
       es: {
-        title: "Llegue a EE. UU.",
+        // DRAFT: needs a fluent Spanish reader.
+        title: "Llegue a U.S. y pase por la aduana",
+        pill: "Llegada",
         what: [
           "Tenga a mano su pasaporte, su visa y los datos de su viaje.",
-          "Un oficial de la frontera de EE. UU. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
+          "Un oficial de la frontera de U.S. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
           "El oficial decide si puede entrar y por cuánto tiempo.",
           "La visa no garantiza la entrada.",
           "Su fecha de salida está en su registro [[i94|I-94]].",
@@ -377,6 +402,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Return on time",
+        pill: "Return",
         what: [
           "Leave the U.S. by the date on your [[i94|I-94]] record.",
           "Do not work during your visit.",
@@ -388,8 +414,9 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "समय पर लौटें",
+        pill: "वापसी",
         what: [
-          "[[i94|I-94]] रिकॉर्ड की तारीख तक अमेरिका छोड़ दें।",
+          "[[i94|I-94]] रिकॉर्ड की तारीख तक U.S. छोड़ दें।",
           "यात्रा के दौरान काम न करें।",
           "ज़्यादा रुकने से वीज़ा रद्द हो सकता है।",
           "ज़्यादा रुकना है? उस तारीख से पहले नियम पढ़ें।",
@@ -399,8 +426,9 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Regrese a tiempo",
+        pill: "Regreso",
         what: [
-          "Salga de EE. UU. antes de la fecha de su registro [[i94|I-94]].",
+          "Salga de U.S. antes de la fecha de su registro [[i94|I-94]].",
           "No trabaje durante su visita.",
           "Quedarse demasiado puede cancelar su visa.",
           "¿Quiere quedarse más tiempo? Lea las reglas antes de esa fecha.",
@@ -420,6 +448,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Receive your Form I-20",
+        pill: "Form I-20",
         what: [
           "Once accepted, your U.S. university's international office will issue a Form I-20.",
           "Check that your name and birthdate exactly match your passport.",
@@ -429,21 +458,23 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपना फॉर्म I-20 प्राप्त करें",
+        pill: "फॉर्म I-20",
         what: [
-          "स्वीकार किए जाने के बाद, आपका अमेरिकी विश्वविद्यालय एक फॉर्म I-20 जारी करेगा।",
+          "स्वीकार किए जाने के बाद, आपका U.S. विश्वविद्यालय एक फॉर्म I-20 जारी करेगा।",
           "जांचें कि आपका नाम और जन्म तिथि आपके पासपोर्ट से बिल्कुल मेल खाते हैं।",
           "वीज़ा के लिए आवेदन करने या SEVIS शुल्क का भुगतान करने से पहले आपके पास यह दस्तावेज़ होना चाहिए।",
         ],
-        simple: "अपने अमेरिकी विश्वविद्यालय से आधिकारिक I-20 दस्तावेज़ आने की प्रतीक्षा करें।",
+        simple: "अपने U.S. विश्वविद्यालय से आधिकारिक I-20 दस्तावेज़ आने की प्रतीक्षा करें।",
       },
       es: {
         title: "Reciba su Formulario I-20",
+        pill: "Formulario I-20",
         what: [
-          "Una vez aceptado, la oficina internacional de su universidad en EE. UU. le emitirá un Formulario I-20.",
+          "Una vez aceptado, la oficina internacional de su universidad en U.S. le emitirá un Formulario I-20.",
           "Revise que su nombre y fecha de nacimiento coincidan exactamente con su pasaporte.",
           "Debe tener este documento antes de poder pagar la tarifa SEVIS o solicitar la visa.",
         ],
-        simple: "Espere a que su universidad en EE. UU. le envíe su documento I-20 oficial.",
+        simple: "Espere a que su universidad en U.S. le envíe su documento I-20 oficial.",
       },
     },
   },
@@ -459,6 +490,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Pay the SEVIS I-901 Fee",
+        pill: "SEVIS fee",
         cost: ["$350 for F-1 students"],
         what: [
           "You must pay the SEVIS fee before applying for your visa.",
@@ -469,23 +501,25 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "SEVIS I-901 शुल्क भरें",
+        pill: "SEVIS शुल्क",
         cost: ["F-1 छात्रों के लिए $350"],
         what: [
           "वीज़ा के लिए आवेदन करने से पहले आपको SEVIS शुल्क का भुगतान करना होगा।",
           "भुगतान करने के लिए आधिकारिक FMJfee वेबसाइट पर जाएं।",
           "भुगतान की रसीद संभाल कर रखें और उसका प्रिंट निकाल लें, इसे इंटरव्यू में ले जाना ज़रूरी है।",
         ],
-        simple: "अमेरिकी सरकार को अपना अनिवार्य छात्र ट्रैकिंग शुल्क भरें।",
+        simple: "U.S. सरकार को अपना अनिवार्य छात्र ट्रैकिंग शुल्क भरें।",
       },
       es: {
         title: "Pague la tarifa SEVIS I-901",
+        pill: "Tarifa SEVIS",
         cost: ["$350 para estudiantes F-1"],
         what: [
           "Debe pagar la tarifa SEVIS antes de solicitar su visa.",
           "Vaya al sitio web oficial de FMJfee para hacer su pago.",
           "Guarde el recibo del pago e imprímalo, porque debe llevarlo a su entrevista.",
         ],
-        simple: "Pague al gobierno de EE. UU. la tarifa obligatoria de seguimiento de estudiantes.",
+        simple: "Pague al gobierno de U.S. la tarifa obligatoria de seguimiento de estudiantes.",
       },
     },
   },
@@ -496,6 +530,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Wait for I-797 Approval",
+        pill: "Approval",
         what: [
           "Your U.S. employer must file an I-129 petition with USCIS on your behalf.",
           "You cannot apply for your visa or schedule an interview until you receive the approved Form I-797 Notice of Action.",
@@ -505,8 +540,9 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "I-797 स्वीकृति की प्रतीक्षा करें",
+        pill: "स्वीकृति",
         what: [
-          "आपका अमेरिकी नियोक्ता आपकी ओर से USCIS में I-129 याचिका दायर करेगा।",
+          "आपका U.S. नियोक्ता आपकी ओर से USCIS में I-129 याचिका दायर करेगा।",
           "जब तक आपको स्वीकृत फॉर्म I-797 नोटिस नहीं मिल जाता, तब तक आप वीज़ा आवेदन या इंटरव्यू बुक नहीं कर सकते।",
           "अपडेट के लिए अपने नियोक्ता के इमिग्रेशन वकील से संपर्क में रहें।",
         ],
@@ -514,8 +550,9 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Espere la aprobación del I-797",
+        pill: "Aprobación",
         what: [
-          "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
+          "Su empleador en U.S. debe presentar una petición I-129 ante USCIS en su nombre.",
           "No puede solicitar su visa ni programar una entrevista hasta recibir el Aviso de Acción I-797 aprobado.",
           "Hable con el abogado de inmigración de su empleador para recibir novedades.",
         ],

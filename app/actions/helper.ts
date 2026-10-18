@@ -82,32 +82,3 @@ export async function getJourneyByHelperToken(token: string) {
     return { valid: false, journey: null, label: null };
   }
 }
-
-export async function updateHelperProgress(token: string, stepId: string, status: string) {
-  if (!token) return { success: false };
-
-  try {
-    const helperCheck = await sql`
-      SELECT journey_id, revoked_at FROM journey_helpers WHERE token = ${token} LIMIT 1
-    `;
-
-    if (helperCheck.length === 0 || helperCheck[0].revoked_at) {
-      throw new Error("Invalid or revoked link");
-    }
-
-    const journeyId = helperCheck[0].journey_id;
-
-    await sql`
-      UPDATE journeys 
-      SET stop_status = stop_status || ${sql.json({ [stepId]: status === "completed" })},
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = ${journeyId}
-    `;
-
-    revalidatePath(`/help/${token}`);
-    return { success: true };
-  } catch (error) {
-    console.error("Helper update error:", error);
-    return { success: false };
-  }
-}

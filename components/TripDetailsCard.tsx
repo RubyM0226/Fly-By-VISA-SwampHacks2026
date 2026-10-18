@@ -12,7 +12,7 @@ import { DatePicker } from "./DatePicker";
 import { Dropdown } from "./Dropdown";
 import { PlaceSelect } from "./PlaceSelect";
 
-type Draft = Pick<Trip, "from" | "homeCity" | "to" | "destCity" | "arrival" | "stayMonths" | "purpose">;
+type Draft = Pick<Trip, "firstName" | "lastName" | "from" | "homeCity" | "to" | "destCity" | "arrival" | "stayMonths" | "purpose">;
 type Status =
   | { kind: "idle" }
   | { kind: "saving" }
@@ -39,6 +39,8 @@ export function TripDetailsCard() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   const form: Draft = draft ?? {
+    firstName: trip.firstName ?? "",
+    lastName: trip.lastName ?? "",
     from: trip.from || ORIGIN_CODES[0],
     homeCity: trip.homeCity,
     to: trip.to || "US",
@@ -78,6 +80,8 @@ export function TripDetailsCard() {
         arrival: form.arrival,
         stayMonths: form.stayMonths,
         purpose: form.purpose,
+        firstName: form.firstName,
+        lastName: form.lastName,
       });
       if (!res.ok) {
         return setStatus({ kind: "error", key: SAVE_ERRORS[res.error] });
@@ -117,138 +121,164 @@ export function TripDetailsCard() {
         <p className="text-lg text-muted">{t("trip.lead")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <div className="space-y-4">
-          <PlaceSelect
-            id="trip-from"
-            label={t("trip.from")}
-            enabled={ORIGIN_CODES}
-            value={form.from}
-            onChange={(code) => edit({ from: code as Trip["from"], homeCity: firstCity(code) })}
-          />
-          <div className="space-y-1">
-            <p id="trip-from-city-label" className="text-base font-bold">
-              {t("trip.fromCity")}
-            </p>
-            <Dropdown
-              id="trip-from-city"
-              labelledBy="trip-from-city-label"
-              value={form.homeCity}
-              options={cityOptions(form.from)}
-              onChange={(city) => edit({ homeCity: city })}
-            />
+      {/* Wide screens: the questions on the left, the date and Save on the right. */}
+      <div className="space-y-6 @5xl:grid @5xl:grid-cols-2 @5xl:items-start @5xl:gap-x-10 @5xl:space-y-0">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {(["firstName", "lastName"] as const).map((field) => (
+              <div key={field} className="space-y-1">
+                <label htmlFor={`trip-${field}`} className="block text-base font-bold">
+                  {t(field === "firstName" ? "start.firstName" : "start.lastName")}
+                </label>
+                <input
+                  id={`trip-${field}`}
+                  type="text"
+                  autoComplete={field === "firstName" ? "given-name" : "family-name"}
+                  maxLength={80}
+                  value={form[field] ?? ""}
+                  onChange={(e) => edit({ [field]: e.target.value })}
+                  className="min-h-14 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-lg font-semibold text-ink"
+                />
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="space-y-4">
-          <PlaceSelect
-            id="trip-to"
-            label={t("trip.to")}
-            enabled={DESTINATIONS}
-            value={form.to}
-            onChange={(code) => edit({ to: code as Trip["to"], destCity: firstCity(code) })}
-          />
-          <div className="space-y-1">
-            <p id="trip-to-city-label" className="text-base font-bold">
-              {t("trip.toCity")}
-            </p>
-            <Dropdown
-              id="trip-to-city"
-              labelledBy="trip-to-city-label"
-              value={form.destCity}
-              options={cityOptions(form.to)}
-              onChange={(city) => edit({ destCity: city })}
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Purpose of Visit Selection */}
-      <fieldset className="space-y-3">
-        <legend className="mb-1 text-xl font-bold">{t("start.why")}</legend>
-        {(
-          [
-            { value: "family", labelKey: "start.why.family" },
-            { value: "study", labelKey: "start.why.study" },
-            { value: "work", labelKey: "start.why.work" },
-          ] as const
-        ).map((item) => {
-          const isSelected = form.purpose === item.value;
-          return (
-            <label key={item.value} className="block cursor-pointer">
-              <input
-                type="radio"
-                name="trip-purpose"
-                value={item.value}
-                checked={isSelected}
-                onChange={() => edit({ purpose: item.value as VisaCategory })}
-                className="peer sr-only"
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="space-y-4">
+              <PlaceSelect
+                id="trip-from"
+                label={t("trip.from")}
+                enabled={ORIGIN_CODES}
+                value={form.from}
+                onChange={(code) => edit({ from: code as Trip["from"], homeCity: firstCity(code) })}
               />
-              <span
-                className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
-                  isSelected
-                    ? "border-accent bg-accent text-accent-ink"
-                    : "border-line-strong bg-surface text-slate-800 hover:bg-hover"
-                }`}
-              >
-                {t(item.labelKey)}
-              </span>
-            </label>
-          );
-        })}
-      </fieldset>
+              <div className="space-y-1">
+                <p id="trip-from-city-label" className="text-base font-bold">
+                  {t("trip.fromCity")}
+                </p>
+                <Dropdown
+                  id="trip-from-city"
+                  labelledBy="trip-from-city-label"
+                  value={form.homeCity}
+                  options={cityOptions(form.from)}
+                  onChange={(city) => edit({ homeCity: city })}
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <PlaceSelect
+                id="trip-to"
+                label={t("trip.to")}
+                enabled={DESTINATIONS}
+                value={form.to}
+                onChange={(code) => edit({ to: code as Trip["to"], destCity: firstCity(code) })}
+              />
+              <div className="space-y-1">
+                <p id="trip-to-city-label" className="text-base font-bold">
+                  {t("trip.toCity")}
+                </p>
+                <Dropdown
+                  id="trip-to-city"
+                  labelledBy="trip-to-city-label"
+                  value={form.destCity}
+                  options={cityOptions(form.to)}
+                  onChange={(city) => edit({ destCity: city })}
+                />
+              </div>
+            </div>
+          </div>
 
-      <div className="space-y-2">
-        <p id="trip-stay-label" className="text-xl font-bold">
-          {t("start.howLong")}
-        </p>
-        <Dropdown
-          id="trip-stay"
-          labelledBy="trip-stay-label"
-          value={form.stayMonths}
-          options={MONTH_CHOICES.map((n) => ({ value: n, label: n === 1 ? t("start.month") : t("start.months", { n }) }))}
-          onChange={(n) => edit({ stayMonths: n })}
-          className="sm:w-72"
-        />
-      </div>
+          {/* Purpose of Visit Selection */}
+          <fieldset className="space-y-3">
+            <legend className="mb-1 text-xl font-bold">{t("start.why")}</legend>
+            {(
+              [
+                { value: "family", labelKey: "start.why.family" },
+                { value: "study", labelKey: "start.why.study" },
+                { value: "work", labelKey: "start.why.work" },
+              ] as const
+            ).map((item) => {
+              const isSelected = form.purpose === item.value;
+              return (
+                <label key={item.value} className="block cursor-pointer">
+                  <input
+                    type="radio"
+                    name="trip-purpose"
+                    value={item.value}
+                    checked={isSelected}
+                    onChange={() => edit({ purpose: item.value as VisaCategory })}
+                    className="peer sr-only"
+                  />
+                  <span
+                    className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
+                      isSelected
+                        ? "border-accent bg-accent text-accent-ink"
+                        : "border-line-strong bg-surface text-slate-800 hover:bg-hover"
+                    }`}
+                  >
+                    {t(item.labelKey)}
+                  </span>
+                </label>
+              );
+            })}
+          </fieldset>
 
-      <div className="space-y-2">
-        <p id="trip-arrival-label" className="text-xl font-bold">
-          {t("start.when")}
-        </p>
-        <p id="trip-arrival-help" className="text-lg text-muted">
-          {t("start.whenHelp")}
-        </p>
-        {today && (
-          <DatePicker
-            id="trip-arrival"
-            value={form.arrival}
-            min={addDays(today, 1)}
-            onChange={(day) => edit({ arrival: day })}
-            labelledBy="trip-arrival-label"
-            describedBy="trip-arrival-help"
-            invalid={status.kind === "error" && status.key.startsWith("start.")}
-          />
-        )}
-      </div>
+          <div className="space-y-2">
+            <p id="trip-stay-label" className="text-xl font-bold">
+              {t("start.howLong")}
+            </p>
+            <Dropdown
+              id="trip-stay"
+              labelledBy="trip-stay-label"
+              value={form.stayMonths}
+              options={MONTH_CHOICES.map((n) => ({ value: n, label: n === 1 ? t("start.month") : t("start.months", { n }) }))}
+              onChange={(n) => edit({ stayMonths: n })}
+              className="sm:w-72"
+            />
+          </div>
+        </div>
 
-      <div className="space-y-3">
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex min-h-14 items-center justify-center rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink disabled:opacity-50"
-        >
-          {saving ? t("trip.saving") : t("trip.save")}
-        </button>
-        {status.kind === "saved" && (
-          <p role="status" className="rounded-lg border-2 border-accent bg-accent-soft p-3 text-lg font-semibold">
-            {status.text}
-          </p>
-        )}
-        {status.kind === "error" && (
-          <p role="alert" className="text-lg font-semibold text-danger">
-            {t(status.key)}
-          </p>
-        )}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <p id="trip-arrival-label" className="text-xl font-bold">
+              {t("start.when")}
+            </p>
+            <p id="trip-arrival-help" className="text-lg text-muted">
+              {t("start.whenHelp")}
+            </p>
+            {today && (
+              <DatePicker
+                id="trip-arrival"
+                value={form.arrival}
+                min={addDays(today, 1)}
+                onChange={(day) => edit({ arrival: day })}
+                labelledBy="trip-arrival-label"
+                describedBy="trip-arrival-help"
+                invalid={status.kind === "error" && status.key.startsWith("start.")}
+              />
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex min-h-14 items-center justify-center rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink disabled:opacity-50"
+            >
+              {saving ? t("trip.saving") : t("trip.save")}
+            </button>
+            {status.kind === "saved" && (
+              <p role="status" className="rounded-lg border-2 border-accent bg-accent-soft p-3 text-lg font-semibold">
+                {status.text}
+              </p>
+            )}
+            {status.kind === "error" && (
+              <p role="alert" className="text-lg font-semibold text-danger">
+                {t(status.key)}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </form>
   );
