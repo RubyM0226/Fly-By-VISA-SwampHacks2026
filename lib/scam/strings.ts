@@ -105,7 +105,55 @@ const hi: Record<ScamKey, string> = {
   announceQuestion: "जवाब तैयार है।",
 };
 
-const STRINGS: Record<Lang, Record<ScamKey, string>> = { en, hi };
+const es: Record<ScamKey, string> = {
+  title: "Revisar estafas",
+  intro: "¿Recibió un mensaje sobre su visa que le preocupa? Péguelo abajo o agregue una captura de pantalla. Buscaremos señales de estafa y le explicaremos lo que encontremos con palabras sencillas.",
+  inputLabel: "Mensaje para revisar",
+  placeholder: "Pegue el mensaje aquí",
+  imageLabel: "O agregue una captura de pantalla (opcional)",
+  imageHint: "PNG, JPG o WEBP, de menos de 4 MB.",
+  imageChoose: "Elegir una captura de pantalla",
+  imageRemove: "Quitar la captura de pantalla",
+  imageBad: "Elija una imagen PNG, JPG o WEBP.",
+  imageBig: "Esa imagen es demasiado grande. Elija una de menos de 4 MB.",
+  imageOff: "La revisión de capturas de pantalla no está disponible en este momento. Pegue el texto del mensaje en su lugar.",
+  imageFailed: "No pudimos leer esa captura de pantalla. Inténtelo de nuevo o pegue el texto.",
+  imageNoText: "No encontramos ninguna palabra en esa captura de pantalla. Pruebe con otra o pegue el texto.",
+  imageLimit: "Se hicieron muchas revisiones en poco tiempo. Inténtelo de nuevo en un minuto.",
+  question: "Esto parece una pregunta, no un mensaje para revisar. Para preguntas sobre formularios y documentos de la visa, use Consulta de información.",
+  questionLink: "Ir a Consulta de información",
+  check: "Revisar este mensaje",
+  checking: "Revisando…",
+  privacy:
+    "No guardamos lo que escribe ni ninguna captura de pantalla. Para revisar texto, intentamos quitar números de teléfono, correos, números de identificación y nombres, y luego podemos enviar el resto a la IA Gemini de Google. Una captura de pantalla se envía tal cual a la IA Gemini de Google para que pueda leer las palabras. No podemos ocultar datos dentro de una imagen antes de enviarla. No se guarda.",
+  empty: "Primero pegue un mensaje o agregue una captura de pantalla.",
+  tooLong: "Es demasiado largo. Pegue hasta {max} caracteres.",
+  count: "{n} de {max} caracteres",
+  error: "Algo salió mal. Inténtelo de nuevo.",
+  why: "Por qué lo creemos",
+  whyNone: "No encontramos ninguna de las señales de alerta que conocemos. Eso no significa que el mensaje sea real.",
+  words: "Palabras que notamos:",
+  todo: "Qué hacer ahora",
+  official: "Páginas oficiales",
+  aiExplains: "Explicado por IA. Puede cometer errores, así que revise las páginas oficiales.",
+  "note.ai-off": "Revisado solo con nuestras reglas fijas. El asistente de IA no está activado en este momento.",
+  "note.ai-failed": "Revisado solo con nuestras reglas fijas. El asistente de IA no pudo responder en este momento.",
+  "note.rate-limited": "Se hicieron muchas revisiones en poco tiempo, así que esto se revisó solo con nuestras reglas fijas. Inténtelo de nuevo en un minuto.",
+  "note.offline": "No pudimos conectarnos con nuestro servidor, así que esto se revisó en su dispositivo solo con nuestras reglas fijas.",
+  followLabel: "Haga otra pregunta",
+  followAsk: "Preguntar",
+  followLeft: "Puede hacer {n} más.",
+  followDone: "Ese es el límite de preguntas adicionales. Pulse Empezar de nuevo para revisar algo nuevo.",
+  followNeedsAi: "Las preguntas adicionales necesitan el asistente de IA, que no está disponible en este momento.",
+  you: "Usted preguntó",
+  answer: "Respuesta",
+  startOver: "Empezar de nuevo",
+  cleared: "Borrado. No se guardó nada.",
+  announce: "Resultado: {verdict}",
+  announceQuestion: "La respuesta está lista.",
+};
+
+const STRINGS: Record<Lang, Record<ScamKey, string>> = { en, hi, es };
 
 /** Like useT(), for Scam Check's own strings. */
 export function useScamT() {

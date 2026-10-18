@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useToday } from "@/lib/clock";
-import { ADVISORIES_CHECKED, COUNTRY_INFO, HOME_AIRPORTS_BY_COUNTRY, US_AIRPORTS } from "@/lib/flightData";
+import { ADVISORIES_CHECKED, COUNTRY_INFO, HOME_AIRPORTS, US_AIRPORTS } from "@/lib/flightData";
 import { kayakUrl, PICK_ORDER, warningsFor, type FlightOption, type PickId } from "@/lib/flights";
 import { useT } from "@/lib/i18n";
 import { addDays, diffDays, formatDate } from "@/lib/journey";
 import { tripStore, useTrip } from "@/lib/trip";
 import { AlertIcon, ArrowIcon, ExternalIcon, PlaneIcon } from "./Icons";
 import { BACK } from "./ScreenTransition";
+import { INTL_LOCALE } from "@/lib/locale";
 
 interface Result {
   options: FlightOption[];
@@ -81,7 +82,7 @@ export function FlightsScreen() {
           <label className="space-y-1">
             <span className="block text-lg font-bold">{t("flights.from")}</span>
             <select className={selectClass} value={trip.homeAirport} onChange={(e) => tripStore.set({ homeAirport: e.target.value })}>
-              {HOME_AIRPORTS_BY_COUNTRY[trip.from || "IN"].map((a) => (
+              {HOME_AIRPORTS.map((a) => (
                 <option key={a.code} value={a.code}>{a.city[lang]} ({a.code})</option>
               ))}
             </select>
@@ -147,7 +148,7 @@ export function FlightsScreen() {
 
 function FlightCard({ option: o, labels, bookUrl, kayak }: { option: FlightOption; labels: PickId[]; bookUrl: string; kayak: string }) {
   const { t, lang } = useT();
-  const money = new Intl.NumberFormat(lang === "hi" ? "hi-IN" : "en-IN", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const money = new Intl.NumberFormat(INTL_LOCALE[lang], { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const dur = (min: number) => t("flights.duration", { h: Math.floor(min / 60), m: min % 60 });
   const stops = o.stops === 0 ? t("flights.nonstop") : o.stops === 1 ? t("flights.oneStop") : t("flights.manyStops", { n: o.stops });
   const warn = warningsFor(o);
@@ -171,7 +172,7 @@ function FlightCard({ option: o, labels, bookUrl, kayak }: { option: FlightOptio
 
       {o.layovers.map((l) => {
         const info = l.country ? COUNTRY_INFO[l.country] : undefined;
-        const place = lang === "en" ? `${l.name} (${l.airport})` : `${info?.name.hi ?? l.name} (${l.airport})`;
+        const place = lang === "en" ? `${l.name} (${l.airport})` : `${info?.name[lang] ?? l.name} (${l.airport})`;
         return (
           <div key={l.airport} className="space-y-1 rounded-xl border-2 border-line p-3">
             <p className="text-lg font-semibold">{t("flights.via", { place, time: dur(l.minutes) })}</p>

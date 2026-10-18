@@ -409,7 +409,7 @@ function OfficialLinks({ extra }: { extra: Source[] }) {
               {/* Official pages are in English only. */}
               <span lang={extra.includes(l) ? "en" : undefined}>{l.title}</span>
               <ExternalIcon className="h-4 w-4 shrink-0" />
-              <span className="sr-only">{lang === "hi" ? "(नए टैब में खुलता है)" : "(opens in a new tab)"}</span>
+              <span className="sr-only">{lang === "hi" ? "(नए टैब में खुलता है)" : lang === "es" ? "(se abre en una pestaña nueva)" : "(opens in a new tab)"}</span>
             </a>
           </li>
         ))}

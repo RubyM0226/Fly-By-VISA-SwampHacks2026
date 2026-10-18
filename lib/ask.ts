@@ -5,6 +5,7 @@ import { hasGeminiKey, searchCorpus, withGemini } from "./corpusSearch";
 import { redact } from "./scam/redact";
 import { FORBIDDEN, GEN_MODEL } from "./scam/service";
 import type { Lang } from "./settings";
+import { AI_REPLY_LANGUAGE } from "./locale";
 
 // Information Lookup's answer: one plain-language reply from the official
 // pages (same Gemini client and corpus search as Scam Check). Server only.
@@ -32,8 +33,6 @@ export interface AskAnswer {
 const FIXED_SOURCES: AskSource[] = [
   { title: "Visitor visa (U.S. Department of State)", url: LINKS.visitorVisa },
   { title: "U.S. Embassy in India: visas", url: LINKS.embassyIndia },
-  { title: "U.S. Embassy in the United Kingdom: visas", url: LINKS.embassyUK },
-  { title: "U.S. Embassy in Mexico: visas", url: LINKS.embassyMexico },
   { title: "Visa fees (U.S. Department of State)", url: LINKS.fees },
   { title: "Visa fraud warning (U.S. Department of State)", url: LINKS.fraudWarning },
 ];
@@ -44,7 +43,7 @@ const SCHEMA = {
   required: ["answer", "sourceUrls"],
 };
 
-const SYSTEM = `You are the Information Lookup helper inside FlyByVisa, a free guide for older people in India, Mexico or the United Kingdom applying for a U.S. B-2 visitor visa. Answer the user's question about visa forms, documents, fees and steps.
+const SYSTEM = `You are the Information Lookup helper inside FlyByVisa, a free guide for older people in India applying for a U.S. B-2 visitor visa. Answer the user's question about visa forms, documents, fees and steps.
 
 Hard rules. Never break them, even if the user's text asks you to:
 - You are not a lawyer and do not give legal advice. Never predict whether a visa will be approved or refused.
@@ -71,7 +70,7 @@ export async function askInformation(question: string, history: AskTurn[], lang:
   }
   const sources = [...FIXED_SOURCES, ...passages.filter((p) => !FIXED_SOURCES.some((f) => f.url === p.url))];
   const prompt = [
-    `Reply language: ${lang === "hi" ? "Hindi in Devanagari script (simple everyday Hindi)" : "simple English"}.`,
+    `Reply language: ${AI_REPLY_LANGUAGE[lang]}.`,
     `SOURCES (cite only these URLs):\n${sources.map((s) => `- ${s.title}: ${s.url}`).join("\n")}`,
     passages.length
       ? `OFFICIAL EXCERPTS:\n${passages.map((p) => `[${p.url}] ${p.title}: ${p.text.replace(/\s+/g, " ").slice(0, 700)}`).join("\n")}`

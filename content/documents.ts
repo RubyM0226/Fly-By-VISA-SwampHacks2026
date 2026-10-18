@@ -13,8 +13,7 @@ import type { TemplateId } from "./templates";
 // `blank` says how to get an empty version. Never invent an "official" form:
 // "template" is a FlyByVisa Word file from content/templates.ts, labelled as ours.
 // Names use [[term|Shown text]] glossary chips like steps.ts. Hindi is a first
-// draft: have a fluent reader check it. Names use the home-country tokens and
-// India's links from lib/homeCountry.ts; render through useHome().loc.
+// draft: have a fluent reader check it.
 
 export type Blank =
   | { type: "online"; url: string }
@@ -29,73 +28,73 @@ export interface DocumentEntry {
 const ALL_STEPS = [...new Set(Object.values(STEPS_BY_PURPOSE).flat())] as StepId[];
 const ENTRIES = {
   passport: {
-    name: { en: "Your passport", hi: "आपका पासपोर्ट" },
+    name: { en: "Your passport", hi: "आपका पासपोर्ट", es: "Su pasaporte" },
     upload: true,
     blank: { type: "none", url: LINKS.passportIndia },
   },
-  travelDates: { name: { en: "Your travel dates", hi: "यात्रा की तारीखें" }, upload: false },
+  travelDates: { name: { en: "Your travel dates", hi: "यात्रा की तारीखें", es: "Sus fechas de viaje" }, upload: false },
   travelFamilyDetails: {
-    name: { en: "Travel and family details", hi: "यात्रा और परिवार की जानकारी" },
+    name: { en: "Travel and family details", hi: "यात्रा और परिवार की जानकारी", es: "Datos del viaje y de la familia" },
     upload: false,
   },
   photo: {
-    name: { en: "A digital photo", hi: "डिजिटल फ़ोटो" },
+    name: { en: "A digital photo", hi: "डिजिटल फ़ोटो", es: "Una foto digital" },
     upload: true,
     blank: { type: "none", url: LINKS.photoRules },
   },
   ds160Confirmation: {
-    name: { en: "[[ds160|DS-160]] confirmation page", hi: "[[ds160|DS-160]] पुष्टि पृष्ठ" },
+    name: { en: "[[ds160|DS-160]] confirmation page", hi: "[[ds160|DS-160]] पुष्टि पृष्ठ", es: "Página de confirmación del [[ds160|DS-160]]" },
     upload: true,
     blank: { type: "online", url: LINKS.ds160 },
   },
   feeReceipt: {
-    name: { en: "Fee receipt", hi: "शुल्क की रसीद" },
+    name: { en: "Fee receipt", hi: "शुल्क की रसीद", es: "Recibo de pago de la tarifa" },
     upload: true,
     blank: { type: "none", url: LINKS.fees },
   },
   appointmentLetters: {
-    name: { en: "Appointment letters", hi: "अपॉइंटमेंट पत्र" },
+    name: { en: "Appointment letters", hi: "अपॉइंटमेंट पत्र", es: "Cartas de las citas" },
     upload: true,
     blank: { type: "none", url: LINKS.embassyIndia },
   },
   lifeInIndia: {
-    name: { en: "Proof of your life in {home}", hi: "{home} में आपके जीवन का प्रमाण" },
+    name: { en: "Proof of your life in India", hi: "भारत में आपके जीवन का प्रमाण", es: "Pruebas de su vida en India" },
     upload: true,
     blank: { type: "none" },
   },
   fundsProof: {
-    name: { en: "Proof of how you will pay", hi: "खर्च कैसे उठाएँगे, इसका प्रमाण" },
+    name: { en: "Proof of how you will pay", hi: "खर्च कैसे उठाएँगे, इसका प्रमाण", es: "Pruebas de cómo pagará" },
     upload: true,
     blank: { type: "none" },
   },
   tripPlan: {
-    name: { en: "A simple trip plan", hi: "यात्रा की सरल योजना" },
+    name: { en: "A simple trip plan", hi: "यात्रा की सरल योजना", es: "Un plan de viaje sencillo" },
     upload: true,
     blank: { type: "template", id: "trip-plan" },
   },
   lastStepPapers: {
-    name: { en: "Your papers from the last step", hi: "पिछले कदम के कागज़ात" },
+    name: { en: "Your papers from the last step", hi: "पिछले कदम के कागज़ात", es: "Sus papeles del paso anterior" },
     upload: false,
   },
   passportWithVisa: {
-    name: { en: "Passport with the visa", hi: "वीज़ा वाला पासपोर्ट" },
+    name: { en: "Passport with the visa", hi: "वीज़ा वाला पासपोर्ट", es: "Pasaporte con la visa" },
     upload: true,
     blank: { type: "none" },
   },
   flightDetails: {
-    name: { en: "Flight details", hi: "उड़ान की जानकारी" },
+    name: { en: "Flight details", hi: "उड़ान की जानकारी", es: "Datos del vuelo" },
     upload: true,
     blank: { type: "none" },
   },
   insurance: {
-    name: { en: "Insurance papers, if you buy it", hi: "बीमा के कागज़, अगर लें" },
+    name: { en: "Insurance papers, if you buy it", hi: "बीमा के कागज़, अगर लें", es: "Papeles del seguro, si lo compra" },
     upload: true,
     blank: { type: "none" },
   },
-  stayAddress: { name: { en: "Address where you will stay", hi: "ठहरने की जगह का पता" }, upload: false },
-  tripDetails: { name: { en: "Your trip details", hi: "आपकी यात्रा की जानकारी" }, upload: false },
+  stayAddress: { name: { en: "Address where you will stay", hi: "ठहरने की जगह का पता", es: "Dirección donde se quedará" }, upload: false },
+  tripDetails: { name: { en: "Your trip details", hi: "आपकी यात्रा की जानकारी", es: "Los datos de su viaje" }, upload: false },
   i94: {
-    name: { en: "Your [[i94|I-94]] record", hi: "आपका [[i94|I-94]] रिकॉर्ड" },
+    name: { en: "Your [[i94|I-94]] record", hi: "आपका [[i94|I-94]] रिकॉर्ड", es: "Su registro [[i94|I-94]]" },
     upload: true,
     blank: { type: "online", url: LINKS.i94 },
   },i20Form: {
@@ -114,7 +113,7 @@ const ENTRIES = {
     blank: { type: "none" },
   },
   returnTicket: {
-    name: { en: "Your return ticket", hi: "वापसी का टिकट" },
+    name: { en: "Your return ticket", hi: "वापसी का टिकट", es: "Su boleto de regreso" },
     upload: true,
     blank: { type: "none" },
   },
