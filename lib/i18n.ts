@@ -140,7 +140,7 @@ const en = {
 
   "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "landing.about":
-    "FlyByVisa helps older adults plan their U.S. visitor visa journey, one step at a time. It is free, in English and other languages.",
+    "FlyByVisa helps you plan your U.S. visa journey, one step at a time. It is free, in English and other languages.",
   "landing.getStarted": "Get started",
   "home.title": "Where are you coming from, and where do you want to go?",
   "home.lead": "Pick both places and we will build your plan, step by step.",
@@ -539,7 +539,7 @@ const hi: Record<UiKey, string> = {
   "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
   // DRAFT: the two landing strings below need a native Hindi reader.
   "landing.about":
-    "FlyByVisa बुज़ुर्गों को अमेरिका के आगंतुक वीज़ा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और दूसरी भाषाओं में।",
+    "FlyByVisa आपकी अमेरिका की वीज़ा यात्रा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और दूसरी भाषाओं में।",
   "landing.getStarted": "शुरू करें",
   "home.title": "आप कहाँ से आ रहे हैं, और कहाँ जाना चाहते हैं?",
   "home.lead": "दोनों जगह चुनिए। हम आपके लिए कदम-दर-कदम योजना बनाएँगे।",

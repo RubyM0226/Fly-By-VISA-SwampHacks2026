@@ -17,6 +17,8 @@ interface Props {
   onPick: (code: CountryCode) => void;
   /** Camera zoom; 1 is the normal view, larger is closer. */
   zoom: number;
+  /** Landing page: decorative. Drag to spin only; no route, pins, labels or picking. */
+  landing: boolean;
 }
 
 interface Point {
@@ -53,6 +55,12 @@ const COLORS = {
 const ARC_ALT_SCALE = 0.45;
 const FLIGHT_MS = 4500;
 const PAUSE_MS = 1200;
+
+// Landing page plane: one lap, one full turn of its orbit, one tilt cycle.
+const LAP_MS = 40_000;
+const ORBIT_TURN_MS = 180_000;
+const TILT_MS = 95_000;
+const FREE_ALT = 0.12;
 
 /** Camera height at zoom 1: closer once places are chosen. */
 function baseAltitude(from: string, to: string) {
@@ -113,11 +121,24 @@ function makePlane() {
   return plane;
 }
 
+function removePlane(scene: THREE.Scene, plane: THREE.Group) {
+  scene.remove(plane);
+  plane.traverse((o) => {
+    if (o instanceof THREE.Mesh) {
+      o.geometry.dispose();
+      (o.material as THREE.Material).dispose();
+    }
+  });
+}
+
 /**
  * The 3D globe. This is an enhancement: every choice is also available in the
  * dropdowns above it, so keyboard and screen-reader users never need it.
  */
-export default function GlobeView({ from, to, onPick, zoom }: Props) {
+export default function GlobeView({ from: savedFrom, to: savedTo, onPick, zoom, landing }: Props) {
+  // The landing page ignores any saved trip: no route, no highlighted places.
+  const from = landing ? "" : savedFrom;
+  const to = landing ? "" : savedTo;
   const { t } = useT();
   const [settings] = useSettings();
   const systemReduce = useSyncExternalStore(noop, prefersReducedMotion, () => false);
@@ -185,7 +206,10 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
     controls.autoRotate = !reduceMotion && !(from && to);
     controls.autoRotateSpeed = 0.5;
     controls.enableZoom = false; // keep page scrolling with the mouse wheel
-  }, [ready, reduceMotion, from, to]);
+    // Landing page on phones: a vertical swipe scrolls the page, a sideways
+    // one spins the globe. The picker keeps OrbitControls' own "none".
+    if (controls.domElement) controls.domElement.style.touchAction = landing ? "pan-y" : "none";
+  }, [ready, reduceMotion, from, to, landing]);
 
   // Turn toward whatever was just chosen.
   useEffect(() => {
@@ -267,15 +291,54 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
 
     return () => {
       cancelAnimationFrame(frame);
-      scene.remove(plane);
-      plane.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
-          o.geometry.dispose();
-          (o.material as THREE.Material).dispose();
-        }
-      });
+      removePlane(scene, plane);
     };
   }, [ready, reduceMotion, from, to]);
+
+  // Landing page: the plane flies endlessly around the whole globe, on a great
+  // circle that slowly turns (and tilts between 30° and 80°), so over time it
+  // passes over every part of the map. With motion paused it holds still.
+  useEffect(() => {
+    const globe = globeRef.current;
+    if (!ready || !globe || !landing) return;
+    const at = (ms: number) => {
+      const along = (2 * Math.PI * ms) / LAP_MS;
+      const node = (2 * Math.PI * ms) / ORBIT_TURN_MS;
+      const tilt = ((55 + 25 * Math.sin((2 * Math.PI * ms) / TILT_MS)) * Math.PI) / 180;
+      const lat = Math.asin(Math.sin(tilt) * Math.sin(along));
+      const lng = node + Math.atan2(Math.cos(tilt) * Math.sin(along), Math.cos(along));
+      const c = globe.getCoords((lat * 180) / Math.PI, (lng * 180) / Math.PI, FREE_ALT);
+      return new THREE.Vector3(c.x, c.y, c.z);
+    };
+
+    const plane = makePlane();
+    const place = (ms: number) => {
+      const pos = at(ms);
+      plane.position.copy(pos);
+      plane.up.copy(pos).normalize();
+      plane.lookAt(at(ms + 100));
+    };
+
+    const scene = globe.scene();
+    scene.add(plane);
+
+    let frame = 0;
+    if (reduceMotion) {
+      place(LAP_MS * 0.1);
+    } else {
+      const start = performance.now();
+      const tick = (now: number) => {
+        place(now - start);
+        frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }
+
+    return () => {
+      cancelAnimationFrame(frame);
+      removePlane(scene, plane);
+    };
+  }, [ready, reduceMotion, landing]);
 
   const countryOf = (d: object) => {
     const id = (d as Shape).id;
@@ -283,6 +346,7 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
   };
 
   const shapeColor = (d: object) => {
+    if (landing) return COLORS.land;
     const c = countryOf(d);
     if (c && (c.code === from || c.code === to)) return COLORS.landSelected;
     if (d === hover && c && (c.origin || c.destination)) return COLORS.landHover;
@@ -291,6 +355,7 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
   };
 
   const shapeAltitude = (d: object) => {
+    if (landing) return 0.008;
     const c = countryOf(d);
     if (c && (c.code === from || c.code === to)) return 0.03;
     if (d === hover && c && (c.origin || c.destination)) return 0.03;
@@ -329,17 +394,20 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
           polygonStrokeColor={() => COLORS.border}
           polygonAltitude={shapeAltitude}
           polygonsTransitionDuration={reduceMotion ? 0 : 300}
+          showPointerCursor={!landing}
           polygonLabel={(d: object) => {
+            if (landing) return "";
             const c = countryOf(d);
             if (c) return tooltip(t(c.nameKey), c.origin || c.destination);
             return tooltip((d as Shape).properties.name, false);
           }}
-          onPolygonHover={(d: object | null) => setHover((d as Shape) ?? null)}
+          onPolygonHover={(d: object | null) => setHover(landing ? null : ((d as Shape) ?? null))}
           onPolygonClick={(d: object) => {
+            if (landing) return;
             const c = countryOf(d);
             if (c && (c.origin || c.destination)) onPick(c.code);
           }}
-          pointsData={points}
+          pointsData={landing ? [] : points}
           pointLat="lat"
           pointLng="lng"
           pointColor={colorOf}
@@ -353,7 +421,7 @@ export default function GlobeView({ from, to, onPick, zoom }: Props) {
             const p = d as Point;
             if (p.enabled) onPick(p.code);
           }}
-          labelsData={points}
+          labelsData={landing ? [] : points}
           labelLat="lat"
           labelLng="lng"
           labelAltitude={0.04}
