@@ -243,6 +243,20 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm, .bg-dange
 /* Black-and-white keeps the light wash so tints look as before, minus texture. */
 html[data-mono="true"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-image: var(--surface-wash); }
 
+/* Anything clickable shows the hand. In the base layer so cursor-* utilities still win. */
+@layer base {
+  :is(button, a[href], [role="button"], [role="option"], [role="switch"], [role="tab"], summary, label[for], label:has(input:is([type="checkbox"], [type="radio"], [type="file"])), select,
+    input:is([type="checkbox"], [type="radio"], [type="file"], [type="submit"], [type="button"])),
+  input[type="file"]::file-selector-button {
+    cursor: pointer;
+  }
+  :is(button, select, input):disabled,
+  :is(button, select, input):disabled::file-selector-button,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Tactile controls: buttons, pills and toggles sit slightly raised and  */
 /* press in. Selected options rest pressed in. In a layer so Tailwind     */

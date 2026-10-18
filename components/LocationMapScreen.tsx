@@ -79,11 +79,11 @@ export function LocationMapScreen() {
   const officeLines = (o: Office) => ({
     title: `${t(o.kind === "embassy" ? "map.embassy" : "map.consulate")} · ${t(`post.${o.id}`)}`,
     lines: [
-      t("map.interviewWait", { n: waits[o.id] }),
+      waits[o.id] === 1 ? t("map.interviewWaitOne") : t("map.interviewWait", { n: waits[o.id] }),
       ...(earliest ? [t("map.earliest", { date: formatDate(earliest[o.id], lang) })] : []),
       o.appointmentWaitDays === null
         ? t("map.appointmentUnknown")
-        : t("map.appointmentWait", { n: o.appointmentWaitDays }),
+        : o.appointmentWaitDays === 1 ? t("map.appointmentWaitOne") : t("map.appointmentWait", { n: o.appointmentWaitDays }),
     ],
   });
 

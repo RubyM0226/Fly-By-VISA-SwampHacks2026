@@ -11,7 +11,7 @@ import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { tripFromProfile } from "@/lib/tripProfile";
-import { DocumentIcon } from "./Icons";
+import { useSavedConsent } from "./DocumentsScreen";
 import { TripDetailsCard } from "./TripDetailsCard";
 
 export function AccountScreen() {
@@ -19,6 +19,7 @@ export function AccountScreen() {
   const user = useProfile();
   const { user: auth0User } = useUser();
   const [trip] = useTrip();
+  const consent = useSavedConsent();
   const [helperUrl, setHelperUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -140,7 +141,7 @@ export function AccountScreen() {
               <div className="space-y-1">
                 <p className="text-sm font-bold uppercase tracking-wide text-muted">Duration of Stay</p>
                 <p className="text-lg font-medium text-slate-800">
-                  {trip.stayMonths ? `${trip.stayMonths} months` : "Not selected"}
+                  {trip.stayMonths ? (trip.stayMonths === 1 ? t("start.month") : t("start.months", { n: trip.stayMonths })) : "Not selected"}
                 </p>
               </div>
 
@@ -155,12 +156,12 @@ export function AccountScreen() {
             <div className="space-y-2">
               <p className="text-sm font-bold uppercase tracking-wide text-muted">Current Roadmap Status</p>
               <div className="flex items-center gap-3 rounded-lg border-2 border-accent/20 bg-accent-soft p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-ink">
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <p className="text-xl font-bold text-accent-ink">{currentStepTitle}</p>
+                <p className="text-xl font-bold text-ink">{currentStepTitle}</p>
               </div>
             </div>
           </div>
@@ -212,19 +213,30 @@ export function AccountScreen() {
             )}
           </div>
 
-          {/* Private file uploads now live on the Documents tab. */}
-          <div className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-6">
-            <p className="text-lg">{t("myPlan.filesMoved")}</p>
-            <Link
-              href="/documents"
-              className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
-            >
-              <DocumentIcon className="h-6 w-6 shrink-0" />
-              {t("journey.goToDocuments")}
-            </Link>
-          </div>
+          <Link href="/documents" className="inline-flex min-h-12 items-center text-lg font-semibold text-accent underline">
+            {t("journey.viewDocuments")}
+          </Link>
 
-          {/* Phase 3: "Your acknowledgement" (documents consent) goes here. */}
+          {/* The Documents consent, read from the same localStorage keys the Documents page writes. */}
+          {consent.agreed !== null && (
+            <div className="space-y-2 rounded-xl border-2 border-line-strong bg-surface p-6">
+              <h2 className="text-2xl font-bold text-accent">{t("account.ack.title")}</h2>
+              {consent.agreed ? (
+                <p className="text-lg">
+                  {consent.date
+                    ? t("account.ack.agreedOn", { date: formatDate(consent.date, lang) })
+                    : t("account.ack.agreed")}
+                </p>
+              ) : (
+                <p className="text-lg">
+                  {t("account.ack.notYet")}{" "}
+                  <Link href="/documents" className="font-semibold text-accent underline">
+                    {t("account.ack.link")}
+                  </Link>
+                </p>
+              )}
+            </div>
+          )}
 
         </>
       )}

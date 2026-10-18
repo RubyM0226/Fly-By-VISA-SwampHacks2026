@@ -59,7 +59,7 @@ async function HelperContent({ params }: { params: Promise<{ token: string }> })
           <div className="space-y-1">
             <p className="text-sm font-bold uppercase tracking-wide text-muted">Duration of Stay</p>
             <p className="text-lg font-medium text-slate-800">
-              {profile.stayMonths ? `${profile.stayMonths} months` : "Not selected"}
+              {profile.stayMonths ? `${profile.stayMonths} ${profile.stayMonths === 1 ? "month" : "months"}` : "Not selected"}
             </p>
           </div>
 

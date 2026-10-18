@@ -2,6 +2,7 @@ import { LINKS } from "@/lib/config";
 import { STEP_ORDER, type StepId } from "@/lib/journey";
 import { STEP_BY_ID } from "./steps";
 import type { Lang } from "@/lib/settings";
+import type { TemplateId } from "./templates";
 
 // Every item in a roadmap step's "What you need" list. Steps in content/steps.ts
 // list these ids, so the roadmap and the Documents tab share one source.
@@ -10,14 +11,14 @@ import type { Lang } from "@/lib/settings";
 // tab. The rest (dates, details to know) only show on the roadmap.
 //
 // `blank` says how to get an empty version. Never invent an "official" form:
-// "template" is a FlyByVisa file in public/templates, labelled as ours.
+// "template" is a FlyByVisa Word file from content/templates.ts, labelled as ours.
 // Names use [[term|Shown text]] glossary chips like steps.ts. Hindi is a first
 // draft: have a fluent reader check it.
 
 export type Blank =
   | { type: "online"; url: string }
   | { type: "none"; url?: string }
-  | { type: "template"; file: string };
+  | { type: "template"; id: TemplateId };
 
 export interface DocumentEntry {
   name: Record<Lang, string>;
@@ -69,7 +70,7 @@ const ENTRIES = {
   tripPlan: {
     name: { en: "A simple trip plan", hi: "यात्रा की सरल योजना" },
     upload: true,
-    blank: { type: "template", file: "/templates/trip-plan.txt" },
+    blank: { type: "template", id: "trip-plan" },
   },
   lastStepPapers: {
     name: { en: "Your papers from the last step", hi: "पिछले कदम के कागज़ात" },

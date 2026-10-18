@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { enforceFloor, IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_MESSAGE_CHARS, OFFICIAL_LINKS, validateMessage, VERDICT_TEXT, type Verdict } from "@/lib/scam";
 import { MAX_FOLLOW_UPS, rulesOnlyResponse, type ScamCheckResponse, type Source, type Turn } from "@/lib/scam/api";
-import { EXAMPLES, useScamT, type ScamKey } from "@/lib/scam/strings";
+import { useScamT, type ScamKey } from "@/lib/scam/strings";
 import { plainText, RichText } from "./Glossary";
 import { SpeakButton } from "./SpeakButton";
 import { AlertIcon, ExternalIcon, QuestionIcon, ShieldIcon } from "./Icons";
@@ -62,7 +62,6 @@ function useScamState() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [announce, setAnnounce] = useState("");
-  const [exampleIndex, setExampleIndex] = useState(0);
 
   /** `error` is the server's code, or null when it could not be reached. */
   async function post(body: object | FormData): Promise<{ response: ScamCheckResponse } | { error: string | null }> {
@@ -153,14 +152,7 @@ function useScamState() {
     setAnnounce(st("cleared"));
   }
 
-  function tryExample() {
-    const list = EXAMPLES[lang];
-    setText(list[exampleIndex % list.length]);
-    setExampleIndex((i) => i + 1);
-    setError(null);
-  }
-
-  return { text, setText, image, setImage, result, turns, followUpBlocked, busy, error, announce, check, askFollowUp, startOver, tryExample };
+  return { text, setText, image, setImage, result, turns, followUpBlocked, busy, error, announce, check, askFollowUp, startOver };
 }
 
 type ScamState = ReturnType<typeof useScamState>;
@@ -262,16 +254,6 @@ function ScamPanel({ state }: { state: ScamState }) {
           >
             {busy && !result ? st("checking") : st("check")}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              state.tryExample();
-              inputRef.current?.focus();
-            }}
-            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-6 py-2 text-lg font-semibold hover:bg-accent-soft sm:flex-1"
-          >
-            {st("example")}
-          </button>
         </div>
         <p id={`${ids}-privacy`} className="text-base text-muted">
           {st("privacy")}
@@ -319,27 +301,13 @@ function MessageResult({ result }: { result: Result }) {
   const extra = response.ai?.reasons ?? [];
   const steps = text.nextSteps[lang];
 
-  const verdictSpeech = () =>
-    [
-      text.label[lang],
-      plainText(summary),
-      st("why"),
-      ...response.rules.signals.map((s) => s.explanation[lang]),
-      ...extra.map(plainText),
-    ]
-      .filter(Boolean)
-      .join(". ");
-
   return (
     <>
       <div className={`space-y-2 rounded-2xl border-2 p-3 ${style.box}`}>
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 className="flex min-w-[9rem] flex-1 items-center gap-2 text-xl font-bold">
-            <style.Icon className="h-7 w-7 shrink-0" />
-            {text.label[lang]}
-          </h3>
-          <SpeakButton ownerId={`${ids}-verdict`} getText={verdictSpeech} className="text-ink" />
-        </div>
+        <h3 className="flex min-h-12 items-center justify-center gap-2 text-center text-xl font-bold">
+          <style.Icon className="h-7 w-7 shrink-0" />
+          {text.label[lang]}
+        </h3>
         {summary && (
           <div className="space-y-1 text-ink">
             <p className="text-base">
