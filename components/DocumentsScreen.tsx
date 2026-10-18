@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { DOC_GROUPS, DOCUMENTS, UPLOAD_DOC_IDS, type Blank, type DocId } from "@/content/documents";
+import { DOC_GROUPS, DOCUMENTS, type Blank, type DocId } from "@/content/documents";
 import { STEP_BY_ID } from "@/content/steps";
 import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
 import { useTrip } from "@/lib/trip";
