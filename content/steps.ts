@@ -75,6 +75,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Prepárese",
+        pill: "Preparación",
         what: [
           "Revise su pasaporte.",
           "Debe seguir vigente 6 meses después de que regrese a casa.",
@@ -130,6 +131,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Llene el formulario en línea",
+        pill: "Formulario",
         what: [
           "Llene el formulario en línea [[ds160|DS-160]].",
           "Responda todas las preguntas con sinceridad.",
@@ -181,6 +183,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Pague la tarifa y reserve sus citas",
+        pill: "Citas",
         what: [
           "Pague la tarifa de la visa.",
           "Luego reserve su entrevista en una oficina de EE. UU. en India.",
@@ -234,6 +237,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Reúna sus documentos",
+        pill: "Documentos",
         what: [
           "Reúna los papeles que el oficial puede pedir.",
           "Demuestre que su vida está en {home}: familia, vivienda o pensión.",
@@ -281,6 +285,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Practique para la entrevista",
+        pill: "Entrevista",
         what: [
           "Practique sus respuestas en voz alta.",
           "¿A quién va a visitar?",
@@ -326,6 +331,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Reserve su vuelo",
+        pill: "Vuelo",
         what: [
           "Espere hasta tener su visa y que le devuelvan el pasaporte.",
           "Luego compare vuelos con el botón de arriba.",
@@ -372,7 +378,9 @@ export const STEPS: StepContent[] = [
         simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
       },
       es: {
-        title: "Llegue a EE. UU.",
+        // DRAFT: needs a fluent Spanish reader.
+        title: "Llegue a U.S. y pase por la aduana",
+        pill: "Llegada",
         what: [
           "Tenga a mano su pasaporte, su visa y los datos de su viaje.",
           "Un oficial de la frontera de EE. UU. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
@@ -418,6 +426,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Regrese a tiempo",
+        pill: "Regreso",
         what: [
           "Salga de EE. UU. antes de la fecha de su registro [[i94|I-94]].",
           "No trabaje durante su visita.",
@@ -459,6 +468,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Reciba su Formulario I-20",
+        pill: "Formulario I-20",
         what: [
           "Una vez aceptado, la oficina internacional de su universidad en EE. UU. le emitirá un Formulario I-20.",
           "Revise que su nombre y fecha de nacimiento coincidan exactamente con su pasaporte.",
@@ -502,6 +512,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Pague la tarifa SEVIS I-901",
+        pill: "Tarifa SEVIS",
         cost: ["$350 para estudiantes F-1"],
         what: [
           "Debe pagar la tarifa SEVIS antes de solicitar su visa.",
@@ -539,6 +550,7 @@ export const STEPS: StepContent[] = [
       },
       es: {
         title: "Espere la aprobación del I-797",
+        pill: "Aprobación",
         what: [
           "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
           "No puede solicitar su visa ni programar una entrevista hasta recibir el Aviso de Acción I-797 aprobado.",

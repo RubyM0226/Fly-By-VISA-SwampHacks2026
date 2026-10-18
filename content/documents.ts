@@ -56,6 +56,7 @@ const ENTRIES = {
     description: {
       en: "The page you get after you send the DS-160 form online. It has a barcode. Print it and bring it to your interview.",
       hi: "DS-160 फ़ॉर्म ऑनलाइन भेजने के बाद मिलने वाला पृष्ठ। इस पर बारकोड होता है। इसे प्रिंट करके इंटरव्यू में ले जाएँ।",
+      es: "La página que recibe después de enviar el formulario DS-160 en línea. Tiene un código de barras. Imprímala y llévela a su entrevista.",
     },
     upload: true,
     blank: { type: "online", url: LINKS.ds160 },
@@ -66,6 +67,7 @@ const ENTRIES = {
     description: {
       en: "Proof that you paid the visa fee. You need it to book your appointments.",
       hi: "वीज़ा शुल्क भरने का प्रमाण। अपॉइंटमेंट बुक करने के लिए इसकी ज़रूरत होती है।",
+      es: "Prueba de que pagó la tarifa de la visa. La necesita para reservar sus citas.",
     },
     upload: true,
     blank: { type: "none", url: LINKS.fees },
@@ -75,6 +77,7 @@ const ENTRIES = {
     description: {
       en: "The letters that confirm the date and time of each appointment. Bring them on the day.",
       hi: "हर अपॉइंटमेंट की तारीख और समय बताने वाले पत्र। उस दिन इन्हें साथ ले जाएँ।",
+      es: "Las cartas que confirman la fecha y la hora de cada cita. Llévelas ese día.",
     },
     upload: true,
     blank: { type: "none", url: LINKS.embassyIndia },
@@ -85,6 +88,7 @@ const ENTRIES = {
     description: {
       en: "Papers that show your home, family and income are in {home}, so you will come back. For example: a job or pension letter, property papers, recent bank statements, or a family photo.",
       hi: "ऐसे कागज़ जो दिखाएँ कि आपका घर, परिवार और आमदनी {home} में है, इसलिए आप लौटेंगे। जैसे: नौकरी या पेंशन का पत्र, संपत्ति के कागज़, हाल के बैंक स्टेटमेंट, या परिवार की फ़ोटो।",
+      es: "Papeles que muestran que su casa, su familia y sus ingresos están en {home}, así que usted va a regresar. Por ejemplo: una carta de trabajo o de pensión, papeles de propiedad, estados de cuenta bancarios recientes o una foto familiar.",
     },
     upload: true,
     blank: { type: "none" },
@@ -95,6 +99,7 @@ const ENTRIES = {
     description: {
       en: "Papers that show how the trip is paid for. For example: recent bank statements, a pension letter, or a letter from the family member who is paying.",
       hi: "ऐसे कागज़ जो दिखाएँ कि यात्रा का खर्च कैसे उठेगा। जैसे: हाल के बैंक स्टेटमेंट, पेंशन का पत्र, या खर्च उठाने वाले परिवार के सदस्य का पत्र।",
+      es: "Papeles que muestran cómo se paga el viaje. Por ejemplo: estados de cuenta bancarios recientes, una carta de pensión o una carta del familiar que paga.",
     },
     upload: true,
     blank: { type: "none" },
@@ -104,6 +109,7 @@ const ENTRIES = {
     description: {
       en: "A short plan of where you will stay, who you will visit and when you will come back.",
       hi: "आप कहाँ ठहरेंगे, किससे मिलेंगे और कब लौटेंगे, इसकी छोटी योजना।",
+      es: "Un plan corto de dónde se va a quedar, a quién va a visitar y cuándo va a regresar.",
     },
     upload: true,
     blank: { type: "template", id: "trip-plan" },
@@ -117,6 +123,7 @@ const ENTRIES = {
     description: {
       en: "Your passport with the visa inside. Check that the name and dates on the visa are right.",
       hi: "अंदर लगे वीज़ा वाला आपका पासपोर्ट। देखें कि वीज़ा पर नाम और तारीखें सही हैं।",
+      es: "Su pasaporte con la visa adentro. Revise que el nombre y las fechas de la visa estén bien.",
     },
     upload: true,
     blank: { type: "none" },
@@ -126,6 +133,7 @@ const ENTRIES = {
     description: {
       en: "Your ticket or booking confirmation, with the flight numbers and times.",
       hi: "आपका टिकट या बुकिंग की पुष्टि, उड़ान नंबर और समय के साथ।",
+      es: "Su boleto o la confirmación de la reserva, con los números y horarios de los vuelos.",
     },
     upload: true,
     blank: { type: "none" },
@@ -136,6 +144,7 @@ const ENTRIES = {
     description: {
       en: "Travel health insurance is not required for the visa, but U.S. hospital care is very expensive. If you buy it, keep the policy papers here.",
       hi: "वीज़ा के लिए यात्रा स्वास्थ्य बीमा ज़रूरी नहीं है, पर U.S. में अस्पताल का इलाज बहुत महंगा है। अगर आप लें, तो पॉलिसी के कागज़ यहाँ रखें।",
+      es: "El seguro médico de viaje no es obligatorio para la visa, pero la atención en un hospital de U.S. es muy cara. Si lo compra, guarde aquí los papeles de la póliza.",
     },
     upload: true,
     blank: { type: "none" },
@@ -148,6 +157,7 @@ const ENTRIES = {
     description: {
       en: "Your arrival record. It is made online when you enter the U.S. You can download it from the official website a few days later.",
       hi: "आपके पहुँचने का रिकॉर्ड। यह U.S. में प्रवेश करते समय ऑनलाइन बनता है। कुछ दिन बाद आप इसे आधिकारिक वेबसाइट से डाउनलोड कर सकते हैं।",
+      es: "Su registro de llegada. Se crea en línea cuando entra a U.S. Puede descargarlo del sitio web oficial unos días después.",
     },
     upload: true,
     blank: { type: "online", url: LINKS.i94 },

@@ -2,13 +2,14 @@
 
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/journey";
+import { INTL_LOCALE } from "@/lib/locale";
 import type { SelectedFlight } from "@/lib/trip";
 import { PlaneIcon } from "./Icons";
 
 /** The flight picked on the Flights page, shown on the "Book your flight" step. */
 export function SelectedFlightBox({ flight: f }: { flight: SelectedFlight }) {
   const { t, lang } = useT();
-  const money = new Intl.NumberFormat(lang === "hi" ? "hi-IN" : "en-IN", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const money = new Intl.NumberFormat(INTL_LOCALE[lang], { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const stops = f.stops === 0 ? t("flights.nonstop") : f.stops === 1 ? t("flights.oneStop") : t("flights.manyStops", { n: f.stops });
 
   return (
