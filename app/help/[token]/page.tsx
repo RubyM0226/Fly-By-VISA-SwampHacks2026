@@ -1,5 +1,6 @@
 import { getJourneyByHelperToken, updateHelperProgress } from "@/app/actions/helper";
 import { formatDate } from "@/lib/journey";
+import { COUNTRY_INFO } from "@/lib/flightData";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
@@ -19,9 +20,8 @@ async function HelperContent({ params }: { params: Promise<{ token: string }> })
 
   const profile = journey.profile || {};
   const getCountryName = (code?: string) => {
-    if (code === "IN") return "India";
-    if (code === "US") return "United States";
-    return code || "Not selected";
+    // Official English names; lib/i18n uses React hooks, so it cannot load in this server page.
+    return (code && COUNTRY_INFO[code]?.name.en) || code || "Not selected";
   };
 
   return (

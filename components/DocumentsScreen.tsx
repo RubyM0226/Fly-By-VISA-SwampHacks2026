@@ -6,6 +6,7 @@ import { STEP_BY_ID } from "@/content/steps";
 import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
 import { useTrip } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
+import { useHome } from "@/lib/homeCountry";
 import { todayISO } from "@/lib/clock";
 import { formatDate } from "@/lib/journey";
 import {
@@ -93,9 +94,11 @@ const dangerButton =
   "inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-5 py-2 text-lg font-semibold text-danger hover:bg-danger-soft disabled:opacity-60";
 const linkClass = "inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline";
 
-export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) {
+/** `home` is the traveler's home country when a caregiver views it (their own trip is not in this browser). */
+export function DocumentsScreen({ helperToken, home }: { helperToken?: string; home?: string } = {}) {
   const { t, lang } = useT();
   const [trip] = useTrip(); // <-- ADD THIS LINE
+  const { loc } = useHome(home);
   const caregiver = helperToken !== undefined;
   const base = caregiver ? `/api/helper/${encodeURIComponent(helperToken)}/uploads` : "/api/uploads";
   const [files, setFiles] = useState<UploadedFile[] | null>(null);
@@ -277,7 +280,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   
   const addedCount = myUniqueDocIds.filter((id) => filesFor(id).length > 0).length;
   const count = files?.length ?? 0;
-  const docName = (id: DocId) => DOCUMENTS[id].name[lang];
+  const docName = (id: DocId) => loc(DOCUMENTS[id].name[lang]);
 
   const statusMessage = (where: Where) => (
     <p
@@ -482,7 +485,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
                     )}
 
                     {statusMessage(where)}
-                    {blankInfo(DOCUMENTS[docId].blank)}
+                    {blankInfo(loc(DOCUMENTS[docId].blank))}
                   </li>
                 );
               })}

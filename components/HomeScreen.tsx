@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useT } from "@/lib/i18n";
 import { useTrip } from "@/lib/trip";
+import { isOrigin, ORIGIN_CODES } from "@/lib/countries";
 import { LaunchButton } from "./LaunchButton";
 import { pickPlace as pick } from "./GlobeStage";
 import { PlaceSelect } from "./PlaceSelect";
@@ -15,7 +16,7 @@ export function HomeScreen() {
   // Auth0 integration to detect returning users
   const { user, isLoading } = useUser();
 
-  const ready = trip.from === "IN" && trip.to === "US";
+  const ready = isOrigin(trip.from) && trip.to === "US";
 
   return (
     // The country choices, beside the shared globe (see GlobeStage).
@@ -58,7 +59,7 @@ export function HomeScreen() {
             <p className="text-base text-muted">{t("home.lead")}</p>
 
             <div className="flex flex-col gap-4">
-              <PlaceSelect id="place-from" label={t("home.from")} enabled={["IN"]} value={trip.from} onChange={pick} />
+              <PlaceSelect id="place-from" label={t("home.from")} enabled={ORIGIN_CODES} value={trip.from} onChange={pick} />
               <PlaceSelect id="place-to" label={t("home.to")} enabled={["US"]} value={trip.to} onChange={pick} />
             </div>
 

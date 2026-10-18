@@ -6,6 +6,7 @@ import { DOCUMENTS } from "@/content/documents";
 import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
+import { useHome } from "@/lib/homeCountry";
 import { plainText, RichText } from "./Glossary";
 import { ArrowIcon, CheckIcon, ExternalIcon, PinIcon } from "./Icons";
 import { SpeakButton } from "./SpeakButton";
@@ -23,10 +24,12 @@ interface Props {
 }
 
 /** Everything about one step, shown beside the roadmap when its pill is picked. */
-export function StepDetails({ step, plan, status, interviewDate, onToggleDone, autoFocus }: Props) {
+export function StepDetails({ step: rawStep, plan, status, interviewDate, onToggleDone, autoFocus }: Props) {
   const { t, lang } = useT();
+  const { loc } = useHome();
+  const step = loc(rawStep);
   const text = step.text[lang];
-  const documents = step.documents.map((id) => DOCUMENTS[id]);
+  const documents = step.documents.map((id) => loc(DOCUMENTS[id]));
   const hasUploads = documents.some((d) => d.upload);
   const headingRef = useRef<HTMLHeadingElement>(null);
   // Set only by pressing "Mark as done" here, so the stamp thumps down once
@@ -135,9 +138,9 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
         <div className="min-w-0">
           <h4 className="mb-1 text-lg font-bold">{t("journey.documents")}</h4>
           <ul className="list-disc space-y-1 pl-6 text-lg">
-            {step.documents.map((id) => (
+            {step.documents.map((id, i) => (
               <li key={id}>
-                <RichText text={DOCUMENTS[id].name[lang]} />
+                <RichText text={documents[i].name[lang]} />
               </li>
             ))}
           </ul>

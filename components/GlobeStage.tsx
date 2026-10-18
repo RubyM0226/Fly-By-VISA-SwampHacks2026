@@ -2,9 +2,10 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
+import { COUNTRY_BY_CODE, isOrigin, type CountryCode } from "@/lib/countries";
 import { useT } from "@/lib/i18n";
 import { tripStore, useTrip } from "@/lib/trip";
+import { CITIES_BY_COUNTRY } from "@/lib/tripProfile";
 import { GlobeLoader, useSupportsWebGL } from "./GlobeLoader";
 import { MinusIcon, PlusIcon } from "./Icons";
 
@@ -21,7 +22,12 @@ const zoomButton =
 /** Choose a place from the globe or a list. */
 export function pickPlace(code: CountryCode) {
   const c = COUNTRY_BY_CODE[code];
-  if (c.origin) tripStore.set({ from: code as "IN" });
+  if (isOrigin(code)) {
+    // A city from another country must not carry over: reset to this country's first city.
+    const cities = CITIES_BY_COUNTRY[code];
+    const keep = cities.some((x) => x.city === tripStore.getSnapshot().homeCity);
+    tripStore.set(keep ? { from: code } : { from: code, homeCity: cities[0].city, homeAirport: cities[0].airport });
+  }
   else if (c.destination) tripStore.set({ to: code as "US" });
 }
 

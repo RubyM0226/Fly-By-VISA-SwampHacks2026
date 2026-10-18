@@ -11,7 +11,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), quiet: true });
 
 import { isStronger, type Verdict } from "../lib/scam";
 import type { ScamCheckRequest } from "../lib/scam/api";
-import { defaultDeps, readScreenshot, runScamCheck, type ScamDeps } from "../lib/scam/service";
+import { defaultDeps, readScreenshot, runScamCheck, SCAM_KEYS, type ScamDeps } from "../lib/scam/service";
 import { SAMPLES } from "./scam-samples";
 
 const LIVE = process.argv.includes("--live");
@@ -81,12 +81,13 @@ async function main() {
   const u = await runScamCheck(req("Hi Ma, your interview is on Monday."), unsafe.deps);
   if (u.ai?.summary) problems.push(`"safe" summary was shown: ${u.ai.summary}`);
 
-  // 6. The real environment with no key is rules-only.
-  const saved = process.env.GEMINI_API_KEY;
-  delete process.env.GEMINI_API_KEY;
+  // 6. The real environment with no key is rules-only. Every key counts:
+  // GEMINI_SCAM_API_KEY first, then the shared keys as fallbacks.
+  const saved = SCAM_KEYS.map((name) => [name, process.env[name]] as const);
+  for (const name of SCAM_KEYS) delete process.env[name];
   const env = await runScamCheck(req(SAMPLES[0].text), defaultDeps());
-  if (env.note !== "ai-off") problems.push("defaultDeps() with no GEMINI_API_KEY should be rules-only");
-  process.env.GEMINI_API_KEY = saved;
+  if (env.note !== "ai-off") problems.push("defaultDeps() with no Gemini key should be rules-only");
+  for (const [name, value] of saved) if (value !== undefined) process.env[name] = value;
 
   // 7. Screenshots: the text read from the picture gets the same rules and redaction as pasted text.
   const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
@@ -123,15 +124,15 @@ async function main() {
 
 /** Every sample through real Gemini, with the floor applied. */
 async function live() {
-  if (!process.env.GEMINI_API_KEY) {
-    problems.push("--live needs GEMINI_API_KEY in .env.local");
+  if (!SCAM_KEYS.some((name) => process.env[name])) {
+    problems.push("--live needs GEMINI_SCAM_API_KEY (or GEMINI_API_KEY) in .env.local");
     return;
   }
   const deps = defaultDeps();
   let tp = 0, fn = 0, fp = 0, tn = 0, aiUsed = 0;
   for (const s of SAMPLES) {
     // Stay under the free tier's requests-per-minute limit.
-    await new Promise((done) => setTimeout(done, 7000));
+    await new Promise((done) => setTimeout(done, 14000));
     const r = await runScamCheck(req(s.text, { lang: s.lang === "hi" ? "hi" : "en" }), deps);
     if (r.ai) aiUsed++;
     const flagged = r.kind === "message" && r.verdict !== "cant-tell";
