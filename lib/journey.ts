@@ -4,7 +4,11 @@ import type { Lang } from "./settings";
 // Facts live in code and data (here and in content/steps.ts). AI should only
 // ever explain these results, never invent them.
 
-export type PostId = "delhi" | "mumbai" | "chennai" | "hyderabad" | "kolkata";
+export type PostId =
+  | "delhi" | "mumbai" | "chennai" | "hyderabad" | "kolkata"
+  | "london"
+  | "mexico-city" | "guadalajara" | "monterrey" | "tijuana" | "ciudad-juarez"
+  | "hermosillo" | "merida" | "nogales" | "nuevo-laredo" | "matamoros";
 export type Fit = "onTrack" | "tight" | "atRisk";
 export type VisaCategory = "family" | "study" | "work";
 
@@ -29,6 +33,12 @@ export const STEPS_BY_PURPOSE: Record<VisaCategory, StepId[]> = {
 
 // ---------------------------------------------------------------------------
 // SEED DATA: interview wait times by visa category, in months.
+// India's family (B1/B2) values are the "Next Available Appointment" figures
+// from the State Department's Global Visa Wait Times table:
+// https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/global-visa-wait-times.html
+// The State Department updates it roughly monthly. To refresh, update the
+// numbers below and WAIT_TIMES_AS_OF from that page.
+// needsCheck = this number came from a different or unconfirmed source.
 // ---------------------------------------------------------------------------
 export const WAIT_TIMES_AS_OF = "2026-09-17";
 
@@ -38,13 +48,36 @@ export interface PostSeed {
   needsCheck: boolean;
 }
 
-export const WAIT_TIMES: PostSeed[] = [
-  { id: "delhi", waitMonths: { family: 10, study: 2, work: 3 }, needsCheck: false },
-  { id: "mumbai", waitMonths: { family: 11.5, study: 2.5, work: 3.5 }, needsCheck: false },
-  { id: "hyderabad", waitMonths: { family: 12, study: 2, work: 3 }, needsCheck: false },
-  { id: "chennai", waitMonths: { family: 7.5, study: 1.5, work: 2 }, needsCheck: false },
-  { id: "kolkata", waitMonths: { family: 6.5, study: 1.5, work: 2 }, needsCheck: false },
-];
+/** Posts for each home country. A traveler only ever sees their own country's posts. */
+export const WAIT_TIMES_BY_COUNTRY: Record<"IN" | "GB" | "MX", PostSeed[]> = {
+  IN: [
+    { id: "delhi", waitMonths: { family: 10, study: 2, work: 3 }, needsCheck: false },
+    { id: "mumbai", waitMonths: { family: 11.5, study: 2.5, work: 3.5 }, needsCheck: false },
+    { id: "hyderabad", waitMonths: { family: 12, study: 2, work: 3 }, needsCheck: false },
+    { id: "chennai", waitMonths: { family: 7.5, study: 1.5, work: 2 }, needsCheck: false },
+    { id: "kolkata", waitMonths: { family: 6.5, study: 1.5, work: 2 }, needsCheck: false },
+  ],
+  // VERIFY: PLACEHOLDER numbers, not real waits, the same for every category.
+  // Replace each with the figure from the State Department's visa appointment
+  // wait-time page:
+  // https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/global-visa-wait-times.html
+  GB: [{ id: "london", waitMonths: { family: 2, study: 2, work: 2 }, needsCheck: true }],
+  MX: [
+    { id: "mexico-city", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "guadalajara", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "monterrey", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "tijuana", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "ciudad-juarez", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "hermosillo", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "merida", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "nogales", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "nuevo-laredo", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+    { id: "matamoros", waitMonths: { family: 6, study: 6, work: 6 }, needsCheck: true },
+  ],
+};
+
+/** India's posts; the default when no country is given. */
+export const WAIT_TIMES: PostSeed[] = WAIT_TIMES_BY_COUNTRY.IN;
 
 // ---------------------------------------------------------------------------
 // PLANNING ASSUMPTIONS. These are our own rules of thumb, not official times.

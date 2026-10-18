@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useToday } from "@/lib/clock";
-import { ADVISORIES_CHECKED, COUNTRY_INFO, HOME_AIRPORTS, US_AIRPORTS } from "@/lib/flightData";
+import { ADVISORIES_CHECKED, COUNTRY_INFO, HOME_AIRPORTS_BY_COUNTRY, US_AIRPORTS } from "@/lib/flightData";
 import { kayakUrl, PICK_ORDER, warningsFor, type FlightOption, type PickId } from "@/lib/flights";
 import { useT } from "@/lib/i18n";
 import { addDays, diffDays, formatDate } from "@/lib/journey";
@@ -82,7 +82,7 @@ export function FlightsScreen() {
           <label className="space-y-1">
             <span className="block text-lg font-bold">{t("flights.from")}</span>
             <select className={selectClass} value={trip.homeAirport} onChange={(e) => tripStore.set({ homeAirport: e.target.value })}>
-              {HOME_AIRPORTS.map((a) => (
+              {HOME_AIRPORTS_BY_COUNTRY[trip.from || "IN"].map((a) => (
                 <option key={a.code} value={a.code}>{a.city[lang]} ({a.code})</option>
               ))}
             </select>
