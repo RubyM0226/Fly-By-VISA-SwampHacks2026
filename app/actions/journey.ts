@@ -62,6 +62,12 @@ export async function createIntakeJourney(profileData: JourneyProfile) {
   const session = await auth0.getSession();
   const userId = session?.user?.sub || null;
 
+  // Validate and clean the profile data including names and route fields
+  const checked = cleanProfile(profileData, new Date().toISOString().slice(0, 10));
+  if (!checked.ok) {
+    return { success: false, id: null, error: checked.error };
+  }
+
   try {
     if (userId) {
       const existing = await sql`SELECT id FROM journeys WHERE user_id = ${userId}`;
@@ -70,7 +76,7 @@ export async function createIntakeJourney(profileData: JourneyProfile) {
           UPDATE journeys 
           SET current_stop = 1, 
               stop_status = '{}'::jsonb, 
-              profile = ${sql.json(profileData)}, 
+              profile = ${sql.json(checked.profile as any)}, 
               updated_at = CURRENT_TIMESTAMP
           WHERE user_id = ${userId}
         `;
@@ -80,7 +86,7 @@ export async function createIntakeJourney(profileData: JourneyProfile) {
 
     const result = await sql`
       INSERT INTO journeys (user_id, current_stop, stop_status, profile)
-      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(profileData)})
+      VALUES (${userId}, 1, '{}'::jsonb, ${sql.json(checked.profile as any)})
       RETURNING id
     `;
     
@@ -108,6 +114,7 @@ export async function claimAnonymousJourney(journeyId: string) {
     return { success: false };
   }
 }
+
 /**
  * Saves edited trip answers for a signed-in user. Changes only the profile:
  * current_stop and stop_status (their checked-off steps) are kept.
@@ -123,7 +130,7 @@ export async function updateJourneyProfile(input: JourneyProfile) {
   try {
     const updated = await sql`
       UPDATE journeys
-      SET profile = ${sql.json(checked.profile)},
+      SET profile = ${sql.json(checked.profile as any)},
           updated_at = CURRENT_TIMESTAMP
       WHERE user_id = ${session.user.sub}
       RETURNING id
@@ -132,7 +139,7 @@ export async function updateJourneyProfile(input: JourneyProfile) {
       // Signed in before finishing the intake: start their journey now.
       await sql`
         INSERT INTO journeys (user_id, current_stop, stop_status, profile)
-        VALUES (${session.user.sub}, 1, '{}'::jsonb, ${sql.json(checked.profile)})
+        VALUES (${session.user.sub}, 1, '{}'::jsonb, ${sql.json(checked.profile as any)})
       `;
     }
     return { ok: true as const, profile: checked.profile };

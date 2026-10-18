@@ -1,6 +1,6 @@
 "use client";
 
-/// <reference types="google.maps" />
+declare const google: any;
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useToday } from "@/lib/clock";
@@ -23,6 +23,7 @@ declare global {
   interface Window {
     __flybyvisaMapsReady?: () => void;
     gm_authFailure?: () => void;
+    google?: any;
   }
 }
 
@@ -67,14 +68,28 @@ export function LocationMapScreen() {
   const home = OFFICE_MAPS.IN; // only India -> U.S. for now
 
   // Same numbers as the "Earliest interview" calculation.
-  const waits = useMemo(() => Object.fromEntries(WAIT_TIMES.map((w) => [w.id, w.waitMonths])) as Record<PostId, number>, []);
+  // Same numbers as the "Earliest interview" calculation, filtered by visa purpose.
+  const waits = useMemo(() => {
+    const purpose = (trip.purpose as "family" | "study" | "work") || "family";
+    return Object.fromEntries(
+      WAIT_TIMES.map((w) => [w.id, w.waitMonths[purpose] ?? w.waitMonths.family])
+    ) as Record<PostId, number>;
+  }, [trip.purpose]);
+
   // The lowest wait in the data. Every office at exactly that value gets the badge.
   const shortestWait = useMemo(() => Math.min(...Object.values(waits)), [waits]);
+
   const earliest = useMemo(() => {
     if (!today || !trip.arrival) return null;
-    const journey = buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths });
+    const purpose = (trip.purpose as "family" | "study" | "work") || "family";
+    const journey = buildJourney({ 
+      today, 
+      arrival: trip.arrival, 
+      stayMonths: trip.stayMonths,
+      visaType: purpose 
+    });
     return Object.fromEntries(journey.posts.map((p) => [p.id, p.interviewDate])) as Record<PostId, string>;
-  }, [today, trip.arrival, trip.stayMonths]);
+  }, [today, trip.arrival, trip.stayMonths, trip.purpose]);
 
   const officeLines = (o: Office) => ({
     title: `${t(o.kind === "embassy" ? "map.embassy" : "map.consulate")} · ${t(`post.${o.id}`)}`,
@@ -89,8 +104,8 @@ export function LocationMapScreen() {
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">(API_KEY ? "loading" : "error");
   const mapEl = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const infoRef = useRef<google.maps.InfoWindow | null>(null);
+  const mapRef = useRef<any>(null);
+  const infoRef = useRef<any>(null);
 
   // Load the API and draw the map once.
   useEffect(() => {
@@ -98,7 +113,7 @@ export function LocationMapScreen() {
     let cancelled = false;
     loadMaps(() => setStatus("error"))
       .then(async () => {
-        const { Map, InfoWindow } = (await google.maps.importLibrary("maps")) as google.maps.MapsLibrary;
+        const { Map, InfoWindow } = (await google.maps.importLibrary("maps")) as any;
         await google.maps.importLibrary("marker");
         if (cancelled || !mapEl.current) return;
         const map = new Map(mapEl.current, {

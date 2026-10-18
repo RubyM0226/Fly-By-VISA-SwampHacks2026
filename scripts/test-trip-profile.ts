@@ -3,7 +3,9 @@
 import assert from "node:assert/strict";
 import { cleanProfile, tripFromProfile } from "../lib/tripProfile";
 
-const today = "2026-10-17";
+const today = "2026-10-18";
+import type { VisaPurpose } from "../lib/tripProfile";
+
 const good = {
   from: "IN",
   fromCity: "Mumbai",
@@ -13,12 +15,21 @@ const good = {
   destAirport: "",
   arrival: "2026-10-28",
   stayMonths: 3,
-  purpose: "family",
+  purpose: "family" as VisaPurpose,
 };
 
 // Valid: airports come from the city list, not the browser.
 const ok = cleanProfile(good, today);
-assert.deepEqual(ok, { ok: true, profile: { ...good, homeAirport: "BOM", destAirport: "SEA" } });
+assert.deepEqual(ok, { ok: true, profile: { ...good, homeAirport: "BOM", destAirport: "SEA", purpose: "family" } });
+
+// Valid purpose variations (family, study, work)
+for (const p of ["family", "study", "work"] as const) {
+  const result = cleanProfile({ ...good, purpose: p }, today);
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.equal(result.profile.purpose, p);
+  }
+}
 
 // Coming-soon countries, unknown cities, a city from the other country: rejected.
 for (const bad of [
@@ -30,7 +41,7 @@ for (const bad of [
   { stayMonths: 0 },
   { stayMonths: 7 },
   { stayMonths: "3" },
-  { purpose: "work" },
+  { purpose: "tourism" }, // Invalid purpose category
   { arrival: "" },
   { arrival: "2026-02-30" },
   { arrival: "2026-13-01" },
@@ -57,6 +68,8 @@ assert.deepEqual(tripFromProfile(null), {
   arrival: "",
   stayMonths: 1,
   purpose: "family",
+  firstName: "",
+  lastName: "",
 });
 
 console.log("trip profile checks passed");
