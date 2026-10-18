@@ -12,7 +12,7 @@ import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { DocumentIcon } from "./Icons";
 
-export function MyPlanScreen() {
+export function AccountScreen() {
   const { t, lang } = useT();
   const user = useProfile();
   const { user: auth0User } = useUser();
@@ -79,7 +79,7 @@ export function MyPlanScreen() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">{t("nav.myPlan")}</h1>
+      <h1 className="text-3xl font-bold">{t("nav.account")}</h1>
 
       {user === undefined && <p className="text-lg text-muted">{t("myPlan.checking")}</p>}
 
@@ -88,7 +88,7 @@ export function MyPlanScreen() {
           <p className="text-lg">{t("myPlan.signInFirst")}</p>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
-            href="/auth/login?returnTo=/my-plan"
+            href="/auth/login?returnTo=/account"
             data-button
             className="inline-flex min-h-14 items-center rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
           >
@@ -99,7 +99,30 @@ export function MyPlanScreen() {
 
       {user && (
         <>
-          <p className="text-lg font-semibold">{t("myPlan.signedInAs", { name: user.name || user.email || "" })}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-lg font-semibold">{t("myPlan.signedInAs", { name: user.name || user.email || "" })}</p>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <a
+              href="/auth/logout"
+              data-button
+              onClick={() => {
+                // Wipe the browser's memory so the next user starts fresh
+                tripStore.set({ 
+                  from: undefined as unknown as Trip["from"], 
+                  to: undefined as unknown as Trip["to"], 
+                  arrival: "", 
+                  stayMonths: 1, 
+                  done: {} 
+                });
+                localStorage.removeItem("temp_journey_id");
+              }}
+              className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
+            >
+              {t("myPlan.signOut")}
+            </a>
+          </div>
+
+          {/* Phase 2: the Trip details card goes here. */}
           
           <div className="rounded-xl border-2 border-line-strong bg-surface p-6">
             <h2 className="mb-6 text-2xl font-bold text-accent">Your Travel Profile</h2>
@@ -147,12 +170,10 @@ export function MyPlanScreen() {
             </div>
           </div>
 
-          {/* Helper Access Card */}
+          {/* Add collaborator: for now, the helper link. The full invite feature comes later. */}
           <div className="rounded-xl border-2 border-line-strong bg-surface p-6 space-y-4">
-            <h2 className="text-2xl font-bold text-accent">Helper Collaboration Link</h2>
-            <p className="text-muted">
-              Invite a family member abroad to check off administrative requirements and view your roadmap status without needing an account.
-            </p>
+            <h2 className="text-2xl font-bold text-accent">{t("account.addCollaborator")}</h2>
+            <p className="text-lg text-muted">{t("account.addCollaboratorLead")}</p>
 
             {helperUrl ? (
               <div className="space-y-3">
@@ -208,25 +229,8 @@ export function MyPlanScreen() {
             </Link>
           </div>
 
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a
-            href="/auth/logout"
-            data-button
-            onClick={() => {
-              // Wipe the browser's memory so the next user starts fresh
-              tripStore.set({ 
-                from: undefined as unknown as Trip["from"], 
-                to: undefined as unknown as Trip["to"], 
-                arrival: "", 
-                stayMonths: 1, 
-                done: {} 
-              });
-              localStorage.removeItem("temp_journey_id");
-            }}
-            className="mt-4 inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
-          >
-            {t("myPlan.signOut")}
-          </a>
+          {/* Phase 3: "Your acknowledgement" (documents consent) goes here. */}
+
         </>
       )}
     </div>

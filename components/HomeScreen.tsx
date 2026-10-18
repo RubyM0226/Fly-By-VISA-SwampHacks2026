@@ -43,7 +43,7 @@ export function HomeScreen() {
                 {t("home.resumeJourney")}
               </Link>
               <Link
-                href="/my-plan"
+                href="/account"
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-accent px-6 py-2 text-lg font-bold text-accent-ink hover:bg-accent/10"
               >
                 {t("home.viewProfile")}

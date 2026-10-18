@@ -27,7 +27,7 @@ export async function createHelperLink(label: string = "Helper") {
       VALUES (${journey[0].id}, ${token}, ${label})
     `;
 
-    revalidatePath("/my-plan");
+    revalidatePath("/account");
     return { success: true, token };
   } catch (error) {
     console.error("Failed to create helper link:", error);
@@ -45,7 +45,7 @@ export async function revokeHelperLink(token: string) {
       SET revoked_at = CURRENT_TIMESTAMP
       WHERE token = ${token}
     `;
-    revalidatePath("/my-plan");
+    revalidatePath("/account");
     return { success: true };
   } catch (error) {
     console.error("Failed to revoke helper link:", error);

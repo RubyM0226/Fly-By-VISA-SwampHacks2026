@@ -123,6 +123,15 @@ const en = {
   "documents.otherLead": "Files you added before, and messages you think may be a scam.",
   "myPlan.filesMoved": "Your files are now kept on the Documents page, next to the papers each step needs.",
   "journey.goToDocuments": "Go to my documents",
+  "nav.account": "Account",
+  "nav.sharedPlan": "Shared plan",
+  "account.addCollaborator": "Add collaborator",
+  "account.addCollaboratorLead":
+    "Share a private link with a family member so they can see your trip plan. They do not need an account. You can stop sharing any time.",
+  "helperAccount.viewing": "You are viewing a traveler's plan that they shared with you.",
+  "helperAccount.stopViewing": "Stop viewing this plan",
+  "helperAccount.ownAccount": "Sign in / Sign up for your own account",
+  "helperAccount.comingSoon": "Coming soon",
 
   "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "landing.about":
@@ -455,6 +464,16 @@ const hi: Record<UiKey, string> = {
   "documents.otherLead": "पहले जोड़ी गई फ़ाइलें, और ऐसे संदेश जो आपको ठगी लगते हैं।",
   "myPlan.filesMoved": "आपकी फ़ाइलें अब दस्तावेज़ पृष्ठ पर रखी जाती हैं, हर कदम के ज़रूरी कागज़ों के साथ।",
   "journey.goToDocuments": "मेरे दस्तावेज़ पर जाएँ",
+  // DRAFT: the Account strings below need a native Hindi reader.
+  "nav.account": "खाता",
+  "nav.sharedPlan": "साझा योजना",
+  "account.addCollaborator": "सहयोगी जोड़ें",
+  "account.addCollaboratorLead":
+    "परिवार के किसी सदस्य के साथ एक निजी लिंक साझा करें ताकि वे आपकी यात्रा योजना देख सकें। उन्हें खाते की ज़रूरत नहीं है। आप कभी भी साझा करना बंद कर सकते हैं।",
+  "helperAccount.viewing": "आप एक यात्री की योजना देख रहे हैं, जो उन्होंने आपके साथ साझा की है।",
+  "helperAccount.stopViewing": "यह योजना देखना बंद करें",
+  "helperAccount.ownAccount": "अपने खाते के लिए साइन इन / साइन अप करें",
+  "helperAccount.comingSoon": "जल्द आ रहा है",
 
   // DRAFT: needs a native Hindi reader.
   "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
