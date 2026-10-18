@@ -1,4 +1,4 @@
-import { COUNTRY_INFO, countryOfAirport, type TransitRule } from "./flightData";
+import { COUNTRY_INFO, countryOfAirport, transitFor, type TransitRule } from "./flightData";
 
 // ---- SerpApi shapes (only the fields we use) ----
 interface SerpAirport { id: string; name: string; time: string }
@@ -64,7 +64,8 @@ export const FLIGHT_RULES = {
   highAdvisory: 3,
 } as const;
 
-export function normalize(it: SerpItinerary): FlightOption | null {
+/** `home` is the traveler's home country code; layover rules depend on it. */
+export function normalize(it: SerpItinerary, home: string): FlightOption | null {
   if (typeof it.price !== "number" || !it.flights?.length) return null;
   const legs: Leg[] = it.flights.map((s) => ({
     from: s.departure_airport.id,
@@ -84,8 +85,9 @@ export function normalize(it: SerpItinerary): FlightOption | null {
       minutes: l.duration,
       overnight: Boolean(l.overnight),
       country,
-      transit: info?.transit ?? "check",
-      advisory: info?.advisory ?? null,
+      transit: transitFor(country, home),
+      // No travel advisory for the traveler's own country.
+      advisory: country === home ? null : (info?.advisory ?? null),
     };
   });
   return {

@@ -5,9 +5,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
-import { buildJourney, formatDate, WAIT_TIMES, WAIT_TIMES_AS_OF, type PostId } from "@/lib/journey";
+import { buildJourney, formatDate, WAIT_TIMES_AS_OF, WAIT_TIMES_BY_COUNTRY, type PostId } from "@/lib/journey";
 import { OFFICE_MAPS, type Office } from "@/lib/offices";
 import { useTrip } from "@/lib/trip";
+import { useHome } from "@/lib/homeCountry";
 import { ShortestWaitBadge } from "./FitPanel";
 
 // Set in .env.local. NEXT_PUBLIC_ so the browser can use it; restrict the key
@@ -64,17 +65,19 @@ export function LocationMapScreen() {
   const { t, lang } = useT();
   const [trip] = useTrip();
   const today = useToday();
-  const home = OFFICE_MAPS.IN; // only India -> U.S. for now
+  const { code: from, name: homeName } = useHome();
+  const home = OFFICE_MAPS[from];
+  const seeds = WAIT_TIMES_BY_COUNTRY[from];
 
   // Same numbers as the "Earliest interview" calculation.
-  const waits = useMemo(() => Object.fromEntries(WAIT_TIMES.map((w) => [w.id, w.waitMonths])) as Record<PostId, number>, []);
+  const waits = useMemo(() => Object.fromEntries(seeds.map((w) => [w.id, w.waitMonths])) as Record<PostId, number>, [seeds]);
   // The lowest wait in the data. Every office at exactly that value gets the badge.
   const shortestWait = useMemo(() => Math.min(...Object.values(waits)), [waits]);
   const earliest = useMemo(() => {
     if (!today || !trip.arrival) return null;
-    const journey = buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths });
+    const journey = buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths, waits: seeds });
     return Object.fromEntries(journey.posts.map((p) => [p.id, p.interviewDate])) as Record<PostId, string>;
-  }, [today, trip.arrival, trip.stayMonths]);
+  }, [today, trip.arrival, trip.stayMonths, seeds]);
 
   const officeLines = (o: Office) => ({
     title: `${t(o.kind === "embassy" ? "map.embassy" : "map.consulate")} · ${t(`post.${o.id}`)}`,
@@ -174,7 +177,7 @@ export function LocationMapScreen() {
     <div data-hills-peek className="space-y-4 pb-6">
       <div className="space-y-1">
         <h1 className="text-3xl font-bold">{t("nav.map")}</h1>
-        <p className="text-lg text-muted">{t("map.intro")}</p>
+        <p className="text-lg text-muted">{t("map.intro", { home: homeName })}</p>
       </div>
 
       {status === "error" ? (

@@ -3,6 +3,7 @@
 import { LINKS } from "@/lib/config";
 import { formatDate, WAIT_TIMES_AS_OF, type Fit, type Journey } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
+import { useHome } from "@/lib/homeCountry";
 import { AlertIcon, CheckIcon, ClockIcon, ExternalIcon } from "./Icons";
 
 const FIT_STYLE: Record<Fit, string> = {
@@ -36,6 +37,7 @@ export function ShortestWaitBadge() {
 /** Can the traveler arrive by their date? Plus the five U.S. offices compared. */
 export function FitPanel({ journey }: { journey: Journey }) {
   const { t, lang } = useT();
+  const { name: homeName } = useHome();
   const best = journey.best;
   const bestName = t(`post.${best.id}`);
 
@@ -72,7 +74,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
       <p className="text-base text-muted">{t("fit.emergency")}</p>
 
       <div className="space-y-3">
-        <h3 className="text-xl font-bold">{t("fit.compare")}</h3>
+        <h3 className="text-xl font-bold">{t("fit.compare", { home: homeName })}</h3>
         <ul className="grid gap-3 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-5">
           {journey.posts.map((p, i) => (
             <li

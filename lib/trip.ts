@@ -1,8 +1,9 @@
+import type { OriginCode } from "./countries";
 import { createPersistedStore, useStore } from "./store";
 
 /** What the traveler told us. Stored only in this browser. */
 export interface Trip {
-  from: "" | "IN";
+  from: "" | OriginCode;
   to: "" | "US";
   purpose: "family";
   stayMonths: number;

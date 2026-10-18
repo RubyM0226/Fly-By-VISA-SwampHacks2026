@@ -5,15 +5,16 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { getUserJourney, updateJourneyProgress, claimAnonymousJourney } from "@/app/actions/journey";
 import { STEP_BY_ID } from "@/content/steps";
-import { CONTENT_LAST_CHECKED } from "@/lib/config";
+import { CONTENT_LAST_CHECKED, LINKS } from "@/lib/config";
 import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
-import { buildJourney, formatDate, STEP_ORDER, type StepId } from "@/lib/journey";
+import { buildJourney, formatDate, STEP_ORDER, WAIT_TIMES_BY_COUNTRY, type StepId } from "@/lib/journey";
 import { tripStore, useTrip } from "@/lib/trip";
 import { tripFromProfile } from "@/lib/tripProfile";
-import { COUNTRY_BY_CODE } from "@/lib/countries";
+import { COUNTRY_BY_CODE, isOrigin } from "@/lib/countries";
 import { useSettings } from "@/lib/settings";
-import { ArrowIcon, PinIcon } from "./Icons";
+import { useHome } from "@/lib/homeCountry";
+import { ArrowIcon, ExternalIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
 import { RoadmapPath, type OpenStep } from "./RoadmapPath";
 import type { StepStatus } from "./StepDetails";
@@ -25,6 +26,7 @@ export function JourneyScreen() {
   const [settings] = useSettings();
   const today = useToday();
   const [openStep, setOpenStep] = useState<OpenStep | null>(null);
+  const { loc } = useHome();
   
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
@@ -32,11 +34,15 @@ export function JourneyScreen() {
   // Auth0 User Session
   const { user } = useUser();
 
-  const ready = Boolean(today && trip.arrival && trip.from === "IN" && trip.to === "US");
+  const home = isOrigin(trip.from) ? trip.from : null;
+  const ready = Boolean(today && trip.arrival && home && trip.to === "US");
 
   const journey = useMemo(
-    () => (ready ? buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths }) : null),
-    [ready, today, trip.arrival, trip.stayMonths],
+    () =>
+      ready && home
+        ? buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths, waits: WAIT_TIMES_BY_COUNTRY[home] })
+        : null,
+    [ready, home, today, trip.arrival, trip.stayMonths],
   );
 
   // 1. Claim anonymous data, then fetch from Tiger Data
@@ -143,7 +149,7 @@ export function JourneyScreen() {
             <div>
               <dt className="text-sm font-bold text-muted">{t("trip.from")}</dt>
               <dd className="font-semibold">
-                {trip.homeCity} ({trip.homeAirport}), {t(COUNTRY_BY_CODE[trip.from || "IN"].nameKey)}
+                {trip.homeCity} ({trip.homeAirport}), {t(COUNTRY_BY_CODE[home!].nameKey)}
               </dd>
             </div>
             <div>
@@ -188,7 +194,7 @@ export function JourneyScreen() {
           {currentId && currentPlan ? (
             <>
               <p className="text-2xl font-bold">{STEP_BY_ID[currentId].text[lang].title}</p>
-              <p className="text-lg">{STEP_BY_ID[currentId].text[lang].simple}</p>
+              <p className="text-lg">{loc(STEP_BY_ID[currentId].text[lang].simple)}</p>
             </>
           ) : (
             <p className="text-2xl font-bold">{t("journey.allDone")}</p>
@@ -205,6 +211,24 @@ export function JourneyScreen() {
           </button>
         )}
       </section>
+
+      {/* FACT-CHECK: most UK citizens visiting for 90 days or less use the Visa Waiver Program (ESTA). */}
+      {home === "GB" && trip.purpose === "family" && trip.stayMonths <= 3 && (
+        <section role="note" aria-labelledby="esta-title" className="space-y-2 rounded-2xl border-2 border-accent bg-accent-soft p-5 sm:p-6">
+          <p id="esta-title" className="text-xl font-bold">{t("esta.body")}</p>
+          <p className="text-lg">{t("esta.more")}</p>
+          <a
+            href={LINKS.esta}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline"
+          >
+            {t("esta.link")}
+            <ExternalIcon className="h-4 w-4" />
+            <span className="sr-only">{t("journey.opensNewTab")}</span>
+          </a>
+        </section>
+      )}
 
       <FitPanel journey={journey} />
 

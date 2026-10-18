@@ -3,7 +3,9 @@ import type { DocId } from "./documents";
 import type { StepId } from "@/lib/journey";
 import type { Lang } from "@/lib/settings";
 
-// Step content for the India -> U.S. B-2 visitor visa journey.
+// Step content for the U.S. B-2 visitor visa journey, from India, the UK or Mexico.
+// Written once with home-country tokens ({home}, {vac}) and India's links; see
+// lib/homeCountry.ts. Render through useHome().loc, never raw.
 //
 // Sources for the facts: the U.S. State Department visitor visa page
 // (travel.state.gov) unless marked otherwise. Anything marked VERIFY came from
@@ -123,8 +125,8 @@ export const STEPS: StepContent[] = [
         title: "Pay the fee and book your appointments",
         what: [
           "Pay the visa fee.",
-          "Then book your interview at a U.S. office in India.",
-          "You may also need to visit a [[vac|VAC]] first, for fingerprints.",
+          "Then book your interview at a U.S. office in {home}.",
+          "You may also need to visit a [[vac|{vac}]] first, for fingerprints.",
           "Book as early as you can. The wait is long.",
           "Follow the U.S. Embassy website. The steps can change.",
         ],
@@ -136,8 +138,8 @@ export const STEPS: StepContent[] = [
         title: "शुल्क भरें और अपॉइंटमेंट बुक करें",
         what: [
           "वीज़ा शुल्क भरें।",
-          "फिर भारत में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
-          "शायद पहले उंगलियों के निशान के लिए [[vac|VAC]] भी जाना पड़े।",
+          "फिर {home} में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
+          "शायद पहले उंगलियों के निशान के लिए [[vac|{vac}]] भी जाना पड़े।",
           "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
           "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
         ],
@@ -151,7 +153,7 @@ export const STEPS: StepContent[] = [
     // embassy page before the demo.
     links: [
       { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ" }, url: LINKS.fees },
-      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
       { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय" }, url: LINKS.waitTimes },
     ],
   },
@@ -163,25 +165,25 @@ export const STEPS: StepContent[] = [
         title: "Gather your documents",
         what: [
           "Collect the papers the officer may ask for.",
-          "Show that your life is in India: family, home or pension.",
+          "Show that your life is in {home}: family, home or pension.",
           "Show that you will come home.",
           "Show how the trip will be paid for.",
           "A letter from family in the U.S. is not needed.",
         ],
         time: ["1 to 2 weeks."],
-        simple: "Gather papers that show your life is in India and that you will go home after the trip.",
+        simple: "Gather papers that show your life is in {home} and that you will go home after the trip.",
       },
       hi: {
         title: "अपने कागज़ात इकट्ठा करें",
         what: [
           "अधिकारी जो कागज़ माँग सकते हैं, वे इकट्ठा करें।",
-          "दिखाएँ कि आपका जीवन भारत में है: परिवार, घर या पेंशन।",
+          "दिखाएँ कि आपका जीवन {home} में है: परिवार, घर या पेंशन।",
           "दिखाएँ कि आप वापस लौटेंगे।",
           "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
           "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
         ],
         time: ["1 से 2 सप्ताह।"],
-        simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
+        simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन {home} में है और आप यात्रा के बाद लौटेंगे।",
       },
     },
     links: [
@@ -218,7 +220,7 @@ export const STEPS: StepContent[] = [
       },
     },
     links: [
-      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
     ],
   },
   {

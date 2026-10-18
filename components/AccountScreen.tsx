@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useT } from "@/lib/i18n";
+import { DICTIONARY, useT } from "@/lib/i18n";
+import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
 import { useProfile } from "@/lib/useProfile";
 import { useTrip, tripStore, type Trip } from "@/lib/trip";
 import { formatDate, STEP_ORDER } from "@/lib/journey";
@@ -56,9 +57,9 @@ export function AccountScreen() {
 
   // Helper to format country codes
   const getCountryName = (code?: string) => {
-    if (code === "IN") return "India";
-    if (code === "US") return "United States";
-    return code || "Not selected";
+    // Official names stay in English in every language.
+    const c = COUNTRY_BY_CODE[code as CountryCode];
+    return c ? DICTIONARY.en[c.nameKey] : code || "Not selected";
   };
 
   const handleGenerateLink = async () => {

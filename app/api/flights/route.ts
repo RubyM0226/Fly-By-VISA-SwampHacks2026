@@ -1,10 +1,13 @@
 import type { NextRequest } from "next/server";
 import demo from "@/data/flights-demo.json";
-import { HOME_AIRPORTS, US_AIRPORTS } from "@/lib/flightData";
+import { countryOfAirport, HOME_AIRPORTS, US_AIRPORTS } from "@/lib/flightData";
 import { googleFlightsUrl, normalize, rankFlights, type FlightOption, type SerpResponse } from "@/lib/flights";
 
 const HOME = new Set(HOME_AIRPORTS.map((a) => a.code));
 const DEST = new Set(US_AIRPORTS.map((a) => a.code));
+
+// Google's country code for each home country (the UK is "uk", not "gb").
+const GOOGLE_COUNTRY: Record<string, string> = { IN: "in", GB: "uk", MX: "mx" };
 
 // Same search within an hour = no new SerpApi call (saves quota).
 const cache = new Map<string, { at: number; body: unknown }>();
@@ -20,6 +23,7 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "bad_request" }, { status: 400 });
   }
 
+  const home = countryOfAirport(from) ?? "IN";
   const cacheKey = `${from}-${to}-${date}`;
   const hit = cache.get(cacheKey);
   if (hit && Date.now() - hit.at < HOUR_MS) return Response.json(hit.body);
@@ -38,7 +42,7 @@ export async function GET(request: NextRequest) {
       type: "2", // one way
       currency: "USD",
       hl: "en",
-      gl: "in",
+      gl: GOOGLE_COUNTRY[home] ?? "in",
       api_key: key,
     }).toString();
     const res = await fetch(url, { cache: "no-store" });
@@ -46,13 +50,18 @@ export async function GET(request: NextRequest) {
     raw = (await res.json()) as SerpResponse;
     if (!raw.best_flights?.length && !raw.other_flights?.length) throw new Error("no flights in response");
   } catch (err) {
+    // The saved demo flights leave from Delhi. Never show them for a UK or Mexico search.
+    if (home !== "IN") {
+      console.error("flight search failed, no demo data for this route:", err);
+      return Response.json({ error: "unavailable" }, { status: 503 });
+    }
     console.error("flight search failed, using demo data:", err);
     raw = demo as unknown as SerpResponse;
     isDemo = true;
   }
 
   const all = [...(raw.best_flights ?? []), ...(raw.other_flights ?? [])]
-    .map(normalize)
+    .map((it) => normalize(it, home))
     .filter((o): o is FlightOption => o !== null);
   const ranked = rankFlights(all);
 

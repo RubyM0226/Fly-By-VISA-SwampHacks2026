@@ -1,6 +1,7 @@
 // Seed data for the flight finder. Same rules as lib/journey.ts: facts live
 // here with a date and a source. needsCheck = confirm before the demo.
 
+import type { OriginCode } from "./countries";
 import type { Lang } from "./settings";
 
 export interface Airport {
@@ -8,14 +9,34 @@ export interface Airport {
   city: Record<Lang, string>;
 }
 
-export const HOME_AIRPORTS: Airport[] = [
-  { code: "DEL", city: { en: "Delhi", hi: "दिल्ली" } },
-  { code: "BOM", city: { en: "Mumbai", hi: "मुंबई" } },
-  { code: "BLR", city: { en: "Bengaluru", hi: "बेंगलुरु" } },
-  { code: "HYD", city: { en: "Hyderabad", hi: "हैदराबाद" } },
-  { code: "MAA", city: { en: "Chennai", hi: "चेन्नई" } },
-  { code: "CCU", city: { en: "Kolkata", hi: "कोलकाता" } },
-];
+// Official names stay in English in every language for the UK and Mexico.
+export const HOME_AIRPORTS_BY_COUNTRY: Record<OriginCode, Airport[]> = {
+  IN: [
+    { code: "DEL", city: { en: "Delhi", hi: "दिल्ली" } },
+    { code: "BOM", city: { en: "Mumbai", hi: "मुंबई" } },
+    { code: "BLR", city: { en: "Bengaluru", hi: "बेंगलुरु" } },
+    { code: "HYD", city: { en: "Hyderabad", hi: "हैदराबाद" } },
+    { code: "MAA", city: { en: "Chennai", hi: "चेन्नई" } },
+    { code: "CCU", city: { en: "Kolkata", hi: "कोलकाता" } },
+  ],
+  GB: [
+    { code: "LHR", city: { en: "London", hi: "London" } },
+    { code: "MAN", city: { en: "Manchester", hi: "Manchester" } },
+    { code: "BHX", city: { en: "Birmingham", hi: "Birmingham" } },
+    { code: "EDI", city: { en: "Edinburgh", hi: "Edinburgh" } },
+    { code: "GLA", city: { en: "Glasgow", hi: "Glasgow" } },
+  ],
+  MX: [
+    { code: "MEX", city: { en: "Mexico City", hi: "Mexico City" } },
+    { code: "GDL", city: { en: "Guadalajara", hi: "Guadalajara" } },
+    { code: "MTY", city: { en: "Monterrey", hi: "Monterrey" } },
+    { code: "CUN", city: { en: "Cancún", hi: "Cancún" } },
+    { code: "TIJ", city: { en: "Tijuana", hi: "Tijuana" } },
+  ],
+};
+
+/** Every home airport, all countries. */
+export const HOME_AIRPORTS: Airport[] = Object.values(HOME_AIRPORTS_BY_COUNTRY).flat();
 
 export const US_AIRPORTS: Airport[] = [
   { code: "JFK", city: { en: "New York", hi: "न्यूयॉर्क" } },
@@ -46,7 +67,10 @@ const IN_EXTRA = ["AMD", "COK", "GOI", "PNQ", "TRV", "LKO", "ATQ", "JAI"];
 export function countryOfAirport(code: string): string | null {
   if (HUB_COUNTRY[code]) return HUB_COUNTRY[code];
   if (US_AIRPORTS.some((a) => a.code === code) || US_EXTRA.includes(code)) return "US";
-  if (HOME_AIRPORTS.some((a) => a.code === code) || IN_EXTRA.includes(code)) return "IN";
+  if (IN_EXTRA.includes(code)) return "IN";
+  for (const [country, airports] of Object.entries(HOME_AIRPORTS_BY_COUNTRY)) {
+    if (airports.some((a) => a.code === code)) return country;
+  }
   return null;
 }
 
@@ -57,6 +81,17 @@ export function countryOfAirport(code: string): string | null {
  * check = we are not sure; tell the user to check with the airline
  */
 export type TransitRule = "none" | "visa" | "check";
+
+/**
+ * The transit rule for a layover, for a traveler from `home`. The COUNTRY_INFO
+ * rules are written for an Indian passport, so other travelers get "check"
+ * except in their own country or the U.S.
+ */
+export function transitFor(country: string | null, home: string): TransitRule {
+  if (country && (country === home || country === "US")) return "none";
+  if (home !== "IN") return "check";
+  return (country ? COUNTRY_INFO[country]?.transit : undefined) ?? "check";
+}
 
 export interface CountryInfo {
   name: Record<Lang, string>;
@@ -100,4 +135,6 @@ export const COUNTRY_INFO: Record<string, CountryInfo> = {
   BH: { name: { en: "Bahrain", hi: "बहरीन" }, transit: "check", advisory: 3, needsCheck: true },
   OM: { name: { en: "Oman", hi: "ओमान" }, transit: "check", advisory: 3, needsCheck: true },
   ET: { name: { en: "Ethiopia", hi: "इथियोपिया" }, transit: "check", advisory: 3, needsCheck: true },
+  // VERIFY: Mexico's advisory is set per state; 2 is the country-wide level as we last saw it.
+  MX: { name: { en: "Mexico", hi: "Mexico" }, transit: "check", advisory: 2, needsCheck: true },
 };

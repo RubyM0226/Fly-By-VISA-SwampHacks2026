@@ -22,7 +22,9 @@ assert.deepEqual(ok, { ok: true, profile: { ...good, homeAirport: "BOM", destAir
 
 // Coming-soon countries, unknown cities, a city from the other country: rejected.
 for (const bad of [
-  { from: "GB" },
+  { from: "CA" },
+  { from: "MX", fromCity: "London" },
+  { from: "GB", fromCity: "Mumbai" },
   { to: "CA" },
   { from: "US", to: "IN" },
   { fromCity: "Paris" },
@@ -41,6 +43,16 @@ for (const bad of [
 assert.deepEqual(cleanProfile(null, today), { ok: false, error: "invalid" });
 assert.deepEqual(cleanProfile({ ...good, arrival: "2026-10-16" }, today), { ok: false, error: "pastDate" });
 assert.equal(cleanProfile({ ...good, arrival: today }, today).ok, true);
+
+// The UK and Mexico are live, each with its own cities and airports.
+assert.deepEqual(cleanProfile({ ...good, from: "GB", fromCity: "London" }, today), {
+  ok: true,
+  profile: { ...good, from: "GB", fromCity: "London", homeAirport: "LHR", destAirport: "SEA" },
+});
+assert.deepEqual(cleanProfile({ ...good, from: "MX", fromCity: "Cancún" }, today), {
+  ok: true,
+  profile: { ...good, from: "MX", fromCity: "Cancún", homeAirport: "CUN", destAirport: "SEA" },
+});
 
 // Saved rows: new keys (fromCity/toCity) and old keys (homeCity/destCity) both restore.
 assert.equal(tripFromProfile(good).homeCity, "Mumbai");

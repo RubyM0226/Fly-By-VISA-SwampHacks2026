@@ -15,6 +15,7 @@ import { DatePicker } from "./DatePicker";
 import { BACK, FORWARD } from "./ScreenTransition";
 import { createIntakeJourney, updateJourneyProfile } from "@/app/actions/journey";
 import { CITIES_BY_COUNTRY, MONTH_CHOICES } from "@/lib/tripProfile";
+import { isOrigin } from "@/lib/countries";
 
 export function StartScreen() {
   const { t } = useT();
@@ -30,10 +31,10 @@ export function StartScreen() {
   useLayoutEffect(() => () => setIsSubmitting(false), []);
   const dateRef = useRef<{ focus: () => void } | null>(null);
 
-  const placesChosen = trip.from === "IN" && trip.to === "US";
+  const placesChosen = isOrigin(trip.from) && trip.to === "US";
 
   // Default cities if not set
-  const homeCityOptions = CITIES_BY_COUNTRY["IN"] || [];
+  const homeCityOptions = CITIES_BY_COUNTRY[trip.from] || [];
   const destCityOptions = CITIES_BY_COUNTRY["US"] || [];
 
   if (!placesChosen) {

@@ -88,6 +88,8 @@ const FIXED_SOURCES: Source[] = [
   { title: "Visa fraud warning (U.S. Department of State)", url: LINKS.fraudWarning },
   { title: "Visitor visa (U.S. Department of State)", url: LINKS.visitorVisa },
   { title: "U.S. Embassy in India: visas", url: LINKS.embassyIndia },
+  { title: "U.S. Embassy in the United Kingdom: visas", url: LINKS.embassyUK },
+  { title: "U.S. Embassy in Mexico: visas", url: LINKS.embassyMexico },
   { title: "Visa fees (U.S. Department of State)", url: LINKS.fees },
 ];
 
@@ -103,7 +105,7 @@ const RESPONSE_SCHEMA = {
   required: ["kind", "verdict", "summary", "reasons", "sourceUrls"],
 };
 
-export const SYSTEM_PROMPT = `You are Scam Check inside FlyByVisa, a free helper for older people in India applying for a U.S. B-2 visitor visa.
+export const SYSTEM_PROMPT = `You are Scam Check inside FlyByVisa, a free helper for older people in India, Mexico or the United Kingdom applying for a U.S. B-2 visitor visa.
 
 Your one job: the user pasted a message (SMS, WhatsApp, email or a call, or text read from a screenshot) about their U.S. visa. Judge whether it shows signs of a scam.
 Anything that is not such a message is "out-of-scope": say kindly, in one or two sentences, that you only check messages for scams.

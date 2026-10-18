@@ -2,7 +2,11 @@
 // Facts live in code and data (here and in content/steps.ts). AI should only
 // ever explain these results, never invent them.
 
-export type PostId = "delhi" | "mumbai" | "chennai" | "hyderabad" | "kolkata";
+export type PostId =
+  | "delhi" | "mumbai" | "chennai" | "hyderabad" | "kolkata"
+  | "london"
+  | "mexico-city" | "guadalajara" | "monterrey" | "tijuana" | "ciudad-juarez"
+  | "hermosillo" | "merida" | "nogales" | "nuevo-laredo" | "matamoros";
 export type Fit = "onTrack" | "tight" | "atRisk";
 export type StepId =
   | "ready"
@@ -28,9 +32,9 @@ export const STEP_ORDER: StepId[] = [
 // ---------------------------------------------------------------------------
 // SEED DATA: interview wait times for B-1/B-2 visas, in months.
 // Values are the B1/B2 "Next Available Appointment" figures from the State
-// Department's Global Visa Wait Times table:
+// Department's Global Visa Wait Times table (India rows):
 // https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/global-visa-wait-times.html
-// The State Department updates it roughly monthly. To refresh, update the five
+// The State Department updates it roughly monthly. To refresh, update the
 // numbers below and WAIT_TIMES_AS_OF from that page.
 // needsCheck = this number came from a different or unconfirmed source.
 // ---------------------------------------------------------------------------
@@ -42,13 +46,35 @@ export interface PostSeed {
   needsCheck: boolean;
 }
 
-export const WAIT_TIMES: PostSeed[] = [
-  { id: "delhi", waitMonths: 10, needsCheck: false },
-  { id: "mumbai", waitMonths: 11.5, needsCheck: false },
-  { id: "hyderabad", waitMonths: 12, needsCheck: false },
-  { id: "chennai", waitMonths: 7.5, needsCheck: false },
-  { id: "kolkata", waitMonths: 6.5, needsCheck: false },
-];
+/** Posts for each home country. A traveler only ever sees their own country's posts. */
+export const WAIT_TIMES_BY_COUNTRY: Record<"IN" | "GB" | "MX", PostSeed[]> = {
+  IN: [
+    { id: "delhi", waitMonths: 10, needsCheck: false },
+    { id: "mumbai", waitMonths: 11.5, needsCheck: false },
+    { id: "hyderabad", waitMonths: 12, needsCheck: false },
+    { id: "chennai", waitMonths: 7.5, needsCheck: false },
+    { id: "kolkata", waitMonths: 6.5, needsCheck: false },
+  ],
+  // VERIFY: PLACEHOLDER numbers, not real waits. Replace each with the B1/B2
+  // figure from the State Department's visa appointment wait-time page:
+  // https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/global-visa-wait-times.html
+  GB: [{ id: "london", waitMonths: 2, needsCheck: true }],
+  MX: [
+    { id: "mexico-city", waitMonths: 6, needsCheck: true },
+    { id: "guadalajara", waitMonths: 6, needsCheck: true },
+    { id: "monterrey", waitMonths: 6, needsCheck: true },
+    { id: "tijuana", waitMonths: 6, needsCheck: true },
+    { id: "ciudad-juarez", waitMonths: 6, needsCheck: true },
+    { id: "hermosillo", waitMonths: 6, needsCheck: true },
+    { id: "merida", waitMonths: 6, needsCheck: true },
+    { id: "nogales", waitMonths: 6, needsCheck: true },
+    { id: "nuevo-laredo", waitMonths: 6, needsCheck: true },
+    { id: "matamoros", waitMonths: 6, needsCheck: true },
+  ],
+};
+
+/** India's posts; the default when no country is given. */
+export const WAIT_TIMES: PostSeed[] = WAIT_TIMES_BY_COUNTRY.IN;
 
 // ---------------------------------------------------------------------------
 // PLANNING ASSUMPTIONS. These are our own rules of thumb, not official times.
