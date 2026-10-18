@@ -186,10 +186,10 @@ export const STEPS: StepContent[] = [
         pill: "Citas",
         what: [
           "Pague la tarifa de la visa.",
-          "Luego reserve su entrevista en una oficina de EE. UU. en India.",
+          "Luego reserve su entrevista en una oficina de U.S. en India.",
           "Quizás deba ir primero a un [[vac|{vac}]], para las huellas digitales.",
           "Reserve lo antes posible. La espera es larga.",
-          "Siga el sitio web de la Embajada de EE. UU. Los pasos pueden cambiar.",
+          "Siga el sitio web de la U.S. Embassy Los pasos pueden cambiar.",
         ],
         cost: ["Tarifa de la visa: $185.", "Pueden aplicarse otras tarifas."],
         time: ["Reservar: aproximadamente 1 día.", "Esperar la entrevista: normalmente meses."],
@@ -201,7 +201,7 @@ export const STEPS: StepContent[] = [
     // embassy page before the demo.
     links: [
       { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ", es: "Página oficial de tarifas" }, url: LINKS.fees },
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "U.S. Embassy en {home}: visas" }, url: LINKS.embassyIndia },
       { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय", es: "Tiempos de espera oficiales" }, url: LINKS.waitTimes },
     ],
   },
@@ -243,7 +243,7 @@ export const STEPS: StepContent[] = [
           "Demuestre que su vida está en {home}: familia, vivienda o pensión.",
           "Demuestre que va a regresar a casa.",
           "Demuestre cómo se pagará el viaje.",
-          "No hace falta una carta de familiares en EE. UU.",
+          "No hace falta una carta de familiares en U.S.",
         ],
         time: ["De 1 a 2 semanas."],
         simple: "Reúna papeles que muestren que su vida está en {home} y que volverá a casa después del viaje.",
@@ -298,7 +298,7 @@ export const STEPS: StepContent[] = [
       },
     },
     links: [
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "U.S. Embassy en {home}: visas" }, url: LINKS.embassyIndia },
     ],
   },
   {
@@ -383,7 +383,7 @@ export const STEPS: StepContent[] = [
         pill: "Llegada",
         what: [
           "Tenga a mano su pasaporte, su visa y los datos de su viaje.",
-          "Un oficial de la frontera de EE. UU. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
+          "Un oficial de la frontera de U.S. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
           "El oficial decide si puede entrar y por cuánto tiempo.",
           "La visa no garantiza la entrada.",
           "Su fecha de salida está en su registro [[i94|I-94]].",
@@ -428,7 +428,7 @@ export const STEPS: StepContent[] = [
         title: "Regrese a tiempo",
         pill: "Regreso",
         what: [
-          "Salga de EE. UU. antes de la fecha de su registro [[i94|I-94]].",
+          "Salga de U.S. antes de la fecha de su registro [[i94|I-94]].",
           "No trabaje durante su visita.",
           "Quedarse demasiado puede cancelar su visa.",
           "¿Quiere quedarse más tiempo? Lea las reglas antes de esa fecha.",
@@ -470,11 +470,11 @@ export const STEPS: StepContent[] = [
         title: "Reciba su Formulario I-20",
         pill: "Formulario I-20",
         what: [
-          "Una vez aceptado, la oficina internacional de su universidad en EE. UU. le emitirá un Formulario I-20.",
+          "Una vez aceptado, la oficina internacional de su universidad en U.S. le emitirá un Formulario I-20.",
           "Revise que su nombre y fecha de nacimiento coincidan exactamente con su pasaporte.",
           "Debe tener este documento antes de poder pagar la tarifa SEVIS o solicitar la visa.",
         ],
-        simple: "Espere a que su universidad en EE. UU. le envíe su documento I-20 oficial.",
+        simple: "Espere a que su universidad en U.S. le envíe su documento I-20 oficial.",
       },
     },
   },
@@ -519,7 +519,7 @@ export const STEPS: StepContent[] = [
           "Vaya al sitio web oficial de FMJfee para hacer su pago.",
           "Guarde el recibo del pago e imprímalo, porque debe llevarlo a su entrevista.",
         ],
-        simple: "Pague al gobierno de EE. UU. la tarifa obligatoria de seguimiento de estudiantes.",
+        simple: "Pague al gobierno de U.S. la tarifa obligatoria de seguimiento de estudiantes.",
       },
     },
   },
@@ -552,7 +552,7 @@ export const STEPS: StepContent[] = [
         title: "Espere la aprobación del I-797",
         pill: "Aprobación",
         what: [
-          "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
+          "Su empleador en U.S. debe presentar una petición I-129 ante USCIS en su nombre.",
           "No puede solicitar su visa ni programar una entrevista hasta recibir el Aviso de Acción I-797 aprobado.",
           "Hable con el abogado de inmigración de su empleador para recibir novedades.",
         ],

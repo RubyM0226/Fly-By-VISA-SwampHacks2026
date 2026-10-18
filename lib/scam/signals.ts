@@ -145,7 +145,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "Someone says they are from the U.S. Embassy or Consulate but wants you on WhatsApp, Telegram or a personal number. Real officials do not do this.",
       hi: "कोई खुद को U.S. Embassy या कांसुलेट का बताता है, पर WhatsApp, Telegram या निजी नंबर पर बात करना चाहता है। असली अधिकारी ऐसा नहीं करते।",
-      es: "Alguien dice ser de la Embajada o el Consulado de EE. UU., pero quiere hablar con usted por WhatsApp, Telegram o un número personal. Los funcionarios reales no hacen esto.",
+      es: "Alguien dice ser de la Embajada o el U.S. Consulate, pero quiere hablar con usted por WhatsApp, Telegram o un número personal. Los funcionarios reales no hacen esto.",
     },
     match: (v) => {
       const office = "embassy|consulate|state department|uscis|visa (?:office|department|section)|immigration (?:office|department)|दूतावास|एम्बेसी|कांसुलेट";
@@ -259,7 +259,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It has a link that is not a U.S. government website. U.S. government sites end in .gov. Do not type your details on other sites.",
       hi: "इसमें ऐसा लिंक है जो U.S. सरकार की वेबसाइट नहीं है। U.S. सरकारी साइटें .gov पर खत्म होती हैं। दूसरी साइटों पर अपनी जानकारी न डालें।",
-      es: "Tiene un enlace que no es de un sitio web del gobierno de EE. UU. Los sitios del gobierno de EE. UU. terminan en .gov. No escriba sus datos en otros sitios.",
+      es: "Tiene un enlace que no es de un sitio web del gobierno de U.S. Los sitios del gobierno de U.S. terminan en .gov. No escriba sus datos en otros sitios.",
     },
     match: (v) => findLinks(v).filter((l) => !l.host.endsWith(".gov")).map((l) => l.phrase),
   },

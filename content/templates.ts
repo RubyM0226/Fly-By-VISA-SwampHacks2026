@@ -75,7 +75,7 @@ const TEMPLATES = {
           "Su nombre",
           "Por qué viaja",
           "A quién visitará y qué parentesco tiene con esa persona",
-          "Dirección donde se quedará en EE. UU.",
+          "Dirección donde se quedará en U.S.",
           "Fecha en que planea llegar",
           "Fecha en que planea volver a casa",
           "Lugares que planea visitar",

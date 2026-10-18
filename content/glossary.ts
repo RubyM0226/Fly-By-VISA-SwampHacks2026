@@ -53,7 +53,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "A visa for people who want to live in the U.S. for good. A visitor visa is not this.",
       hi: "उन लोगों के लिए वीज़ा जो हमेशा के लिए U.S. में रहना चाहते हैं। आगंतुक वीज़ा ऐसा नहीं है।",
-      es: "Una visa para quienes quieren vivir en EE. UU. de forma permanente. La visa de visitante no es de este tipo.",
+      es: "Una visa para quienes quieren vivir en U.S. de forma permanente. La visa de visitante no es de este tipo.",
     },
     category: "visas",
   },
@@ -64,7 +64,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "The online application form for a U.S. visitor visa.",
       hi: "U.S. आगंतुक वीज़ा के लिए ऑनलाइन आवेदन फ़ॉर्म।",
-      es: "El formulario de solicitud en línea para una visa de visitante a EE. UU.",
+      es: "El formulario de solicitud en línea para una visa de visitante a U.S.",
     },
     category: "forms",
   },
@@ -82,7 +82,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "Your arrival and departure record. It shows the date you must leave the U.S.",
       hi: "आपका आगमन और प्रस्थान रिकॉर्ड। इसमें वह तारीख होती है जब तक आपको U.S. छोड़ना है।",
-      es: "Su registro de llegada y salida. Muestra la fecha en que debe salir de EE. UU.",
+      es: "Su registro de llegada y salida. Muestra la fecha en que debe salir de U.S.",
     },
     category: "forms",
   },
@@ -91,7 +91,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "A form you can send to USCIS to ask to stay in the U.S. longer.",
       hi: "एक फ़ॉर्म जो U.S. में ज़्यादा रुकने की अनुमति माँगने के लिए USCIS को भेजा जा सकता है।",
-      es: "Un formulario que puede enviar a USCIS para pedir quedarse más tiempo en EE. UU.",
+      es: "Un formulario que puede enviar a USCIS para pedir quedarse más tiempo en U.S.",
     },
     category: "forms",
   },
@@ -100,7 +100,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "Your travel document. It must still be valid 6 months after your stay in the U.S. ends.",
       hi: "आपका यात्रा दस्तावेज़। U.S. में ठहराव खत्म होने के 6 महीने बाद तक यह मान्य होना चाहिए।",
-      es: "Su documento de viaje. Debe seguir vigente 6 meses después de que termine su estadía en EE. UU.",
+      es: "Su documento de viaje. Debe seguir vigente 6 meses después de que termine su estadía en U.S.",
     },
     category: "forms",
   },
@@ -120,7 +120,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "U.S. Customs and Border Protection. The officers who check you when you arrive at a U.S. airport.",
       hi: "U.S. कस्टम्स और बॉर्डर प्रोटेक्शन। U.S. हवाई अड्डे पर पहुँचने पर आपकी जाँच करने वाले अधिकारी।",
-      es: "Protección de Aduanas y Fronteras de EE. UU. Los oficiales que lo revisan cuando llega a un aeropuerto de EE. UU.",
+      es: "Protección de Aduanas y Fronteras de U.S. Los oficiales que lo revisan cuando llega a un aeropuerto de U.S.",
     },
     category: "agencies",
   },
@@ -129,7 +129,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "U.S. Citizenship and Immigration Services. The office you ask if you want to stay longer than planned.",
       hi: "U.S. नागरिकता और आप्रवासन सेवा। अगर आप योजना से ज़्यादा रुकना चाहें, तो इसी कार्यालय से पूछना होता है।",
-      es: "Servicios de Ciudadanía e Inmigración de EE. UU. La oficina a la que se pide si quiere quedarse más tiempo del planeado.",
+      es: "Servicios de Ciudadanía e Inmigración de U.S. La oficina a la que se pide si quiere quedarse más tiempo del planeado.",
     },
     category: "agencies",
   },
@@ -143,20 +143,20 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     category: "agencies",
   },
   embassy: {
-    term: { en: "U.S. Embassy", hi: "U.S. Embassy", es: "Embajada de EE. UU." },
+    term: { en: "U.S. Embassy", hi: "U.S. Embassy", es: "U.S. Embassy" },
     definition: {
       en: "The main U.S. government office in another country. You can apply for your visa there.",
       hi: "किसी दूसरे देश में U.S. सरकार का मुख्य कार्यालय। आप वहाँ वीज़ा के लिए आवेदन कर सकते हैं।",
-      es: "La oficina principal del gobierno de EE. UU. en otro país. Allí puede solicitar su visa.",
+      es: "La oficina principal del gobierno de U.S. en otro país. Allí puede solicitar su visa.",
     },
     category: "agencies",
   },
   consulate: {
-    term: { en: "U.S. Consulate", hi: "U.S. Consulate", es: "Consulado de EE. UU." },
+    term: { en: "U.S. Consulate", hi: "U.S. Consulate", es: "U.S. Consulate" },
     definition: {
       en: "A U.S. government office in a big city, like Mumbai or Chennai. You can apply for your visa there too.",
       hi: "किसी बड़े शहर में U.S. सरकार का कार्यालय, जैसे Mumbai या Chennai। आप वहाँ भी वीज़ा के लिए आवेदन कर सकते हैं।",
-      es: "Una oficina del gobierno de EE. UU. en una ciudad grande, como Bombay o Chennai. También allí puede solicitar su visa.",
+      es: "Una oficina del gobierno de U.S. en una ciudad grande, como Bombay o Chennai. También allí puede solicitar su visa.",
     },
     category: "agencies",
   },
@@ -165,7 +165,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "The part of the U.S. government that handles visas and collects the visa fee.",
       hi: "U.S. सरकार का वह विभाग जो वीज़ा का काम देखता है और वीज़ा शुल्क लेता है।",
-      es: "La parte del gobierno de EE. UU. que se ocupa de las visas y cobra la tarifa de la visa.",
+      es: "La parte del gobierno de U.S. que se ocupa de las visas y cobra la tarifa de la visa.",
     },
     category: "agencies",
   },
@@ -174,7 +174,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "Department of Homeland Security. The part of the U.S. government that CBP and USCIS belong to.",
       hi: "होमलैंड सिक्योरिटी विभाग। U.S. सरकार का वह विभाग जिसके अंदर CBP और USCIS आते हैं।",
-      es: "Departamento de Seguridad Nacional. La parte del gobierno de EE. UU. a la que pertenecen CBP y USCIS.",
+      es: "Departamento de Seguridad Nacional. La parte del gobierno de U.S. a la que pertenecen CBP y USCIS.",
     },
     category: "agencies",
   },
@@ -194,7 +194,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "The place where you first enter the U.S., usually an airport. CBP officers check you there.",
       hi: "वह जगह जहाँ से आप पहली बार U.S. में प्रवेश करते हैं, आमतौर पर हवाई अड्डा। वहाँ CBP अधिकारी आपकी जाँच करते हैं।",
-      es: "El lugar por donde entra por primera vez a EE. UU., normalmente un aeropuerto. Allí lo revisan los oficiales de CBP.",
+      es: "El lugar por donde entra por primera vez a U.S., normalmente un aeropuerto. Allí lo revisan los oficiales de CBP.",
     },
     category: "process",
   },
@@ -203,7 +203,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "Permission to enter the U.S. The CBP officer decides this at the airport. A visa does not guarantee it.",
       hi: "U.S. में प्रवेश करने की अनुमति। यह CBP अधिकारी हवाई अड्डे पर तय करते हैं। वीज़ा से इसकी गारंटी नहीं मिलती।",
-      es: "El permiso para entrar a EE. UU. Lo decide el oficial de CBP en el aeropuerto. La visa no lo garantiza.",
+      es: "El permiso para entrar a U.S. Lo decide el oficial de CBP en el aeropuerto. La visa no lo garantiza.",
     },
     category: "process",
   },
@@ -212,7 +212,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
     definition: {
       en: "Staying in the U.S. after the date on your I-94. Your visa is cancelled, and it can be hard to get a visa again.",
       hi: "I-94 की तारीख के बाद भी U.S. में रुकना। इससे आपका वीज़ा रद्द हो जाता है, और आगे वीज़ा मिलने में मुश्किल हो सकती है।",
-      es: "Quedarse en EE. UU. después de la fecha de su I-94. Su visa se cancela y puede ser difícil volver a obtener una visa.",
+      es: "Quedarse en U.S. después de la fecha de su I-94. Su visa se cancela y puede ser difícil volver a obtener una visa.",
     },
     category: "process",
   },

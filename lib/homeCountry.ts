@@ -23,7 +23,7 @@ interface HomeInfo {
 export const HOME: Record<OriginCode, HomeInfo> = {
   IN: { name: { en: "India", hi: "India", es: "India" }, vac: "VAC", links: {}, replace: {} },
   GB: {
-    name: { en: "the United Kingdom", hi: "United Kingdom", es: "el Reino Unido" },
+    name: { en: "the United Kingdom", hi: "United Kingdom", es: "el United Kingdom" },
     vac: "VAC",
     // No passport site guessed: the U.S. Embassy visa page instead.
     links: { [LINKS.embassyIndia]: LINKS.embassyUK, [LINKS.passportIndia]: LINKS.embassyUK },
@@ -38,10 +38,10 @@ export const HOME: Record<OriginCode, HomeInfo> = {
       "What is the {vac} visit?": "Do I need a separate fingerprint visit?",
       "{vac} जाना क्या होता है?": "क्या उंगलियों के निशान के लिए अलग से जाना होगा?",
       "Quizás deba ir primero a un [[vac|{vac}]], para las huellas digitales.":
-        "En el Reino Unido normalmente no hay una visita aparte para las huellas digitales. Se las toman el día de su entrevista.",
+        "En el United Kingdom normalmente no hay una visita aparte para las huellas digitales. Se las toman el día de su entrevista.",
       "¿Qué es la visita al {vac}?": "¿Necesito una visita aparte para las huellas digitales?",
       "Muchas personas en {home} primero visitan un [[vac|{vac}]], donde les toman las huellas digitales y la foto. Después van a su entrevista. Lleve su pasaporte y la carta de la cita.":
-        "En el Reino Unido normalmente no hay una visita aparte para las huellas digitales. Le toman las huellas y la foto en la Embajada de EE. UU. en Londres el día de su entrevista. Lleve su pasaporte y la carta de la cita.",
+        "En el United Kingdom normalmente no hay una visita aparte para las huellas digitales. Le toman las huellas y la foto en la U.S. Embassy en London el día de su entrevista. Lleve su pasaporte y la carta de la cita.",
       "Many people in {home} first visit a [[vac|{vac}]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.":
         "In the United Kingdom there is usually no separate fingerprint visit. Your fingerprints and photo are taken at the U.S. Embassy in London on the day of your interview. Bring your passport and appointment letter.",
       "{home} में कई लोग पहले [[vac|{vac}]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।":
@@ -49,7 +49,7 @@ export const HOME: Record<OriginCode, HomeInfo> = {
     },
   },
   MX: {
-    name: { en: "Mexico", hi: "Mexico", es: "México" },
+    name: { en: "Mexico", hi: "Mexico", es: "Mexico" },
     // Mexico's separate fingerprint appointment is at a CAS (Centro de Atención a Solicitantes).
     vac: "CAS",
     links: { [LINKS.embassyIndia]: LINKS.embassyMexico, [LINKS.passportIndia]: LINKS.embassyMexico },
