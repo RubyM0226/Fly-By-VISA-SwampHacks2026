@@ -212,7 +212,7 @@ export function StartScreen() {
           className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
             isSelected
               ? "border-accent bg-accent text-accent-ink"
-              : "border-line-strong bg-surface text-slate-800 hover:bg-accent-soft"
+              : "border-line-strong bg-surface text-slate-800 hover:bg-hover"
           }`}
         >
           {t(item.labelKey)}
@@ -282,7 +282,7 @@ export function StartScreen() {
             href="/places"
             transitionTypes={BACK}
             data-button
-            className="inline-flex min-h-14 items-center justify-center rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-lg font-semibold hover:bg-accent-soft"
+            className="inline-flex min-h-14 items-center justify-center rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-lg font-semibold hover:bg-hover"
           >
             {t("start.back")}
           </Link>

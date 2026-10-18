@@ -187,7 +187,7 @@ export function TripDetailsCard() {
                 className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
                   isSelected
                     ? "border-accent bg-accent text-accent-ink"
-                    : "border-line-strong bg-surface text-slate-800 hover:bg-accent-soft"
+                    : "border-line-strong bg-surface text-slate-800 hover:bg-hover"
                 }`}
               >
                 {t(item.labelKey)}

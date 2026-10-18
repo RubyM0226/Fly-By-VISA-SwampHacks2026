@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   <SideNav />
 </Suspense>
           <div className="@container flex min-w-0 flex-1 flex-col">
-            <main id="main-content" tabIndex={-1} className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-10 outline-none">
+            <main id="main-content" tabIndex={-1} className="mx-auto flex-1 w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10 outline-none">
               {children}
             </main>
             <Footer />

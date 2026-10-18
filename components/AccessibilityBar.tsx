@@ -2,7 +2,6 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { DEFAULT_SETTINGS, settingsStore, useSettings, type Settings } from "@/lib/settings";
-import { tripStore } from "@/lib/trip";
 import { useT, type UiKey } from "@/lib/i18n";
 import { ChevronIcon, GearIcon, MinusIcon, PlusIcon } from "./Icons";
 import { LanguageSelect } from "./LanguageSelect";
@@ -34,7 +33,7 @@ function Segmented<V extends number>({
             className={`min-h-12 rounded-xl border-2 px-2.5 py-2 font-semibold sm:px-3 ${
               active
                 ? "border-accent bg-accent text-accent-ink"
-                : "border-line-strong bg-surface text-ink hover:bg-accent-soft"
+                : "border-line-strong bg-surface text-ink hover:bg-hover"
             } ${o.className ?? ""}`}
           >
             {o.text}
@@ -64,7 +63,7 @@ function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-left hover:bg-accent-soft"
+      className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-left hover:bg-hover"
     >
       <span className="font-semibold">{label}</span>
       {/* The word On/Off is shown too, so state is never colour alone. */}
@@ -90,19 +89,27 @@ const SWITCHES: { key: keyof Settings; label: UiKey }[] = [
   { key: "showDefinitions", label: "a11y.definitions" },
 ];
 
-const SIZE_LABELS: UiKey[] = ["a11y.size0", "a11y.size1", "a11y.size2", "a11y.size3"];
-const MAX_SIZE = SIZE_LABELS.length - 1;
+const SIZE_LABELS: Record<Settings["textSize"], UiKey> = {
+  [-2]: "a11y.sizeMinus2",
+  [-1]: "a11y.sizeMinus1",
+  0: "a11y.size0",
+  1: "a11y.size1",
+  2: "a11y.size2",
+  3: "a11y.size3",
+};
+const MIN_SIZE = -2;
+const MAX_SIZE = 3;
 
-/** − A +: one step smaller or bigger, same four sizes as before. */
+/** − A +: one step smaller or bigger. 0 is the default; two steps go below it. */
 function TextSizeControl({ value, onChange }: { value: Settings["textSize"]; onChange: (v: Settings["textSize"]) => void }) {
   const { t } = useT();
-  const step = "inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface";
+  const step = "inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-hover disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface";
   return (
     <div role="group" aria-label={t("a11y.textSize")} className="inline-flex items-center gap-1">
       <button
         type="button"
         onClick={() => onChange((value - 1) as Settings["textSize"])}
-        disabled={value === 0}
+        disabled={value === MIN_SIZE}
         aria-label={t("a11y.smaller")}
         className={step}
       >
@@ -153,7 +160,6 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
   const { t, lang } = useT();
   const [settings, update] = useSettings();
   const [open, setOpen] = useState(false);
-  const [cleared, setCleared] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
 
   // Measure the real width of each piece (from hidden copies), then show as
@@ -255,7 +261,7 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
           aria-expanded={open}
           aria-controls="a11y-more"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto inline-flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-accent-soft sm:px-3"
+          className="ml-auto inline-flex min-h-12 shrink-0 items-center gap-1.5 rounded-xl border-2 border-line-strong bg-surface px-2.5 py-2 text-sm font-semibold hover:bg-hover sm:px-3"
         >
           <GearIcon className="h-5 w-5" />
           <span>{t("a11y.more")}</span>
@@ -316,27 +322,14 @@ export function AccessibilityBar({ start }: { start?: (compact: boolean) => Reac
             ))}
           </section>
 
-          <section className="flex flex-wrap items-center gap-2 border-t-2 border-line pt-4">
+          <section className="flex justify-center border-t-2 border-line pt-4">
             <button
               type="button"
               onClick={() => settingsStore.set({ ...DEFAULT_SETTINGS, lang: settings.lang })}
-              className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 font-semibold hover:bg-accent-soft"
+              className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 font-semibold hover:bg-hover"
             >
               {t("a11y.reset")}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                tripStore.reset();
-                setCleared(true);
-              }}
-              className="min-h-12 rounded-xl border-2 border-danger bg-surface px-4 py-2 font-semibold text-danger hover:bg-danger-soft"
-            >
-              {t("a11y.clearData")}
-            </button>
-            <p role="status" className="min-h-6 text-base text-muted">
-              {cleared ? t("a11y.cleared") : ""}
-            </p>
           </section>
         </div>
       </div>

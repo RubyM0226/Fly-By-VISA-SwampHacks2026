@@ -26,7 +26,7 @@ export function SpeakButton({ ownerId, getText, className = "" }: Props) {
       aria-pressed={active}
       aria-label={active ? t("nav.stopReading") : t("nav.readAloud")}
       title={active ? t("nav.stopReading") : t("nav.readAloud")}
-      className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-accent-soft ${
+      className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-hover ${
         active ? "border-accent bg-accent-soft text-accent" : ""
       } ${className}`}
     >

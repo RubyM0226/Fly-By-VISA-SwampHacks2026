@@ -114,7 +114,7 @@ export function AccountScreen() {
                 });
                 localStorage.removeItem("temp_journey_id");
               }}
-              className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
+              className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover"
             >
               {t("myPlan.signOut")}
             </a>
@@ -203,7 +203,7 @@ export function AccountScreen() {
                       setHelperUrl(null);
                       alert("Helper link revoked successfully.");
                     }}
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-red-300 bg-red-50 px-5 py-2 text-base font-semibold text-red-700 hover:bg-red-100"
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-red-300 bg-red-50 px-5 py-2 text-base font-semibold text-red-700 hover:bg-hover-danger"
                   >
                     Stop Sharing (Revoke Link)
                   </button>

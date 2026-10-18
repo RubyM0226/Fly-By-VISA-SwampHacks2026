@@ -19,7 +19,7 @@ export function HelperAccountScreen() {
         <p className="text-xl font-semibold">{t("helperAccount.viewing")}</p>
         <Link
           href="/"
-          className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
+          className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover"
         >
           {t("helperAccount.stopViewing")}
         </Link>

@@ -224,7 +224,7 @@ function ScamPanel({ state }: { state: ScamState }) {
               accept="image/png,image/jpeg,image/webp"
               aria-describedby={`${ids}-image-hint`}
               onChange={(e) => state.setImage(e.target.files?.[0] ?? null)}
-              className="min-h-12 max-w-full text-base file:mr-3 file:min-h-12 file:rounded-xl file:border-2 file:border-line-strong file:bg-surface file:px-4 file:py-2 file:font-semibold hover:file:bg-accent-soft"
+              className="min-h-12 max-w-full text-base file:mr-3 file:min-h-12 file:rounded-xl file:border-2 file:border-line-strong file:bg-surface file:px-4 file:py-2 file:font-semibold hover:file:bg-hover"
             />
             {image && (
               <button
@@ -233,7 +233,7 @@ function ScamPanel({ state }: { state: ScamState }) {
                   state.setImage(null);
                   if (fileRef.current) fileRef.current.value = "";
                 }}
-                className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+                className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-hover"
               >
                 {st("imageRemove")}
               </button>
@@ -275,7 +275,7 @@ function ScamPanel({ state }: { state: ScamState }) {
               state.startOver();
               inputRef.current?.focus();
             }}
-            className="min-h-12 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft sm:w-auto"
+            className="min-h-12 w-full rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-hover sm:w-auto"
           >
             {st("startOver")}
           </button>

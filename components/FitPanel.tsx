@@ -23,7 +23,7 @@ export function FitBadge({ fit }: { fit: Fit }) {
   );
 }
 
-/** Marks the office with the shortest wait. Also used on the Location Map, so both read the same. */
+/** Marks the office with the shortest wait. Also used on the Office Map, so both read the same. */
 export function ShortestWaitBadge() {
   const { t } = useT();
   return (
