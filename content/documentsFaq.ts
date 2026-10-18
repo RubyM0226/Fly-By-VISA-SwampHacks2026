@@ -1,11 +1,12 @@
 import { LINKS } from "@/lib/config";
 import type { Lang } from "@/lib/settings";
 
-// Common document questions for the India -> U.S. visitor (B-2) visa, for the
+// Common document questions for the U.S. visitor (B-2) visa, for the
 // Information Lookup page. Keep answers short and plain: an elderly reader
 // in India, need-to-know only. Facts match content/steps.ts; every answer
 // links to an official page. Hindi is a first draft: have a fluent reader
-// check it. Use [[term|Shown text]] for glossary chips.
+// check it. Use [[term|Shown text]] for glossary chips. Home-country tokens
+// ({home}, {vac}) and India's links are filled in by lib/homeCountry.ts.
 
 export interface DocAnswer {
   id: string;
@@ -70,27 +71,27 @@ export const DOC_FAQ: DocAnswer[] = [
       hi: "इंटरव्यू बुक करने पर एक पुष्टि मिलती है। उसे प्रिंट करें और उस दिन साथ ले जाएँ। बुकिंग के तरीके बदल सकते हैं, इसलिए अमेरिकी दूतावास की वेबसाइट देखें।",
       es: "Al reservar su entrevista, recibe una confirmación. Imprímala y llévela ese día. Los pasos para reservar pueden cambiar, así que siga el sitio web de la Embajada de EE. UU.",
     },
-    source: { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
   },
   {
     id: "vac",
-    keywords: ["vac", "fingerprint", "fingerprints", "biometric", "biometrics", "visa application center", "उंगलियों", "निशान", "huellas", "huellas digitales", "biometria", "centro de solicitud"],
-    question: { en: "What is the VAC visit?", hi: "VAC जाना क्या होता है?", es: "¿Qué es la visita al VAC?" },
+    keywords: ["vac", "fingerprint", "fingerprints", "biometric", "biometrics", "visa application center", "cas", "उंगलियों", "निशान", "huellas", "huellas digitales", "biometria", "centro de solicitud"],
+    question: { en: "What is the {vac} visit?", hi: "{vac} जाना क्या होता है?", es: "¿Qué es la visita al {vac}?" },
     answer: {
-      en: "Many people in India first visit a [[vac|VAC]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.",
-      hi: "भारत में कई लोग पहले [[vac|VAC]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
-      es: "Muchas personas en India primero visitan un [[vac|VAC]], donde les toman las huellas digitales y la foto. Después van a su entrevista. Lleve su pasaporte y la carta de la cita.",
+      en: "Many people in {home} first visit a [[vac|{vac}]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.",
+      hi: "{home} में कई लोग पहले [[vac|{vac}]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
+      es: "Muchas personas en {home} primero visitan un [[vac|{vac}]], donde les toman las huellas digitales y la foto. Después van a su entrevista. Lleve su pasaporte y la carta de la cita.",
     },
-    source: { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
   },
   {
     id: "supporting",
     keywords: ["supporting", "documents", "papers", "proof", "ties", "home", "pension", "family", "property", "job", "कागज़", "कागज", "प्रमाण", "पेंशन", "घर", "परिवार", "papeles", "documentos", "pruebas", "apoyo", "vivienda", "pension", "familia", "propiedad", "trabajo"],
     question: { en: "Which supporting papers should I bring?", hi: "मुझे कौन-से सहायक कागज़ात ले जाने चाहिए?", es: "¿Qué papeles de apoyo debo llevar?" },
     answer: {
-      en: "Bring papers that show your life is in India and that you will come home. For example: family, a home, a pension or work. The officer may ask to see them.",
-      hi: "ऐसे कागज़ात ले जाएँ जो दिखाएँ कि आपका जीवन भारत में है और आप लौटेंगे। जैसे: परिवार, घर, पेंशन या काम। अधिकारी इन्हें देखना चाह सकते हैं।",
-      es: "Lleve papeles que muestren que su vida está en India y que va a regresar a casa. Por ejemplo: familia, una vivienda, una pensión o un trabajo. El oficial puede pedir verlos.",
+      en: "Bring papers that show your life is in {home} and that you will come home. For example: family, a home, a pension or work. The officer may ask to see them.",
+      hi: "ऐसे कागज़ात ले जाएँ जो दिखाएँ कि आपका जीवन {home} में है और आप लौटेंगे। जैसे: परिवार, घर, पेंशन या काम। अधिकारी इन्हें देखना चाह सकते हैं।",
+      es: "Lleve papeles que muestren que su vida está en {home} y que va a regresar a casa. Por ejemplo: familia, una vivienda, una pensión o un trabajo. El oficial puede pedir verlos.",
     },
     source: { label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ", es: "Página oficial de la visa de visitante" }, url: LINKS.visitorVisa },
   },
