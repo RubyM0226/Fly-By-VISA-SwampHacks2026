@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useId, useState } from "react";
 import { LINKS } from "@/lib/config";
 import { fitReason } from "@/lib/fitReason";
@@ -8,6 +9,7 @@ import { formatDate, WAIT_TIMES_AS_OF, type Fit, type Journey, type PostResult }
 import { useT } from "@/lib/i18n";
 import { useHome } from "@/lib/homeCountry";
 import { AlertIcon, CheckIcon, ClockIcon, ExternalIcon } from "./Icons";
+import { helperHome } from "./SideNav";
 
 const FIT_STYLE: Record<Fit, string> = {
   onTrack: "border-accent bg-accent-soft text-accent",
@@ -86,6 +88,8 @@ export function ShortestWaitBadge() {
 export function FitPanel({ journey, home }: { journey: Journey; home?: string }) {
   const { t, lang } = useT();
   const { name: homeName } = useHome(home);
+  // On a helper link, the caregiver's own Help page (with the shared plan's numbers).
+  const guideBase = helperHome(usePathname()) ?? "";
   const best = journey.best;
   const bestName = t(`post.${best.id}`);
 
@@ -118,9 +122,9 @@ export function FitPanel({ journey, home }: { journey: Journey; home?: string })
         </div>
       </dl>
 
-      {/* The full walk-through lives on the Help page (components/PlanMath.tsx). */}
+      {/* The full walk-through lives on the Help page (PlanMath in components/guide/GuideScreen.tsx). */}
       <p className="text-right">
-        <Link href="/guide#plan-status" className="inline-flex min-h-12 items-center text-base font-semibold text-accent underline">
+        <Link href={`${guideBase}/guide#plan-status`} className="inline-flex min-h-12 items-center text-base font-semibold text-accent underline">
           {t("fit.how.title")}
         </Link>
       </p>
