@@ -144,7 +144,7 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
                     className="roadmap-pill"
                   >
                     {status === "done" && <CheckIcon className="h-5 w-5 shrink-0" />}
-                    <span>{STEP_BY_ID[id].text[lang].title}</span>
+                    <span>{STEP_BY_ID[id].text[lang].pill}</span>
                     <span className="sr-only">, {t(`status.${status}`)}</span>
                   </button>
                 </div>
@@ -173,6 +173,7 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
             status={statusOf(open.id)}
             interviewDate={journey.best.interviewDate}
             onToggleDone={() => onToggleDone(open.id)}
+            earlierUndone={stepOrder.slice(0, stepOrder.indexOf(open.id)).some((id) => statusOf(id) !== "done")}
             autoFocus={open.focus}
           />
         </div>

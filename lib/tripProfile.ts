@@ -56,8 +56,8 @@ export interface JourneyProfile {
 /** Rows saved before the key fix used homeCity / destCity, so read both. */
 type StoredProfile = Partial<JourneyProfile> & { homeCity?: string; destCity?: string };
 
-/** A saved profile as tripStore fields (without `done`). */
-export function tripFromProfile(p: StoredProfile | null | undefined): Omit<Trip, "done"> {
+/** A saved profile as tripStore fields (without `done`, and keeping this browser's selected flight). */
+export function tripFromProfile(p: StoredProfile | null | undefined): Omit<Trip, "done" | "selectedFlight"> {
   return {
     from: (p?.from || "IN") as Trip["from"],
     homeCity: p?.fromCity || p?.homeCity || "New Delhi",

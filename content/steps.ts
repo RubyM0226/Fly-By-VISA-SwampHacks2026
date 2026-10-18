@@ -18,6 +18,8 @@ import type { Lang } from "@/lib/settings";
 
 export interface StepText {
   title: string;
+  /** Short label for the roadmap pill (one or two words). The card keeps the full title. */
+  pill: string;
   /** What to do, one short sentence per bullet. */
   what: string[];
   /** One short fact per bullet. Leave out when there is nothing useful to say; the section is then hidden. */
@@ -49,6 +51,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Get ready",
+        pill: "Prepare",
         what: [
           "Check your passport.",
           "It must still be valid 6 months after you come home.",
@@ -60,6 +63,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "तैयारी करें",
+        pill: "तैयारी",
         what: [
           "अपना पासपोर्ट देखें।",
           "लौटने के 6 महीने बाद तक वह मान्य होना चाहिए।",
@@ -87,6 +91,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Fill in the online form",
+        pill: "Form",
         what: [
           "Fill in the online form [[ds160|DS-160]].",
           "Answer every question honestly.",
@@ -100,6 +105,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "ऑनलाइन फ़ॉर्म भरें",
+        pill: "फ़ॉर्म",
         what: [
           "ऑनलाइन फ़ॉर्म [[ds160|DS-160]] भरें।",
           "हर सवाल का सच्चा जवाब दें।",
@@ -123,6 +129,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Pay the fee and book your appointments",
+        pill: "Appointments",
         what: [
           "Pay the visa fee.",
           "Then book your interview at a U.S. office in {home}.",
@@ -136,6 +143,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "शुल्क भरें और अपॉइंटमेंट बुक करें",
+        pill: "अपॉइंटमेंट",
         what: [
           "वीज़ा शुल्क भरें।",
           "फिर {home} में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
@@ -163,6 +171,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Gather your documents",
+        pill: "Documents",
         what: [
           "Collect the papers the officer may ask for.",
           "Show that your life is in {home}: family, home or pension.",
@@ -175,6 +184,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपने कागज़ात इकट्ठा करें",
+        pill: "कागज़ात",
         what: [
           "अधिकारी जो कागज़ माँग सकते हैं, वे इकट्ठा करें।",
           "दिखाएँ कि आपका जीवन {home} में है: परिवार, घर या पेंशन।",
@@ -196,6 +206,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Practice for the interview",
+        pill: "Interview",
         what: [
           "Practice your answers out loud.",
           "Who will you visit?",
@@ -208,6 +219,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "इंटरव्यू की तैयारी करें",
+        pill: "इंटरव्यू",
         what: [
           "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
           "आप किससे मिलेंगे?",
@@ -229,6 +241,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Book your flight",
+        pill: "Flight",
         what: [
           "Wait until you have your visa and your passport is back.",
           "Then compare flights with the button above.",
@@ -240,6 +253,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपनी उड़ान बुक करें",
+        pill: "उड़ान",
         what: [
           "वीज़ा मिलने और पासपोर्ट वापस आने तक रुकें।",
           "फिर ऊपर दिए बटन से उड़ानों की तुलना करें।",
@@ -261,7 +275,8 @@ export const STEPS: StepContent[] = [
     documents: ["passportWithVisa", "stayAddress", "tripDetails"],
     text: {
       en: {
-        title: "Arrive in the U.S.",
+        title: "Arrive in the US and go through customs",
+        pill: "Arrival",
         what: [
           "Keep your passport, visa and trip details ready.",
           "A U.S. border officer ([[cbp|CBP]]) checks you at the airport.",
@@ -272,7 +287,9 @@ export const STEPS: StepContent[] = [
         simple: "Keep your papers ready. The officer decides how long you can stay.",
       },
       hi: {
-        title: "अमेरिका पहुँचें",
+        // DRAFT: needs a native Hindi reader.
+        title: "अमेरिका पहुँचें और कस्टम्स से गुज़रें",
+        pill: "पहुँचना",
         what: [
           "पासपोर्ट, वीज़ा और यात्रा की जानकारी तैयार रखें।",
           "हवाई अड्डे पर अमेरिकी सीमा अधिकारी ([[cbp|CBP]]) आपकी जाँच करते हैं।",
@@ -294,6 +311,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Return on time",
+        pill: "Return",
         what: [
           "Leave the U.S. by the date on your [[i94|I-94]] record.",
           "Do not work during your visit.",
@@ -305,6 +323,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "समय पर लौटें",
+        pill: "वापसी",
         what: [
           "[[i94|I-94]] रिकॉर्ड की तारीख तक अमेरिका छोड़ दें।",
           "यात्रा के दौरान काम न करें।",
@@ -326,6 +345,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Receive your Form I-20",
+        pill: "Form I-20",
         what: [
           "Once accepted, your U.S. university's international office will issue a Form I-20.",
           "Check that your name and birthdate exactly match your passport.",
@@ -335,6 +355,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "अपना फॉर्म I-20 प्राप्त करें",
+        pill: "फॉर्म I-20",
         what: [
           "स्वीकार किए जाने के बाद, आपका अमेरिकी विश्वविद्यालय एक फॉर्म I-20 जारी करेगा।",
           "जांचें कि आपका नाम और जन्म तिथि आपके पासपोर्ट से बिल्कुल मेल खाते हैं।",
@@ -356,6 +377,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Pay the SEVIS I-901 Fee",
+        pill: "SEVIS fee",
         cost: ["$350 for F-1 students"],
         what: [
           "You must pay the SEVIS fee before applying for your visa.",
@@ -366,6 +388,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "SEVIS I-901 शुल्क भरें",
+        pill: "SEVIS शुल्क",
         cost: ["F-1 छात्रों के लिए $350"],
         what: [
           "वीज़ा के लिए आवेदन करने से पहले आपको SEVIS शुल्क का भुगतान करना होगा।",
@@ -383,6 +406,7 @@ export const STEPS: StepContent[] = [
     text: {
       en: {
         title: "Wait for I-797 Approval",
+        pill: "Approval",
         what: [
           "Your U.S. employer must file an I-129 petition with USCIS on your behalf.",
           "You cannot apply for your visa or schedule an interview until you receive the approved Form I-797 Notice of Action.",
@@ -392,6 +416,7 @@ export const STEPS: StepContent[] = [
       },
       hi: {
         title: "I-797 स्वीकृति की प्रतीक्षा करें",
+        pill: "स्वीकृति",
         what: [
           "आपका अमेरिकी नियोक्ता आपकी ओर से USCIS में I-129 याचिका दायर करेगा।",
           "जब तक आपको स्वीकृत फॉर्म I-797 नोटिस नहीं मिल जाता, तब तक आप वीज़ा आवेदन या इंटरव्यू बुक नहीं कर सकते।",

@@ -646,9 +646,11 @@ html[data-motion="paused"] .roadmap-track { scroll-behavior: auto; }
   color: var(--accent-ink);
   --pill-edge: color-mix(in srgb, var(--accent) 65%, black);
 }
-/* The open step gets a ring, with a gap so it shows on green pills too. */
+/* The open step gets a ring, with a gap so it shows on green pills too. No
+   raised edge under it, so the pill sits centred in the ring instead of its
+   edge blending into it. */
 .roadmap-pill[aria-expanded="true"] {
-  box-shadow: 0 5px 0 var(--pill-edge), 0 0 0 5px var(--bg), 0 0 0 8px var(--accent);
+  box-shadow: 0 0 0 5px var(--bg), 0 0 0 8px var(--accent);
 }
 
 /* The details box opens below the carousel, full width. */

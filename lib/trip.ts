@@ -4,6 +4,18 @@ import { createPersistedStore, useStore } from "./store";
 /** What the traveler told us. Stored only in this browser. */
 export type VisaPurpose = "family" | "study" | "work";
 
+/** A flight the traveler picked on the Flights page, shown on the "Book your flight" step. */
+export interface SelectedFlight {
+  /** Flight numbers joined, as in FlightOption.key. With `date`, identifies the option. */
+  key: string;
+  date: string;
+  price: number;
+  minutes: number;
+  stops: number;
+  airlines: string[];
+  legs: { flightNumber: string; from: string; to: string; departs: string; arrives: string }[];
+}
+
 export interface Trip {
   from: "" | OriginCode;
   to: "" | "US";
@@ -17,6 +29,8 @@ export interface Trip {
   destCity: string;
   firstName: string;
   lastName: string;
+  /** Only in this browser, never saved to the database. */
+  selectedFlight: SelectedFlight | null;
 }
 
 export const DEFAULT_TRIP: Trip = {
@@ -32,6 +46,7 @@ export const DEFAULT_TRIP: Trip = {
   destCity: "New York",
   firstName: "",
   lastName: "",
+  selectedFlight: null,
 };
 
 export const tripStore = createPersistedStore<Trip>("flybyvisa:trip", DEFAULT_TRIP);
