@@ -1,29 +1,25 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { DICTIONARY, useT } from "@/lib/i18n";
-import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
+import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
 import { useTrip, tripStore, type Trip } from "@/lib/trip";
-import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";import { STEP_BY_ID } from "@/content/steps";
+import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
+import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { tripFromProfile } from "@/lib/tripProfile";
-import { useSavedConsent } from "./DocumentsScreen";
 import { TripDetailsCard } from "./TripDetailsCard";
+import { YourFilesCard } from "./YourFilesCard";
 
 export function AccountScreen() {
   const { t, lang } = useT();
   const user = useProfile();
   const { user: auth0User } = useUser();
   const [trip] = useTrip();
-  const consent = useSavedConsent();
   const [helperUrl, setHelperUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const formatDate = (date: string, locale: string) =>
-    new Intl.DateTimeFormat(locale).format(new Date(`${date}T00:00:00`));
 
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
@@ -52,16 +48,10 @@ export function AccountScreen() {
 
   // Calculate their current place on the roadmap
   const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
-  const currentId = stepOrder.find((id) => !trip.done[id]);  const currentStepTitle = currentId 
-    ? STEP_BY_ID[currentId]?.text[lang]?.title || "Next Step"
-    : "All steps completed! You are ready to fly.";
+  const currentId = stepOrder.find((id) => !trip.done[id]);
+  const currentStepTitle = currentId ? (STEP_BY_ID[currentId]?.text[lang]?.title ?? "") : t("account.allDone");
 
-  // Helper to format country codes
-  const getCountryName = (code?: string) => {
-    // Official names stay in English in every language.
-    const c = COUNTRY_BY_CODE[code as CountryCode];
-    return c ? DICTIONARY.en[c.nameKey] : code || "Not selected";
-  };
+  const firstName = trip.firstName.trim() || auth0User?.given_name || "";
 
   const handleGenerateLink = async () => {
     setIsGenerating(true);
@@ -70,14 +60,14 @@ export function AccountScreen() {
       const url = `${window.location.origin}/help/${res.token}`;
       setHelperUrl(url);
       navigator.clipboard.writeText(url);
-      alert("Helper link copied to clipboard!");
+      alert(t("account.helper.copied"));
     }
     setIsGenerating(false);
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">{t("nav.account")}</h1>
+      <h1 className="text-3xl font-bold">{firstName ? t("account.hi", { name: firstName }) : t("account.hiPlain")}</h1>
 
       {user === undefined && <p className="text-lg text-muted">{t("myPlan.checking")}</p>}
 
@@ -97,8 +87,72 @@ export function AccountScreen() {
 
       {user && (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-lg font-semibold">{t("myPlan.signedInAs", { name: user.name || user.email || "" })}</p>
+          <TripDetailsCard />
+
+          <section aria-labelledby="roadmap-status-title" className="space-y-2 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-5">
+            <h2 id="roadmap-status-title" className="text-sm font-bold uppercase tracking-wide text-muted">
+              {t("account.roadmapStatus")}
+            </h2>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-ink">
+                <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <p className="text-xl font-bold text-ink">{currentStepTitle}</p>
+            </div>
+          </section>
+
+          {/* Add Family Helper: a private, read-only helper link. */}
+          <div className="rounded-xl border-2 border-line-strong bg-surface p-6 space-y-4">
+            <h2 className="text-2xl font-bold text-accent">{t("account.addCollaborator")}</h2>
+            <p className="text-lg text-muted">{t("account.addCollaboratorLead")}</p>
+
+            {helperUrl ? (
+              <div className="space-y-3">
+                <div className="rounded-lg border-2 border-line bg-slate-50 p-3 text-sm font-mono break-all text-slate-700">
+                  {helperUrl}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(helperUrl);
+                      alert(t("account.helper.copied"));
+                    }}
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-5 py-2 text-base font-bold text-accent-ink hover:bg-accent/90"
+                  >
+                    {t("account.helper.copyAgain")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const token = helperUrl.split("/").pop();
+                      if (token) await revokeHelperLink(token);
+                      setHelperUrl(null);
+                      alert(t("account.helper.stopped"));
+                    }}
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-red-300 bg-red-50 px-5 py-2 text-base font-semibold text-red-700 hover:bg-hover-danger"
+                  >
+                    {t("account.helper.stop")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                disabled={isGenerating}
+                onClick={handleGenerateLink}
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-6 py-3 text-lg font-bold text-accent-ink hover:bg-accent/90 disabled:opacity-50"
+              >
+                {isGenerating ? t("account.helper.generating") : t("account.helper.generate")}
+              </button>
+            )}
+          </div>
+
+          <YourFilesCard />
+
+          <div className="flex justify-center pt-2">
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/auth/logout"
@@ -114,138 +168,11 @@ export function AccountScreen() {
                 });
                 localStorage.removeItem("temp_journey_id");
               }}
-              className="inline-flex min-h-12 items-center rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover"
+              className="inline-flex min-h-12 items-center rounded-xl border-2 border-danger bg-surface px-6 py-2 text-lg font-semibold text-danger hover:bg-hover-danger"
             >
               {t("myPlan.signOut")}
             </a>
           </div>
-
-          <TripDetailsCard />
-          
-          <div className="rounded-xl border-2 border-line-strong bg-surface p-6">
-            <h2 className="mb-6 text-2xl font-bold text-accent">Your Travel Profile</h2>
-            
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="space-y-1">
-                <p className="text-sm font-bold uppercase tracking-wide text-muted">{t("account.route")}</p>
-                <p className="text-lg font-medium text-slate-800">
-                  {getCountryName(trip.from)} → {getCountryName(trip.to)}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-sm font-bold uppercase tracking-wide text-muted">Arrival Date</p>
-                <p className="text-lg font-medium text-slate-800">
-                  {trip.arrival ? formatDate(trip.arrival, lang) : "Not selected"}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-sm font-bold uppercase tracking-wide text-muted">Duration of Stay</p>
-                <p className="text-lg font-medium text-slate-800">
-                  {trip.stayMonths ? (trip.stayMonths === 1 ? t("start.month") : t("start.months", { n: trip.stayMonths })) : "Not selected"}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-sm font-bold uppercase tracking-wide text-muted">Reason for Visit</p>
-                <p className="text-lg font-medium text-slate-800 capitalize">
-                  {trip.purpose === "study"
-                    ? "Study (F-1 Visa)"
-                    : trip.purpose === "work"
-                    ? "Work (H-1B Visa)"
-                    : "Tourism / Family (B1/B2)"}
-                </p>
-              </div>
-            </div>
-
-            <hr className="my-6 border-line" />
-
-            <div className="space-y-2">
-              <p className="text-sm font-bold uppercase tracking-wide text-muted">Current Roadmap Status</p>
-              <div className="flex items-center gap-3 rounded-lg border-2 border-accent/20 bg-accent-soft p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-ink">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <p className="text-xl font-bold text-ink">{currentStepTitle}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Add collaborator: for now, the helper link. The full invite feature comes later. */}
-          <div className="rounded-xl border-2 border-line-strong bg-surface p-6 space-y-4">
-            <h2 className="text-2xl font-bold text-accent">{t("account.addCollaborator")}</h2>
-            <p className="text-lg text-muted">{t("account.addCollaboratorLead")}</p>
-
-            {helperUrl ? (
-              <div className="space-y-3">
-                <div className="rounded-lg border-2 border-line bg-slate-50 p-3 text-sm font-mono break-all text-slate-700">
-                  {helperUrl}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(helperUrl);
-                      alert("Link copied to clipboard!");
-                    }}
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-5 py-2 text-base font-bold text-accent-ink hover:bg-accent/90"
-                  >
-                    Copy Link Again
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const token = helperUrl.split("/").pop();
-                      if (token) await revokeHelperLink(token);
-                      setHelperUrl(null);
-                      alert("Helper link revoked successfully.");
-                    }}
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-red-300 bg-red-50 px-5 py-2 text-base font-semibold text-red-700 hover:bg-hover-danger"
-                  >
-                    Stop Sharing (Revoke Link)
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                disabled={isGenerating}
-                onClick={handleGenerateLink}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-6 py-3 text-lg font-bold text-accent-ink hover:bg-accent/90 disabled:opacity-50"
-              >
-                {isGenerating ? "Generating..." : "Generate & Copy Helper Link"}
-              </button>
-            )}
-          </div>
-
-          <Link href="/documents" className="inline-flex min-h-12 items-center text-lg font-semibold text-accent underline">
-            {t("journey.viewDocuments")}
-          </Link>
-
-          {/* The Documents consent, read from the same localStorage keys the Documents page writes. */}
-          {consent.agreed !== null && (
-            <div className="space-y-2 rounded-xl border-2 border-line-strong bg-surface p-6">
-              <h2 className="text-2xl font-bold text-accent">{t("account.ack.title")}</h2>
-              {consent.agreed ? (
-                <p className="text-lg">
-                  {consent.date
-                    ? t("account.ack.agreedOn", { date: formatDate(consent.date, lang) })
-                    : t("account.ack.agreed")}
-                </p>
-              ) : (
-                <p className="text-lg">
-                  {t("account.ack.notYet")}{" "}
-                  <Link href="/documents" className="font-semibold text-accent underline">
-                    {t("account.ack.link")}
-                  </Link>
-                </p>
-              )}
-            </div>
-          )}
-
         </>
       )}
     </div>

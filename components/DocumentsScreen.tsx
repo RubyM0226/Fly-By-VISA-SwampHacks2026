@@ -39,7 +39,7 @@ const ALLOWED_EXTENSIONS: string[] = Object.values(ALLOWED_TYPES).flatMap((exts)
 /** Where a status message shows: a document row ("<step>-<doc>") or "other". */
 type Where = string;
 
-type DeleteTarget = { kind: "one"; file: UploadedFile; where: Where } | { kind: "all" } | null;
+type DeleteTarget = { file: UploadedFile; where: Where } | null;
 type Message = { where: Where; text: string; problem: boolean };
 
 function isUploadError(value: unknown): value is UploadError {
@@ -58,7 +58,7 @@ async function errorCode(res: Response): Promise<UploadError> {
 }
 
 /** The files at an uploads API, or null when they could not be loaded. */
-async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
+export async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
   try {
     const res = await fetch(base, { cache: "no-store" });
     if (!res.ok) return null;
@@ -66,6 +66,21 @@ async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
     return body.files;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Deletes the signed-in traveler's files: `{ pathname }` for one, `{ all: true }`
+ * for every file. Returns null when done, or the error code. Used here and on
+ * the Account page (Delete all my files).
+ */
+export async function deleteUploads(which: { pathname: string } | { all: true }): Promise<UploadError | null> {
+  const query = "all" in which ? "all=1" : `pathname=${encodeURIComponent(which.pathname)}`;
+  try {
+    const res = await fetch(`/api/uploads?${query}`, { method: "DELETE" });
+    return res.ok ? null : await errorCode(res);
+  } catch {
+    return "server";
   }
 }
 
@@ -243,26 +258,15 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
     const current = target;
     setTarget(null);
     if (!current) return;
-    const where = current.kind === "all" ? "all" : current.where;
     setBusy(true);
-    try {
-      const url =
-        current.kind === "all"
-          ? "/api/uploads?all=1"
-          : `/api/uploads?pathname=${encodeURIComponent(current.file.pathname)}`;
-      const res = await fetch(url, { method: "DELETE" });
-      if (!res.ok) {
-        say(where, errorText(await errorCode(res)), true);
-        return;
-      }
-      say(where, t(current.kind === "all" ? "files.allDeleted" : "files.deleted"));
+    const error = await deleteUploads({ pathname: current.file.pathname });
+    if (error) say(current.where, errorText(error), true);
+    else {
+      say(current.where, t("files.deleted"));
       await refresh();
-    } catch {
-      say(where, errorText("server"), true);
-    } finally {
-      setBusy(false);
-      if (current.kind === "one") focusRow(current.where);
     }
+    setBusy(false);
+    focusRow(current.where);
   }
 
   // Statuses are only shown once the list has really loaded, never guessed.
@@ -311,7 +315,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
 
   const deleteButton = (f: UploadedFile, where: Where) =>
     !caregiver && (
-      <button type="button" disabled={busy} onClick={() => setTarget({ kind: "one", file: f, where })} className={dangerButton}>
+      <button type="button" disabled={busy} onClick={() => setTarget({ file: f, where })} className={dangerButton}>
         {t("files.delete")}
         <span className="sr-only"> {f.name}</span>
       </button>
@@ -385,7 +389,6 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         <p className="text-base text-muted">{t("files.formats", { mb: MB, n: MAX_FILES_PER_USER })}</p>
         {files === null && <p className="text-lg text-muted">{t("files.loading")}</p>}
         {loadFailed && <p className="text-lg font-semibold text-danger">{t("files.loadError")}</p>}
-        {statusMessage("all")}
         {known && (
           <p className="text-lg font-semibold">
             {t("documents.summary", { n: addedCount, total: UPLOAD_DOC_IDS.length })}
@@ -537,12 +540,6 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         )}
       </section>
 
-      {!caregiver && files && files.length > 1 && (
-        <button type="button" disabled={busy} onClick={() => setTarget({ kind: "all" })} className={dangerButton}>
-          {t("files.deleteAll")}
-        </button>
-      )}
-
       {/* Native dialog: focus is trapped and Escape closes it. "Keep it" comes first. */}
       <dialog
         ref={dialogRef}
@@ -553,12 +550,10 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         {target && (
           <div className="space-y-4">
             <h2 id="files-dialog-title" className="text-2xl font-bold">
-              {t(target.kind === "all" ? "files.deleteAllTitle" : "files.deleteTitle")}
+              {t("files.deleteTitle")}
             </h2>
             <p className="break-words text-lg">
-              {target.kind === "all"
-                ? t("files.deleteAllBody", { n: count })
-                : t("files.deleteBody", { name: target.file.name })}
+              {t("files.deleteBody", { name: target.file.name })}
             </p>
             <div className="flex flex-wrap gap-3">
               <button

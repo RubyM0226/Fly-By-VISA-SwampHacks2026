@@ -114,8 +114,9 @@ export function cleanProfile(
       arrival,
       stayMonths: p.stayMonths as number,
       purpose: (["family", "study", "work"].includes(p.purpose as string) ? p.purpose : "family") as VisaPurpose,
-      firstName: typeof p.firstName === "string" ? p.firstName.trim() : "",
-      lastName: typeof p.lastName === "string" ? p.lastName.trim() : "",
+      // Capped: the name comes straight from the browser.
+      firstName: typeof p.firstName === "string" ? p.firstName.trim().slice(0, 80) : "",
+      lastName: typeof p.lastName === "string" ? p.lastName.trim().slice(0, 80) : "",
     },
   };
 }
