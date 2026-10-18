@@ -104,7 +104,7 @@ The users are older, often new to the web, and sometimes reading in a second
 language. The design rule: **calm, large, one thing at a time, and the user is
 always in control.**
 
-- **Accessibility panel on every page**, saved in the browser: four text sizes,
+- **Accessibility panel on every page**, saved in the browser: six text sizes,
   high contrast, black-and-white mode, a dyslexia-friendly font (OpenDyslexic),
   wider letter and line spacing, bold text, underlined and highlighted links,
   paused motion, and optional word definitions.
@@ -149,7 +149,7 @@ GoDaddy Registry and deployed on Vercel.
 
 ### MLH: DEV Writing Challenge
 
-Our write-up is on DEV: **add link here before submitting.**
+Our write-up is on DEV: https://devpost.com/software/flybyvisa
 
 ---
 
@@ -278,4 +278,4 @@ with "state parameter is invalid" until they do.
 
 ## Team
 
-Built at SwampHacks XII, University of Florida. Add team names here.
+Built at SwampHacks XII, University of Florida. Built by: Ruby McCandless, Amrita Ketireddy, Holly Overholser, and Emlynn Rossiya.
