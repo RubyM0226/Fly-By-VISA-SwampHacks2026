@@ -121,7 +121,7 @@ export function StartScreen() {
         {/* City and Airport Selection */}
         <div className="space-y-4 rounded-xl border-2 border-line bg-surface p-4">
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-slate-700">Departure City (India)</label>
+            <label className="block text-sm font-bold text-slate-700">{t("start.departureCity")}</label>
             <select
               value={trip.homeCity || "New Delhi"}
               onChange={(e) => {
@@ -141,7 +141,7 @@ export function StartScreen() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-slate-700">Arrival City (United States)</label>
+            <label className="block text-sm font-bold text-slate-700">{t("start.arrivalCity")}</label>
             <select
               value={trip.destCity || "New York"}
               onChange={(e) => {

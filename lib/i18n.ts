@@ -140,7 +140,7 @@ const en = {
 
   "home.headline": "Visiting family in the U.S.? Let's plan it, one step at a time.",
   "landing.about":
-    "FlyByVisa helps older adults in India plan their U.S. visitor visa journey, one step at a time. It is free, in English and Hindi.",
+    "FlyByVisa helps older adults plan their U.S. visitor visa journey, one step at a time. It is free, in English and other languages.",
   "landing.getStarted": "Get started",
   "home.title": "Where are you coming from, and where do you want to go?",
   "home.lead": "Pick both places and we will build your plan, step by step.",
@@ -154,7 +154,7 @@ const en = {
   "home.pickBoth": "Choose both places to continue.",
   "home.globeHint": "You can also tap a place on the globe.",
   "home.globeLabel": "Interactive globe. The same choices are in the lists.",
-  "home.scope": "For now, FlyByVisa covers India to the United States only.",
+  "home.scope": "For now, FlyByVisa supports travel to the United States.",
   "home.globeLoading": "Loading the globe…",
   "home.zoom": "Globe zoom",
   "home.zoomIn": "Zoom in",
@@ -197,6 +197,9 @@ const en = {
   "start.nextMonth": "Next month",
   "start.chooseMonthYear": "choose month and year",
   "start.monthLabel": "Month",
+  "start.departureCity": "Departure city",
+  "start.arrivalCity": "Arrival city",
+  "account.route": "Route",
   "start.yearLabel": "Year",
   "start.chosenDate": "You picked: {date}",
   "start.noDate": "No date picked yet.",
@@ -506,7 +509,7 @@ const hi: Record<UiKey, string> = {
   "home.headline": "अमेरिका में अपने परिवार से मिलने जाना है? आइए एक-एक कदम में योजना बनाएं।",
   // DRAFT: the two landing strings below need a native Hindi reader.
   "landing.about":
-    "FlyByVisa भारत के बुज़ुर्गों को अमेरिका के आगंतुक वीज़ा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और हिन्दी में।",
+    "FlyByVisa बुज़ुर्गों को अमेरिका के आगंतुक वीज़ा की योजना कदम-दर-कदम बनाने में मदद करता है। यह मुफ़्त है, अंग्रेज़ी और दूसरी भाषाओं में।",
   "landing.getStarted": "शुरू करें",
   "home.title": "आप कहाँ से आ रहे हैं, और कहाँ जाना चाहते हैं?",
   "home.lead": "दोनों जगह चुनिए। हम आपके लिए कदम-दर-कदम योजना बनाएँगे।",
@@ -520,7 +523,8 @@ const hi: Record<UiKey, string> = {
   "home.pickBoth": "आगे बढ़ने के लिए दोनों जगह चुनें।",
   "home.globeHint": "आप ग्लोब पर किसी जगह को छू भी सकते हैं।",
   "home.globeLabel": "ग्लोब। यही विकल्प सूची में भी हैं।",
-  "home.scope": "अभी FlyByVisa केवल भारत से संयुक्त राज्य अमेरिका के लिए है।",
+  // DRAFT: needs a native Hindi reader.
+  "home.scope": "अभी FlyByVisa संयुक्त राज्य अमेरिका की यात्रा में मदद करता है।",
   "home.globeLoading": "ग्लोब खुल रहा है…",
   "home.zoom": "ग्लोब का ज़ूम",
   "home.zoomIn": "ज़ूम इन करें",
@@ -565,6 +569,10 @@ const hi: Record<UiKey, string> = {
   "start.nextMonth": "अगला महीना",
   "start.chooseMonthYear": "महीना और साल चुनें",
   "start.monthLabel": "महीना",
+  // DRAFT: the three strings below need a native Hindi reader.
+  "start.departureCity": "प्रस्थान का शहर",
+  "start.arrivalCity": "पहुँचने का शहर",
+  "account.route": "मार्ग",
   "start.yearLabel": "साल",
   "start.chosenDate": "आपने चुना: {date}",
   "start.noDate": "अभी कोई तारीख नहीं चुनी।",

@@ -125,7 +125,7 @@ export function AccountScreen() {
             
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="space-y-1">
-                <p className="text-sm font-bold uppercase tracking-wide text-muted">Route</p>
+                <p className="text-sm font-bold uppercase tracking-wide text-muted">{t("account.route")}</p>
                 <p className="text-lg font-medium text-slate-800">
                   {getCountryName(trip.from)} → {getCountryName(trip.to)}
                 </p>
