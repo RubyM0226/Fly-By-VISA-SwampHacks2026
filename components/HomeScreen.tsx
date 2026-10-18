@@ -32,9 +32,6 @@ export function HomeScreen() {
             <h1 className="text-2xl font-bold text-accent">
               {t("home.welcomeBack", { name: user.given_name || user.nickname || t("home.traveler") })}
             </h1>
-            <p className="text-lg text-ink">
-              {t("home.journeySaved")}
-            </p>
             
             <div className="mt-6 flex flex-col gap-3">
               <Link
@@ -45,7 +42,7 @@ export function HomeScreen() {
               </Link>
               <Link
                 href="/account"
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-accent px-6 py-2 text-lg font-bold text-accent hover:bg-accent/10"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-accent px-6 py-2 text-lg font-bold text-accent hover:bg-hover"
               >
                 {t("home.viewProfile")}
               </Link>

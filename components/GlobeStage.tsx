@@ -17,7 +17,7 @@ const MAX_ZOOM = ZOOM_LEVELS.length - 1;
 
 // aria-disabled, not disabled, so keyboard focus stays on the button at the limit.
 const zoomButton =
-  "inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface shadow hover:bg-accent-soft aria-disabled:cursor-not-allowed aria-disabled:opacity-40 aria-disabled:hover:bg-surface";
+  "inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface shadow hover:bg-hover aria-disabled:cursor-not-allowed aria-disabled:opacity-40 aria-disabled:hover:bg-surface";
 
 /** Choose a place from the globe or a list. */
 export function pickPlace(code: CountryCode) {

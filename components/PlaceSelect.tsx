@@ -30,7 +30,7 @@ export function PlaceSelect({ id, label, enabled, value, onChange }: Props) {
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value as CountryCode)}
-          className="min-h-12 w-full appearance-none truncate rounded-xl border-2 border-line-strong bg-surface py-2 pl-4 pr-10 text-lg font-semibold text-ink hover:bg-accent-soft"
+          className="min-h-12 w-full appearance-none truncate rounded-xl border-2 border-line-strong bg-surface py-2 pl-4 pr-10 text-lg font-semibold text-ink hover:bg-hover"
         >
           <option value="" disabled>
             {t("home.choose")}

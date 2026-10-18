@@ -87,7 +87,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
     new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2023, i, 1))),
   );
   const selectClass =
-    "min-h-12 w-full appearance-none rounded-xl border-2 border-line-strong bg-surface py-2 pl-3 pr-9 text-lg font-semibold text-ink hover:bg-accent-soft";
+    "min-h-12 w-full appearance-none rounded-xl border-2 border-line-strong bg-surface py-2 pl-3 pr-9 text-lg font-semibold text-ink hover:bg-hover";
 
   const monthTitle = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(
     new Date(Date.UTC(y, m, 1)),
@@ -143,7 +143,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
           onClick={() => moveMonths(-1, false)}
           disabled={!canGoBack}
           aria-label={t("start.prevMonth")}
-          className="inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-accent-soft disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ArrowIcon className="h-6 w-6 rotate-180" />
         </button>
@@ -152,7 +152,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
           onClick={() => setPickerOpen((o) => !o)}
           aria-expanded={pickerOpen}
           aria-controls={`${id}-pick`}
-          className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1.5 justify-self-center rounded-xl px-1 py-1 text-center text-xl font-bold hover:bg-accent-soft sm:px-3"
+          className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1.5 justify-self-center rounded-xl px-1 py-1 text-center text-xl font-bold hover:bg-hover sm:px-3"
         >
           <span id={`${id}-month`} aria-live="polite">
             {monthTitle}
@@ -164,7 +164,7 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
           type="button"
           onClick={() => moveMonths(1, false)}
           aria-label={t("start.nextMonth")}
-          className="inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-accent-soft"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface hover:bg-hover"
         >
           <ArrowIcon className="h-6 w-6" />
         </button>
@@ -229,8 +229,8 @@ export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, 
                       day === value
                         ? "bg-accent text-accent-ink"
                         : day < min
-                          ? "cursor-not-allowed text-muted line-through opacity-50"
-                          : "border-2 border-line bg-surface text-ink hover:border-accent hover:bg-accent-soft"
+                          ? "cursor-not-allowed text-muted opacity-50"
+                          : "border-2 border-line bg-surface text-ink hover:border-accent hover:bg-hover"
                     }`}
                   >
                     {parts(day).d}

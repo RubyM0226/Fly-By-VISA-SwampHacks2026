@@ -5,8 +5,8 @@ export type Lang = "en" | "hi";
 
 export interface Settings {
   lang: Lang;
-  /** 0 = A, 1 = A+, 2 = A++, 3 = A+++ */
-  textSize: 0 | 1 | 2 | 3;
+  /** -2, -1 = smaller; 0 = the default A; 1 = A+, 2 = A++, 3 = A+++ */
+  textSize: -2 | -1 | 0 | 1 | 2 | 3;
   highContrast: boolean;
   monochrome: boolean;
   dyslexiaFont: boolean;

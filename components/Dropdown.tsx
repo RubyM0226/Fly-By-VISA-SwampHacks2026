@@ -101,7 +101,7 @@ export function Dropdown<V extends string | number>({ id, labelledBy, value, opt
         aria-activedescendant={open ? `${listId}-${active}` : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
-        className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-left text-lg font-semibold text-ink hover:bg-accent-soft"
+        className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-left text-lg font-semibold text-ink hover:bg-hover"
       >
         <span>{options[selected]?.label}</span>
         <ChevronIcon className={`h-5 w-5 shrink-0 ${open ? "rotate-180" : ""}`} />

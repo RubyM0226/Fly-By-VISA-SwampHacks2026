@@ -12,7 +12,7 @@ type IconType = (props: { className?: string }) => React.ReactElement;
 // as a tooltip). Tablets and up: icon and label side by side.
 const itemClass = (active: boolean) =>
   `flex min-h-[48px] items-center justify-center rounded-xl p-[8px] font-semibold leading-tight md:min-h-14 md:justify-start md:gap-2 md:px-2.5 md:text-base ${
-    active ? "bg-accent text-accent-ink" : "text-ink hover:bg-accent-soft"
+    active ? "bg-accent text-accent-ink" : "text-ink hover:bg-hover"
   }`;
 const labelClass = "sr-only md:not-sr-only";
 

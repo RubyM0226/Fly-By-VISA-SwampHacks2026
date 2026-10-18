@@ -71,7 +71,7 @@ export function GlossaryScreen() {
               type="button"
               onClick={() => setQuery("")}
               aria-label={t("docs.clear")}
-              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-accent-soft"
+              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-hover"
             >
               <CloseIcon className="h-5 w-5" />
             </button>
@@ -86,7 +86,7 @@ export function GlossaryScreen() {
               <li key={cat}>
                 <a
                   href={`#cat-${cat}`}
-                  className="inline-flex min-h-12 items-center rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-accent-soft"
+                  className="inline-flex min-h-12 items-center rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-hover"
                 >
                   {t(`glossary.cat.${cat}`)}
                 </a>

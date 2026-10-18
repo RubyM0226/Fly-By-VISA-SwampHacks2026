@@ -183,7 +183,7 @@ export function JourneyScreen() {
           href={editHref}
           transitionTypes={user ? undefined : BACK}
           data-button
-          className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-accent-soft"
+          className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
         >
           {t("journey.edit")}
           <ArrowIcon className="h-6 w-6" />

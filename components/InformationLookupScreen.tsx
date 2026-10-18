@@ -106,7 +106,7 @@ export function InformationLookupScreen() {
               type="button"
               onClick={() => pickExample("")}
               aria-label={t("docs.clear")}
-              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-accent-soft"
+              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-hover"
             >
               <CloseIcon className="h-5 w-5" />
             </button>
@@ -127,7 +127,7 @@ export function InformationLookupScreen() {
               key={ex}
               type="button"
               onClick={() => pickExample(ex)}
-              className="min-h-11 rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-accent-soft"
+              className="min-h-11 rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-hover"
             >
               {ex}
             </button>
@@ -170,7 +170,7 @@ export function InformationLookupScreen() {
           <button
             type="button"
             onClick={() => setTurns([])}
-            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-hover"
           >
             {t("docs.start")}
           </button>
@@ -245,7 +245,7 @@ function QuestionList({
               type="button"
               onClick={() => onPick(d)}
               aria-current={current === d.id ? "true" : undefined}
-              className={`min-h-12 w-full rounded-xl border-2 px-4 py-2 text-left text-lg font-semibold hover:bg-accent-soft ${
+              className={`min-h-12 w-full rounded-xl border-2 px-4 py-2 text-left text-lg font-semibold hover:bg-hover ${
                 current === d.id ? "border-accent bg-accent-soft" : "border-line-strong bg-surface"
               }`}
             >

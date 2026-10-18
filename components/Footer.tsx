@@ -37,7 +37,7 @@ export function Footer() {
     <footer className="site-footer mt-10">
       <Hills />
       <div className="site-footer__body">
-        <div className="space-y-2 px-4 pb-6 pt-2 text-sm sm:px-6 lg:px-8">
+        <div className="space-y-2 px-4 pb-6 pt-2 text-right text-sm sm:px-6 lg:px-8">
           <p>{t("footer.disclaimer")}</p>
           <p>{t("footer.privacy")}</p>
           <p>
