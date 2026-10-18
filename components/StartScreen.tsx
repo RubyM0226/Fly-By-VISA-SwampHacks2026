@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { addDays } from "@/lib/journey";
 import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
@@ -12,26 +13,8 @@ import { Dropdown } from "./Dropdown";
 import { InfoTip } from "./InfoTip";
 import { DatePicker } from "./DatePicker";
 import { BACK, FORWARD } from "./ScreenTransition";
-import { createIntakeJourney } from "@/app/actions/journey";
-
-const MONTH_CHOICES = [1, 2, 3, 4, 5, 6];
-
-const CITIES_BY_COUNTRY: Record<string, { city: string; airport: string }[]> = {
-  IN: [
-    { city: "New Delhi", airport: "DEL" },
-    { city: "Mumbai", airport: "BOM" },
-    { city: "Bengaluru", airport: "BLR" },
-    { city: "Hyderabad", airport: "HYD" },
-    { city: "Chennai", airport: "MAA" },
-  ],
-  US: [
-    { city: "New York", airport: "JFK" },
-    { city: "San Francisco", airport: "SFO" },
-    { city: "Chicago", airport: "ORD" },
-    { city: "Los Angeles", airport: "LAX" },
-    { city: "Seattle", airport: "SEA" },
-  ],
-};
+import { createIntakeJourney, updateJourneyProfile } from "@/app/actions/journey";
+import { CITIES_BY_COUNTRY, MONTH_CHOICES } from "@/lib/tripProfile";
 
 export function StartScreen() {
   const { t } = useT();
@@ -39,8 +22,12 @@ export function StartScreen() {
   const [trip] = useTrip();
   const update = tripStore.set;
   const today = useToday();
-  const [error, setError] = useState<"" | "needDate" | "pastDate">("");
+  const { user } = useUser();
+  const [error, setError] = useState<"" | "needDate" | "pastDate" | "saveFailed">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Next keeps this screen alive (hidden) after we leave, so a pending
+  // "Saving..." would still be there on return. Reset it when hidden.
+  useLayoutEffect(() => () => setIsSubmitting(false), []);
   const dateRef = useRef<{ focus: () => void } | null>(null);
 
   const placesChosen = trip.from === "IN" && trip.to === "US";
@@ -82,26 +69,38 @@ export function StartScreen() {
 
     setIsSubmitting(true);
 
-    try {
-      // Create the row in Tiger Data WITH the full profile, city, and airport data
-      const res = await createIntakeJourney({
-        from: trip.from,
-        fromCity: trip.homeCity || "New Delhi",
-        homeAirport: trip.homeAirport || "DEL",
-        to: trip.to,
-        toCity: trip.destCity || "New York",
-        destAirport: trip.destAirport || "JFK",
-        arrival: trip.arrival,
-        stayMonths: trip.stayMonths,
-        purpose: trip.purpose || "family"
-      });
-      
-      if (res?.id) {
-        // Stash the UUID locally so Auth0 can claim it upon login
-        localStorage.setItem("temp_journey_id", res.id);
+    const profile = {
+      from: trip.from,
+      fromCity: trip.homeCity || "New Delhi",
+      homeAirport: trip.homeAirport || "DEL",
+      to: trip.to,
+      toCity: trip.destCity || "New York",
+      destAirport: trip.destAirport || "JFK",
+      arrival: trip.arrival,
+      stayMonths: trip.stayMonths,
+      purpose: trip.purpose || "family",
+    };
+
+    if (user) {
+      // Signed in: change only their answers, never reset the steps they checked off.
+      const res = await updateJourneyProfile(profile).catch(() => null);
+      if (!res?.ok) {
+        setIsSubmitting(false);
+        setError(res?.ok === false && res.error === "pastDate" ? "pastDate" : "saveFailed");
+        return;
       }
-    } catch (err) {
-      console.error("Database connection failed", err);
+    } else {
+      try {
+        // Create the row in Tiger Data WITH the full profile, city, and airport data
+        const res = await createIntakeJourney(profile);
+
+        if (res?.id) {
+          // Stash the UUID locally so Auth0 can claim it upon login
+          localStorage.setItem("temp_journey_id", res.id);
+        }
+      } catch (err) {
+        console.error("Database connection failed", err);
+      }
     }
 
     router.push("/journey", { transitionTypes: FORWARD });
@@ -224,7 +223,7 @@ export function StartScreen() {
           )}
           {error && (
             <p id="arrival-error" role="alert" className="text-lg font-semibold text-danger">
-              {t(error === "needDate" ? "start.needDate" : "start.pastDate")}
+              {t(error === "needDate" ? "start.needDate" : error === "pastDate" ? "start.pastDate" : "trip.err.save")}
             </p>
           )}
         </div>
@@ -235,7 +234,7 @@ export function StartScreen() {
             disabled={isSubmitting}
             className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink disabled:opacity-50"
           >
-            {isSubmitting ? "Saving..." : t("start.make")}
+            {isSubmitting ? t("trip.saving") : t("start.make")}
             {!isSubmitting && <ArrowIcon className="h-6 w-6" />}
           </button>
           <Link

@@ -346,6 +346,21 @@ const en = {
   "footer.scam":
     "Official visa fees are paid only through official channels. Beware of agents who promise a visa.",
   "footer.scamLink": "Read the official fraud warning",
+  "trip.title": "Trip details",
+  "trip.lead": "Change any answer and save. Your roadmap updates, and steps you marked as done stay done.",
+  "trip.from": "Coming from",
+  "trip.fromCity": "City you leave from",
+  "trip.to": "Going to",
+  "trip.toCity": "City you arrive in",
+  "trip.save": "Save changes",
+  "trip.saving": "Saving…",
+  "trip.saved": "Saved: {from} to {to}, arrive by {date}, stay {stay}.",
+  "trip.err.signedOut": "You are signed out. Log in again to save your changes.",
+  "trip.err.invalid": "Some answers are not valid. Check them and try again.",
+  "trip.err.save": "Could not save. Check your connection and try again.",
+  "journey.tripTitle": "Your trip",
+  "journey.arriveBy": "Arrive by",
+  "journey.stay": "Stay",
 } as const;
 
 export type UiKey = keyof typeof en;
@@ -699,6 +714,22 @@ const hi: Record<UiKey, string> = {
   "footer.scam":
     "आधिकारिक वीज़ा शुल्क केवल आधिकारिक माध्यम से ही भरें। वीज़ा का वादा करने वाले एजेंटों से सावधान रहें।",
   "footer.scamLink": "आधिकारिक धोखाधड़ी चेतावनी पढ़ें",
+  // DRAFT: the trip details strings below need a native Hindi reader.
+  "trip.title": "यात्रा की जानकारी",
+  "trip.lead": "कोई भी जवाब बदलें और सहेजें। आपका रास्ता अपने-आप बदल जाएगा, और जिन कदमों को आपने पूरा चिह्नित किया है वे पूरे ही रहेंगे।",
+  "trip.from": "कहाँ से आ रहे हैं",
+  "trip.fromCity": "जिस शहर से निकलेंगे",
+  "trip.to": "कहाँ जा रहे हैं",
+  "trip.toCity": "जिस शहर में पहुँचेंगे",
+  "trip.save": "बदलाव सहेजें",
+  "trip.saving": "सहेजा जा रहा है…",
+  "trip.saved": "सहेजा गया: {from} से {to}, {date} तक पहुँचना, {stay} ठहरना।",
+  "trip.err.signedOut": "आप लॉग आउट हो गए हैं। बदलाव सहेजने के लिए फिर से लॉग इन करें।",
+  "trip.err.invalid": "कुछ जवाब सही नहीं हैं। उन्हें जाँचें और फिर कोशिश करें।",
+  "trip.err.save": "सहेजा नहीं जा सका। अपना इंटरनेट जाँचें और फिर कोशिश करें।",
+  "journey.tripTitle": "आपकी यात्रा",
+  "journey.arriveBy": "पहुँचने की तारीख़",
+  "journey.stay": "ठहरना",
 };
 
 export const DICTIONARY: Record<Lang, Record<UiKey, string>> = { en, hi };

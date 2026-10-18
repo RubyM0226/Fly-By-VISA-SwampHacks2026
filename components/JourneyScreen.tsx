@@ -10,6 +10,8 @@ import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
 import { buildJourney, formatDate, STEP_ORDER, type StepId } from "@/lib/journey";
 import { tripStore, useTrip } from "@/lib/trip";
+import { tripFromProfile } from "@/lib/tripProfile";
+import { COUNTRY_BY_CODE } from "@/lib/countries";
 import { useSettings } from "@/lib/settings";
 import { ArrowIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
@@ -55,18 +57,7 @@ export function JourneyScreen() {
         const data = await getUserJourney();
         if (data) {
           // Restore their complete profile, cities, airports AND their checkmarks
-          tripStore.set({ 
-            from: data.profile?.from || "IN",
-            homeCity: data.profile?.homeCity || "New Delhi",
-            homeAirport: data.profile?.homeAirport || "DEL",
-            to: data.profile?.to || "US",
-            destCity: data.profile?.destCity || "New York",
-            destAirport: data.profile?.destAirport || "JFK",
-            arrival: data.profile?.arrival || "",
-            stayMonths: data.profile?.stayMonths || 1,
-            purpose: data.profile?.purpose || "family",
-            done: data.stop_status || {} 
-          });
+          tripStore.set({ ...tripFromProfile(data.profile), done: data.stop_status || {} });
         }
       };
 
@@ -92,6 +83,9 @@ export function JourneyScreen() {
     }
   };
 
+  // Signed-in users change answers on Account; signed-out users go back through the intake.
+  const editHref = user ? "/account#trip-details" : "/start";
+
   if (!journey) {
     return (
       <div className="space-y-4">
@@ -100,8 +94,8 @@ export function JourneyScreen() {
           <>
             <p className="text-xl">{t("journey.needInfo")}</p>
             <Link
-              href="/start"
-              transitionTypes={BACK}
+              href={editHref}
+              transitionTypes={user ? undefined : BACK}
               data-button
               className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
             >
@@ -132,19 +126,54 @@ export function JourneyScreen() {
     <div className="space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
-        <p className="text-xl font-semibold text-slate-800">
-          Route: {trip.homeCity || "New Delhi"} ({trip.homeAirport || "DEL"}) → {trip.destCity || "New York"} ({trip.destAirport || "JFK"})
-        </p>
-        <p className="text-xl text-muted">
-          {t("journey.summary", { date: formatDate(journey.arrival, lang), n: trip.stayMonths })}
-        </p>
         <p className="text-base text-muted">
-          {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}{" "}
-          <Link href="/start" transitionTypes={BACK} className="inline-flex min-h-12 items-center font-semibold text-accent underline">
-            {t("journey.edit")}
-          </Link>
+          {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}
         </p>
       </div>
+
+      <section
+        aria-labelledby="trip-summary-title"
+        className="flex flex-col gap-4 rounded-2xl border-2 border-line-strong bg-surface p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+      >
+        <div className="space-y-3">
+          <h2 id="trip-summary-title" className="text-sm font-bold uppercase tracking-wide text-muted">
+            {t("journey.tripTitle")}
+          </h2>
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-2 text-lg sm:grid-cols-2">
+            <div>
+              <dt className="text-sm font-bold text-muted">{t("trip.from")}</dt>
+              <dd className="font-semibold">
+                {trip.homeCity} ({trip.homeAirport}), {t(COUNTRY_BY_CODE[trip.from || "IN"].nameKey)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-bold text-muted">{t("trip.to")}</dt>
+              <dd className="font-semibold">
+                {trip.destCity} ({trip.destAirport}), {t(COUNTRY_BY_CODE[trip.to || "US"].nameKey)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-bold text-muted">{t("journey.arriveBy")}</dt>
+              <dd className="font-semibold">{formatDate(journey.arrival, lang)}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-bold text-muted">{t("journey.stay")}</dt>
+              <dd className="font-semibold">
+                {trip.stayMonths === 1 ? t("start.month") : t("start.months", { n: trip.stayMonths })}
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <Link
+          href={editHref}
+          transitionTypes={user ? undefined : BACK}
+          data-button
+          className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-accent-soft"
+        >
+          {t("journey.edit")}
+          <ArrowIcon className="h-6 w-6" />
+        </Link>
+      </section>
 
       {/* One sentence, one big button: always a way forward. */}
       <section

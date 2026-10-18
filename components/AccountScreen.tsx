@@ -10,7 +10,9 @@ import { formatDate, STEP_ORDER } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
+import { tripFromProfile } from "@/lib/tripProfile";
 import { DocumentIcon } from "./Icons";
+import { TripDetailsCard } from "./TripDetailsCard";
 
 export function AccountScreen() {
   const { t, lang } = useT();
@@ -37,14 +39,7 @@ export function AccountScreen() {
 
         const data = await getUserJourney();
         if (data) {
-          tripStore.set({ 
-            from: data.profile?.from || "IN",
-            to: data.profile?.to || "US",
-            arrival: data.profile?.arrival || "",
-            stayMonths: data.profile?.stayMonths || 1,
-            purpose: data.profile?.purpose || "family",
-            done: data.stop_status || {} 
-          });
+          tripStore.set({ ...tripFromProfile(data.profile), done: data.stop_status || {} });
         }
       };
 
@@ -122,7 +117,7 @@ export function AccountScreen() {
             </a>
           </div>
 
-          {/* Phase 2: the Trip details card goes here. */}
+          <TripDetailsCard />
           
           <div className="rounded-xl border-2 border-line-strong bg-surface p-6">
             <h2 className="mb-6 text-2xl font-bold text-accent">Your Travel Profile</h2>
