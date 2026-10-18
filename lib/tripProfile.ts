@@ -53,11 +53,20 @@ export interface JourneyProfile {
   lastName?: string;
 }
 
+/**
+ * journeys.stop_status as tripStore's `done`. Marking a step saves "completed"
+ * and unmarking saves "pending" (older rows may hold true / false), so only
+ * "completed" or true count as done; "pending" is a truthy string.
+ */
+export function doneFromStatus(status: Record<string, unknown> | null | undefined): Record<string, boolean> {
+  return Object.fromEntries(Object.entries(status ?? {}).map(([id, v]) => [id, v === true || v === "completed"]));
+}
+
 /** Rows saved before the key fix used homeCity / destCity, so read both. */
 type StoredProfile = Partial<JourneyProfile> & { homeCity?: string; destCity?: string };
 
-/** A saved profile as tripStore fields (without `done`). */
-export function tripFromProfile(p: StoredProfile | null | undefined): Omit<Trip, "done"> {
+/** A saved profile as tripStore fields (without `done`, and keeping this browser's selected flight). */
+export function tripFromProfile(p: StoredProfile | null | undefined): Omit<Trip, "done" | "selectedFlight"> {
   return {
     from: (p?.from || "IN") as Trip["from"],
     homeCity: p?.fromCity || p?.homeCity || "New Delhi",
@@ -114,8 +123,9 @@ export function cleanProfile(
       arrival,
       stayMonths: p.stayMonths as number,
       purpose: (["family", "study", "work"].includes(p.purpose as string) ? p.purpose : "family") as VisaPurpose,
-      firstName: typeof p.firstName === "string" ? p.firstName.trim() : "",
-      lastName: typeof p.lastName === "string" ? p.lastName.trim() : "",
+      // Capped: the name comes straight from the browser.
+      firstName: typeof p.firstName === "string" ? p.firstName.trim().slice(0, 80) : "",
+      lastName: typeof p.lastName === "string" ? p.lastName.trim().slice(0, 80) : "",
     },
   };
 }

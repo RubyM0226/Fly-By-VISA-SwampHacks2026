@@ -35,8 +35,8 @@ export function pickPlace(code: CountryCode) {
  * One globe shared by the landing page and the country picker (it lives in
  * their shared layout), so "Get started" never moves or reloads it. The box
  * beside it (`children`) is what changes: the about box, then the country
- * card. On the landing page the globe only turns on its own; on the picker it
- * can be dragged, clicked and zoomed. Layout is in globals.css (.globe-stage).
+ * card. On the landing page the globe turns on its own and can be spun; on the
+ * picker it can also be clicked and zoomed. Layout is in globals.css (.globe-stage).
  */
 export function GlobeStage({ children }: { children: React.ReactNode }) {
   const { t } = useT();
@@ -73,14 +73,14 @@ export function GlobeStage({ children }: { children: React.ReactNode }) {
         <div className="globe-stage__globe flex flex-col items-center gap-2">
           {webgl && (
             <div className="relative w-full">
-              {/* Decorative on the landing page: it ignores the pointer there. */}
+              {/* Decorative on the landing page: it can be spun, but picks nothing. */}
               <div
                 {...(interactive
                   ? { role: "img", "aria-label": t("home.globeLabel") }
                   : { "aria-hidden": true })}
-                className={`aspect-square w-full ${interactive ? "" : "pointer-events-none select-none"}`}
+                className={`aspect-square w-full ${interactive ? "" : "select-none"}`}
               >
-                <GlobeLoader from={trip.from} to={trip.to} onPick={pickPlace} zoom={ZOOM_LEVELS[zoomStep]} />
+                <GlobeLoader from={trip.from} to={trip.to} onPick={pickPlace} zoom={ZOOM_LEVELS[zoomStep]} landing={!interactive} />
               </div>
               <div
                 role="group"

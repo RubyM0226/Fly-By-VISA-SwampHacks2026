@@ -35,7 +35,8 @@ for (const from of ["IN", "GB", "MX"]) assert.ok(!/\{(home|vac)\}/.test(JSON.str
 // India reads exactly as before the tokens.
 const india = JSON.stringify(localize(content, "IN"));
 assert.ok(india.includes("Then book your interview at a U.S. office in India."));
-assert.ok(india.includes("भारत में आपके जीवन का प्रमाण"));
+// Official place names stay in English inside Hindi sentences.
+assert.ok(india.includes("India में आपके जीवन का प्रमाण"));
 assert.ok(india.includes("You may also need to visit a [[vac|VAC]] first, for fingerprints."));
 const mx = JSON.stringify(localize(content, "MX"));
 assert.ok(mx.includes("[[vac|CAS]]") && mx.includes("https://mx.usembassy.gov/visas/") && !mx.includes("in.usembassy.gov"));

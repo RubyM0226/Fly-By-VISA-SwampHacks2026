@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { DOC_GROUPS, DOCUMENTS, UPLOAD_DOC_IDS, type Blank, type DocId } from "@/content/documents";
+import { DOC_GROUPS, DOCUMENTS, type Blank, type DocId } from "@/content/documents";
 import { STEP_BY_ID } from "@/content/steps";
 import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
 import { useTrip } from "@/lib/trip";
@@ -41,7 +41,7 @@ const ALLOWED_EXTENSIONS: string[] = Object.values(ALLOWED_TYPES).flatMap((exts)
 /** Where a status message shows: a document row ("<step>-<doc>") or "other". */
 type Where = string;
 
-type DeleteTarget = { kind: "one"; file: UploadedFile; where: Where } | { kind: "all" } | null;
+type DeleteTarget = { file: UploadedFile; where: Where } | null;
 type Message = { where: Where; text: string; problem: boolean };
 
 function isUploadError(value: unknown): value is UploadError {
@@ -60,7 +60,7 @@ async function errorCode(res: Response): Promise<UploadError> {
 }
 
 /** The files at an uploads API, or null when they could not be loaded. */
-async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
+export async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
   try {
     const res = await fetch(base, { cache: "no-store" });
     if (!res.ok) return null;
@@ -68,6 +68,21 @@ async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
     return body.files;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Deletes the signed-in traveler's files: `{ pathname }` for one, `{ all: true }`
+ * for every file. Returns null when done, or the error code. Used here and on
+ * the Account page (Delete all my files).
+ */
+export async function deleteUploads(which: { pathname: string } | { all: true }): Promise<UploadError | null> {
+  const query = "all" in which ? "all=1" : `pathname=${encodeURIComponent(which.pathname)}`;
+  try {
+    const res = await fetch(`/api/uploads?${query}`, { method: "DELETE" });
+    return res.ok ? null : await errorCode(res);
+  } catch {
+    return "server";
   }
 }
 
@@ -246,26 +261,15 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
     const current = target;
     setTarget(null);
     if (!current) return;
-    const where = current.kind === "all" ? "all" : current.where;
     setBusy(true);
-    try {
-      const url =
-        current.kind === "all"
-          ? "/api/uploads?all=1"
-          : `/api/uploads?pathname=${encodeURIComponent(current.file.pathname)}`;
-      const res = await fetch(url, { method: "DELETE" });
-      if (!res.ok) {
-        say(where, errorText(await errorCode(res)), true);
-        return;
-      }
-      say(where, t(current.kind === "all" ? "files.allDeleted" : "files.deleted"));
+    const error = await deleteUploads({ pathname: current.file.pathname });
+    if (error) say(current.where, errorText(error), true);
+    else {
+      say(current.where, t("files.deleted"));
       await refresh();
-    } catch {
-      say(where, errorText("server"), true);
-    } finally {
-      setBusy(false);
-      if (current.kind === "one") focusRow(current.where);
     }
+    setBusy(false);
+    focusRow(current.where);
   }
 
   // Statuses are only shown once the list has really loaded, never guessed.
@@ -281,6 +285,10 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
   const addedCount = myUniqueDocIds.filter((id) => filesFor(id).length > 0).length;
   const count = files?.length ?? 0;
   const docName = (id: DocId) => loc(DOCUMENTS[id].name[lang]);
+  const docDescription = (id: DocId) => {
+    const d = DOCUMENTS[id].description;
+    return d ? loc(d[lang]) : "";
+  };
 
   const statusMessage = (where: Where) => (
     <p
@@ -320,13 +328,24 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
 
   const deleteButton = (f: UploadedFile, where: Where) =>
     !caregiver && (
-      <button type="button" disabled={busy} onClick={() => setTarget({ kind: "one", file: f, where })} className={dangerButton}>
+      <button type="button" disabled={busy} onClick={() => setTarget({ file: f, where })} className={dangerButton}>
         {t("files.delete")}
         <span className="sr-only"> {f.name}</span>
       </button>
     );
 
-  function blankInfo(blank: Blank | undefined) {
+  /** The note beside "Add my copy" ("*Fill this in online."). None when you just use your own papers. */
+  function blankNote(blank: Blank | undefined) {
+    if (blank?.type !== "online" && blank?.type !== "template") return null;
+    return (
+      <p className="text-base italic text-muted">
+        *{t(blank.type === "online" ? "documents.blank.online" : "documents.blank.templateHint")}
+      </p>
+    );
+  }
+
+  /** Below the card: the official page, or our template and what it is. */
+  function blankLinks(blank: Blank | undefined) {
     if (!blank) return null;
     if (blank.type === "template") {
       return (
@@ -339,19 +358,13 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         </div>
       );
     }
+    if (!blank.url) return null;
     return (
-      <div className="space-y-1">
-        <p className="text-base text-muted">
-          {t(blank.type === "online" ? "documents.blank.online" : "documents.blank.none")}
-        </p>
-        {blank.url && (
-          <a href={blank.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
-            {t(blank.type === "online" ? "documents.blank.onlineLink" : "documents.blank.noneLink")}
-            <ExternalIcon className="h-4 w-4" />
-            <span className="sr-only">{t("journey.opensNewTab")}</span>
-          </a>
-        )}
-      </div>
+      <a href={blank.url} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        {t(blank.type === "online" ? "documents.blank.onlineLink" : "documents.blank.noneLink")}
+        <ExternalIcon className="h-4 w-4" />
+        <span className="sr-only">{t("journey.opensNewTab")}</span>
+      </a>
     );
   }
 
@@ -394,7 +407,6 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         <p className="text-base text-muted">{t("files.formats", { mb: MB, n: MAX_FILES_PER_USER })}</p>
         {files === null && <p className="text-lg text-muted">{t("files.loading")}</p>}
         {loadFailed && <p className="text-lg font-semibold text-danger">{t("files.loadError")}</p>}
-        {statusMessage("all")}
         {known && (
           <p className="text-lg font-semibold">
             {t("documents.summary", { n: addedCount, total: myUniqueDocIds.length })}
@@ -416,7 +428,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
             (id) =>
               `${plainText(docName(id))}: ${
                 known ? t(filesFor(id).length > 0 ? "documents.added" : "documents.missing") : ""
-              }.`,
+              }. ${docDescription(id)}`,
           ),
         ].join(" ");
         return (
@@ -424,7 +436,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
             key={stepId}
             id={`docs-${stepId}`}
             aria-labelledby={`docs-title-${stepId}`}
-            className="scroll-mt-24 space-y-4 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
+            className="@container scroll-mt-24 space-y-4 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6"
           >
             <div className="flex flex-wrap items-center gap-2">
               <h2 id={`docs-title-${stepId}`} tabIndex={-1} className="text-2xl font-bold text-accent outline-none">
@@ -432,23 +444,31 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
               </h2>
               <SpeakButton ownerId={`docs-${stepId}`} getText={() => readText} />
             </div>
-            <ul className="space-y-3">
+            {/* Several papers: side by side. Container rem breakpoints grow with the
+                text size, so larger text falls back to fewer columns (as in StepDetails). */}
+            <ul className={docs.length > 1 ? "grid items-start gap-3 @3xl:grid-cols-2 @6xl:grid-cols-3" : "space-y-3"}>
               {docs.map((docId) => {
                 const where = `${stepId}-${docId}`;
                 const mine = filesFor(docId);
                 const has = mine.length > 0;
+                const blank = loc(DOCUMENTS[docId].blank);
+                const description = docDescription(docId);
                 return (
-                  <li key={docId} className="space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
+                  <li key={docId} className="min-w-0 space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
                     <div className="space-y-1">
-                      <h3 id={`doc-${where}`} tabIndex={-1} className="text-xl font-bold outline-none">
-                        <RichText text={docName(docId)} />
-                      </h3>
-                      {known && (
-                        <p className={`flex items-center gap-1.5 text-lg font-semibold ${has ? "text-accent" : "text-muted"}`}>
-                          {has ? <CheckIcon className="h-5 w-5 shrink-0" /> : <CircleIcon className="h-5 w-5 shrink-0" />}
-                          {t(has ? "documents.added" : "documents.missing")}
-                        </p>
-                      )}
+                      {/* Title, then whether a copy is added, on one line. */}
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <h3 id={`doc-${where}`} tabIndex={-1} className="text-xl font-bold outline-none">
+                          <RichText text={docName(docId)} />
+                        </h3>
+                        {known && (
+                          <p className={`inline-flex items-center gap-1.5 self-center text-lg font-semibold ${has ? "text-accent" : "text-muted"}`}>
+                            {has ? <CheckIcon className="h-5 w-5 shrink-0" /> : <CircleIcon className="h-5 w-5 shrink-0" />}
+                            {t(has ? "documents.added" : "documents.missing")}
+                          </p>
+                        )}
+                      </div>
+                      {description && <p className="text-base">{description}</p>}
                     </div>
 
                     {mine.map((f) => (
@@ -472,20 +492,26 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
                       </div>
                     ))}
 
-                    {known && !has && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => pickFor(where, docId)}
-                        className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink disabled:opacity-60"
-                      >
-                        {t("documents.addCopy")}
-                        <span className="sr-only"> {plainText(docName(docId))}</span>
-                      </button>
+                    {/* "Add my copy" with its note beside it (the note alone once a copy is added). */}
+                    {((known && !has) || blankNote(blank)) && (
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        {known && !has && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => pickFor(where, docId)}
+                            className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl bg-accent px-6 py-2 text-lg font-bold text-accent-ink disabled:opacity-60"
+                          >
+                            {t("documents.addCopy")}
+                            <span className="sr-only"> {plainText(docName(docId))}</span>
+                          </button>
+                        )}
+                        {blankNote(blank)}
+                      </div>
                     )}
 
                     {statusMessage(where)}
-                    {blankInfo(loc(DOCUMENTS[docId].blank))}
+                    {blankLinks(blank)}
                   </li>
                 );
               })}
@@ -546,12 +572,6 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         )}
       </section>
 
-      {!caregiver && files && files.length > 1 && (
-        <button type="button" disabled={busy} onClick={() => setTarget({ kind: "all" })} className={dangerButton}>
-          {t("files.deleteAll")}
-        </button>
-      )}
-
       {/* Native dialog: focus is trapped and Escape closes it. "Keep it" comes first. */}
       <dialog
         ref={dialogRef}
@@ -562,12 +582,10 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
         {target && (
           <div className="space-y-4">
             <h2 id="files-dialog-title" className="text-2xl font-bold">
-              {t(target.kind === "all" ? "files.deleteAllTitle" : "files.deleteTitle")}
+              {t("files.deleteTitle")}
             </h2>
             <p className="break-words text-lg">
-              {target.kind === "all"
-                ? t("files.deleteAllBody", { n: count })
-                : t("files.deleteBody", { name: target.file.name })}
+              {t("files.deleteBody", { name: target.file.name })}
             </p>
             <div className="flex flex-wrap gap-3">
               <button

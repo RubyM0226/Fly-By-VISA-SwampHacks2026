@@ -7,8 +7,8 @@ import { ADVISORIES_CHECKED, COUNTRY_INFO, HOME_AIRPORTS_BY_COUNTRY, US_AIRPORTS
 import { kayakUrl, PICK_ORDER, warningsFor, type FlightOption, type PickId } from "@/lib/flights";
 import { useT } from "@/lib/i18n";
 import { addDays, diffDays, formatDate } from "@/lib/journey";
-import { tripStore, useTrip } from "@/lib/trip";
-import { AlertIcon, ArrowIcon, ExternalIcon, PlaneIcon } from "./Icons";
+import { tripStore, useTrip, type SelectedFlight } from "@/lib/trip";
+import { AlertIcon, ArrowIcon, CheckIcon, ChevronIcon, ExternalIcon, PlaneIcon } from "./Icons";
 import { BACK } from "./ScreenTransition";
 import { INTL_LOCALE } from "@/lib/locale";
 
@@ -124,17 +124,29 @@ export function FlightsScreen() {
                 labels={PICK_ORDER.filter((p) => result.picks[p] === key)}
                 bookUrl={result.bookUrl}
                 kayak={kayakUrl(result.searched.from, result.searched.to, result.searched.date)}
+                date={result.searched.date}
               />
             ))}
           </section>
         )}
 
         {result && result.options.length > pickedKeys.length && (
-          <details className="rounded-2xl border-2 border-line p-4">
-            <summary className="min-h-12 cursor-pointer text-xl font-bold">{t("flights.all", { n: result.options.length })}</summary>
+          // Native <details>; the summary looks like the site's outline buttons.
+          <details className="group">
+            <summary className="inline-flex min-h-12 list-none items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover [&::-webkit-details-marker]:hidden">
+              {t("flights.all", { n: result.options.length })}
+              <ChevronIcon className="h-5 w-5 transition-transform group-open:rotate-180" />
+            </summary>
             <div className="mt-4 space-y-4">
               {result.options.map((o) => (
-                <FlightCard key={o.key} option={o} labels={[]} bookUrl={result.bookUrl} kayak={kayakUrl(result.searched.from, result.searched.to, result.searched.date)} />
+                <FlightCard
+                  key={o.key}
+                  option={o}
+                  labels={[]}
+                  bookUrl={result.bookUrl}
+                  kayak={kayakUrl(result.searched.from, result.searched.to, result.searched.date)}
+                  date={result.searched.date}
+                />
               ))}
             </div>
           </details>
@@ -146,22 +158,70 @@ export function FlightsScreen() {
   );
 }
 
-function FlightCard({ option: o, labels, bookUrl, kayak }: { option: FlightOption; labels: PickId[]; bookUrl: string; kayak: string }) {
+/** The flight as saved on the trip when the traveler selects it. */
+function toSelected(o: FlightOption, date: string): SelectedFlight {
+  return {
+    key: o.key,
+    date,
+    price: o.price,
+    minutes: o.minutes,
+    stops: o.stops,
+    airlines: o.airlines,
+    legs: o.legs.map(({ flightNumber, from, to, departs, arrives }) => ({ flightNumber, from, to, departs, arrives })),
+  };
+}
+
+function FlightCard({
+  option: o,
+  labels,
+  bookUrl,
+  kayak,
+  date,
+}: {
+  option: FlightOption;
+  labels: PickId[];
+  bookUrl: string;
+  kayak: string;
+  /** The searched departure date (yyyy-mm-dd). */
+  date: string;
+}) {
   const { t, lang } = useT();
+  const [trip] = useTrip();
+  const selected = trip.selectedFlight?.key === o.key && trip.selectedFlight.date === date;
   const money = new Intl.NumberFormat(INTL_LOCALE[lang], { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const dur = (min: number) => t("flights.duration", { h: Math.floor(min / 60), m: min % 60 });
   const stops = o.stops === 0 ? t("flights.nonstop") : o.stops === 1 ? t("flights.oneStop") : t("flights.manyStops", { n: o.stops });
   const warn = warningsFor(o);
 
   return (
-    <article className={`space-y-3 rounded-2xl border-2 bg-surface p-5 ${labels.length ? "border-accent" : "border-line"}`}>
-      {labels.length > 0 && (
+    <article className={`space-y-3 rounded-2xl border-2 bg-surface p-5 ${selected || labels.length ? "border-accent" : "border-line"}`}>
+      {/* Pick labels on the left, Select in the top-right corner. */}
+      <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {labels.map((p) => (
             <span key={p} className="rounded-full bg-accent-soft px-3 py-1 text-base font-bold">{t(`flights.pick.${p}`)}</span>
           ))}
         </div>
-      )}
+        {/* One button that stays in place (and keeps focus) as it toggles; the badge says the state. */}
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <span aria-live="polite">
+            {selected && (
+              <span className="inline-flex min-h-12 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-lg font-bold text-accent-ink">
+                <CheckIcon className="h-5 w-5" />
+                {t("flights.selected")}
+              </span>
+            )}
+          </span>
+          <button
+            type="button"
+            onClick={() => tripStore.set({ selectedFlight: selected ? null : toSelected(o, date) })}
+            className="inline-flex min-h-12 items-center rounded-xl border-2 border-accent bg-surface px-5 py-2 text-lg font-bold text-accent hover:bg-hover"
+          >
+            {t(selected ? "flights.unselect" : "flights.select")}
+            <span className="sr-only">, {money.format(o.price)}, {o.legs.map((l) => l.flightNumber).join(", ")}</span>
+          </button>
+        </div>
+      </div>
       {labels[0] && <p className="text-lg text-muted">{t(`flights.why.${labels[0]}`)}</p>}
 
       <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">

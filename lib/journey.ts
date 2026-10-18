@@ -83,7 +83,8 @@ export const WAIT_TIMES: PostSeed[] = WAIT_TIMES_BY_COUNTRY.IN;
 // PLANNING ASSUMPTIONS. These are our own rules of thumb, not official times.
 // ---------------------------------------------------------------------------
 export const ASSUMPTIONS = {
-  daysUntilBooking: 10,
+  // A month to fill in the form, pay the fee and book, with room for difficulties.
+  daysUntilBooking: 30,
   daysAfterInterviewForVisa: 14,
   daysBeforeArrivalBuffer: 7,
   tightSlackDays: 30,

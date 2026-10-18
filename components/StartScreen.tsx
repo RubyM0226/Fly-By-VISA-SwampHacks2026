@@ -117,13 +117,13 @@ export function StartScreen() {
 
         {/* Traveler First and Last Name Inputs */}
         <div className="space-y-4 rounded-xl border-2 border-line bg-surface p-4">
-          <h2 className="text-lg font-bold text-slate-800">Traveler Name</h2>
+          <h2 className="text-lg font-bold text-slate-800">{t("start.travelerName")}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="block text-sm font-bold text-slate-700">First Name</label>
+              <label className="block text-sm font-bold text-slate-700">{t("start.firstName")}</label>
               <input
                 type="text"
-                placeholder="First name"
+                placeholder={t("start.firstName")}
                 value={trip.firstName || ""}
                 onChange={(e) => update({ firstName: e.target.value })}
                 className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"
@@ -131,10 +131,10 @@ export function StartScreen() {
               />
             </div>
             <div className="space-y-1">
-              <label className="block text-sm font-bold text-slate-700">Last Name</label>
+              <label className="block text-sm font-bold text-slate-700">{t("start.lastName")}</label>
               <input
                 type="text"
-                placeholder="Last name"
+                placeholder={t("start.lastName")}
                 value={trip.lastName || ""}
                 onChange={(e) => update({ lastName: e.target.value })}
                 className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"

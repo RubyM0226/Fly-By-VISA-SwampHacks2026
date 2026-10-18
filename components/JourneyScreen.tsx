@@ -9,47 +9,30 @@ import { CONTENT_LAST_CHECKED, LINKS } from "@/lib/config";
 import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
 import { buildJourney, formatDate, STEPS_BY_PURPOSE, WAIT_TIMES_BY_COUNTRY, type StepId, type VisaCategory } from "@/lib/journey";
-import { tripStore, useTrip } from "@/lib/trip";
-import { tripFromProfile } from "@/lib/tripProfile";
+import { tripStore, useTrip, type Trip } from "@/lib/trip";
+import { doneFromStatus, tripFromProfile } from "@/lib/tripProfile";
 import { COUNTRY_BY_CODE, isOrigin } from "@/lib/countries";
 import { useSettings } from "@/lib/settings";
 import { useHome } from "@/lib/homeCountry";
 import { ArrowIcon, ExternalIcon, PinIcon } from "./Icons";
 import { FitPanel } from "./FitPanel";
+import { JourneyPrompts } from "./JourneyPrompts";
+import { PrintablePlan } from "./PrintablePlan";
 import { RoadmapPath, type OpenStep } from "./RoadmapPath";
 import type { StepStatus } from "./StepDetails";
 import { BACK } from "./ScreenTransition";
 
+/** The traveler's Dashboard: their trip from this browser, synced with their account. */
 export function JourneyScreen() {
-  const { t, lang } = useT();
   const [trip] = useTrip();
-  const [settings] = useSettings();
-  const today = useToday();
-  const [openStep, setOpenStep] = useState<OpenStep | null>(null);
-  const { loc } = useHome();
-  
+
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
   
   // Auth0 User Session
-  const { user } = useUser();
-
-  const home = isOrigin(trip.from) ? trip.from : null;
-  const ready = Boolean(today && trip.arrival && home && trip.to === "US");
-
-  const journey = useMemo(
-    () =>
-      ready && home
-        ? buildJourney({
-            today,
-            arrival: trip.arrival,
-            stayMonths: trip.stayMonths,
-            visaType: (trip.purpose as VisaCategory) || "family",
-            waits: WAIT_TIMES_BY_COUNTRY[home],
-          })
-        : null,
-    [ready, home, today, trip.arrival, trip.stayMonths, trip.purpose],
-  );
+  const { user, isLoading: userLoading } = useUser();
+  // Read only: decides whether to suggest signing in.
+  const signedOut = !userLoading && !user;
 
   // 1. Claim anonymous data, then fetch from Tiger Data
   useEffect(() => {
@@ -69,7 +52,7 @@ export function JourneyScreen() {
         const data = await getUserJourney();
         if (data) {
           // Restore their complete profile, cities, airports AND their checkmarks
-          tripStore.set({ ...tripFromProfile(data.profile), done: data.stop_status || {} });
+          tripStore.set({ ...tripFromProfile(data.profile), done: doneFromStatus(data.stop_status) });
         }
       };
 
@@ -101,7 +84,56 @@ export function JourneyScreen() {
   // Signed-in users change answers on Account; signed-out users go back through the intake.
   const editHref = user ? "/account#trip-details" : "/start";
 
+  return (
+    <JourneyView
+      trip={trip}
+      own={{ onToggleDone: handleToggleDone, editHref, back: !user, signedOut }}
+    />
+  );
+}
+
+/** What only the traveler's own Dashboard has: editing, saving and the prompts. */
+interface OwnControls {
+  onToggleDone: (id: StepId) => void;
+  editHref: string;
+  /** Signed out: "Change my answers" goes back through the intake. */
+  back: boolean;
+  signedOut: boolean;
+}
+
+/**
+ * The Dashboard itself. With `own` it is the traveler's; without, it is the
+ * read-only copy a caregiver sees on a helper link (no editing, ticking,
+ * marking done or prompts; Print instead of Change my answers).
+ */
+export function JourneyView({ trip, own }: { trip: Trip; own?: OwnControls }) {
+  const { t, lang } = useT();
+  const [settings] = useSettings();
+  const today = useToday();
+  const [openStep, setOpenStep] = useState<OpenStep | null>(null);
+  const home = isOrigin(trip.from) ? trip.from : null;
+  // The traveler's home country, not this browser's (a caregiver's may differ).
+  const { loc } = useHome(home ?? undefined);
+  const ready = Boolean(today && trip.arrival && home && trip.to === "US");
+
+  const journey = useMemo(
+    () =>
+      ready && home
+        ? buildJourney({
+            today,
+            arrival: trip.arrival,
+            stayMonths: trip.stayMonths,
+            visaType: (trip.purpose as VisaCategory) || "family",
+            waits: WAIT_TIMES_BY_COUNTRY[home],
+          })
+        : null,
+    [ready, home, today, trip.arrival, trip.stayMonths, trip.purpose],
+  );
+  const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
+
   if (!journey) {
+    // A shared plan the traveler has not finished: nothing to show yet.
+    if (!own) return <p className="text-xl">{t("helper.notReady")}</p>;
     return (
       <div className="space-y-4">
         <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
@@ -109,8 +141,8 @@ export function JourneyScreen() {
           <>
             <p className="text-xl">{t("journey.needInfo")}</p>
             <Link
-              href={editHref}
-              transitionTypes={user ? undefined : BACK}
+              href={own.editHref}
+              transitionTypes={own.back ? BACK : undefined}
               data-button
               className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-accent px-6 py-3 text-xl font-bold text-accent-ink"
             >
@@ -139,12 +171,17 @@ export function JourneyScreen() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
-        <p className="text-base text-muted">
-          {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}
-        </p>
-      </div>
+      {/* The caregiver page has its own title (the traveler's name). */}
+      {own ? (
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold sm:text-4xl">{t("journey.title")}</h1>
+          <p className="text-base text-muted">
+            {t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}
+          </p>
+        </div>
+      ) : (
+        <p className="text-base text-muted">{t("journey.notice", { date: formatDate(CONTENT_LAST_CHECKED, lang) })}</p>
+      )}
 
       <section
         aria-labelledby="trip-summary-title"
@@ -179,16 +216,31 @@ export function JourneyScreen() {
             </div>
           </dl>
         </div>
-        <Link
-          href={editHref}
-          transitionTypes={user ? undefined : BACK}
-          data-button
-          className="inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
-        >
-          {t("journey.edit")}
-          <ArrowIcon className="h-6 w-6" />
-        </Link>
+        <div className="flex shrink-0 flex-col gap-3">
+          {own && (
+            <Link
+              href={own.editHref}
+              transitionTypes={own.back ? BACK : undefined}
+              data-button
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
+            >
+              {t("journey.edit")}
+              <ArrowIcon className="h-6 w-6" />
+            </Link>
+          )}
+          {/* Same style as Change my answers; the column stretches both to one width. */}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border-2 border-accent bg-surface px-6 py-3 text-xl font-bold text-accent hover:bg-hover"
+          >
+            {t(own ? "journey.print" : "journey.printTraveler")}
+          </button>
+        </div>
       </section>
+
+      <PrintablePlan profile={trip} done={trip.done} today={today} />
+      {own && <JourneyPrompts journey={journey} signedOut={own.signedOut} editHref={own.editHref} />}
 
       {/* One sentence, one big button: always a way forward. */}
       <section
@@ -239,7 +291,7 @@ export function JourneyScreen() {
         </section>
       )}
 
-      <FitPanel journey={journey} />
+      <FitPanel journey={journey} home={home ?? undefined} />
 
       <section aria-labelledby="roadmap-title" className="space-y-4">
         <h2 id="roadmap-title" className="text-2xl font-bold">
@@ -250,7 +302,8 @@ export function JourneyScreen() {
           statusOf={statusOf}
           open={openStep ?? { id: currentId ?? stepOrder[0], focus: false }}
           onOpen={setOpenStep}
-          onToggleDone={handleToggleDone} 
+          onToggleDone={own?.onToggleDone}
+          home={home ?? undefined}
         />
       </section>
     </div>
