@@ -6,8 +6,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { useT } from "@/lib/i18n";
 import { useProfile } from "@/lib/useProfile";
 import { useTrip, tripStore, type Trip } from "@/lib/trip";
-import { formatDate, STEP_ORDER } from "@/lib/journey";
-import { STEP_BY_ID } from "@/content/steps";
+import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { tripFromProfile } from "@/lib/tripProfile";
@@ -22,6 +21,8 @@ export function AccountScreen() {
   const consent = useSavedConsent();
   const [helperUrl, setHelperUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const formatDate = (date: string, locale: string) =>
+    new Intl.DateTimeFormat(locale).format(new Date(`${date}T00:00:00`));
 
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
@@ -49,8 +50,8 @@ export function AccountScreen() {
   }, [auth0User?.sub]);
 
   // Calculate their current place on the roadmap
-  const currentId = STEP_ORDER.find((id) => !trip.done[id]);
-  const currentStepTitle = currentId 
+  const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
+  const currentId = stepOrder.find((id) => !trip.done[id]);  const currentStepTitle = currentId 
     ? STEP_BY_ID[currentId]?.text[lang]?.title || "Next Step"
     : "All steps completed! You are ready to fly.";
 

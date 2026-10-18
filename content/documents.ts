@@ -1,8 +1,8 @@
 import { LINKS } from "@/lib/config";
-import { STEP_ORDER, type StepId } from "@/lib/journey";
-import { STEP_BY_ID } from "./steps";
+import { STEPS_BY_PURPOSE, type StepId } from "@/lib/journey";import { STEP_BY_ID } from "./steps";
 import type { Lang } from "@/lib/settings";
 import type { TemplateId } from "./templates";
+
 
 // Every item in a roadmap step's "What you need" list. Steps in content/steps.ts
 // list these ids, so the roadmap and the Documents tab share one source.
@@ -25,7 +25,7 @@ export interface DocumentEntry {
   upload: boolean;
   blank?: Blank;
 }
-
+const ALL_STEPS = [...new Set(Object.values(STEPS_BY_PURPOSE).flat())] as StepId[];
 const ENTRIES = {
   passport: {
     name: { en: "Your passport", hi: "आपका पासपोर्ट" },
@@ -117,9 +117,10 @@ export function isUploadDocId(value: unknown): value is DocId {
 }
 
 /** Roadmap steps that need at least one uploadable document, in roadmap order. */
-export const DOC_GROUPS: { stepId: StepId; docs: DocId[] }[] = STEP_ORDER.map((stepId) => ({
+export const DOC_GROUPS: { stepId: StepId; docs: DocId[] }[] = ALL_STEPS.map((stepId) => ({
   stepId,
-  docs: STEP_BY_ID[stepId].documents.filter((id) => DOCUMENTS[id].upload),
+  // Use optional chaining to safely check if the step and its documents array exist
+  docs: STEP_BY_ID[stepId]?.documents?.filter((id) => DOCUMENTS[id].upload) || [],
 })).filter((g) => g.docs.length > 0);
 
 /** Every uploadable document the roadmap asks for, once each. */
