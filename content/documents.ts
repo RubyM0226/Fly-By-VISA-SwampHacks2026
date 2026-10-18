@@ -13,7 +13,8 @@ import type { TemplateId } from "./templates";
 // `blank` says how to get an empty version. Never invent an "official" form:
 // "template" is a FlyByVisa Word file from content/templates.ts, labelled as ours.
 // Names use [[term|Shown text]] glossary chips like steps.ts. Hindi is a first
-// draft: have a fluent reader check it.
+// draft: have a fluent reader check it. Names use the home-country tokens and
+// India's links from lib/homeCountry.ts; render through useHome().loc.
 
 export type Blank =
   | { type: "online"; url: string }
@@ -58,7 +59,7 @@ const ENTRIES = {
     blank: { type: "none", url: LINKS.embassyIndia },
   },
   lifeInIndia: {
-    name: { en: "Proof of your life in India", hi: "भारत में आपके जीवन का प्रमाण" },
+    name: { en: "Proof of your life in {home}", hi: "{home} में आपके जीवन का प्रमाण" },
     upload: true,
     blank: { type: "none" },
   },

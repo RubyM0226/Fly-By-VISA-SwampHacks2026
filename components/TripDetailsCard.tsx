@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { updateJourneyProfile } from "@/app/actions/journey";
 import { useToday } from "@/lib/clock";
-import { COUNTRIES, COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
+import { COUNTRIES, COUNTRY_BY_CODE, ORIGIN_CODES, type CountryCode } from "@/lib/countries";
 import { useT } from "@/lib/i18n";
 import { addDays, formatDate, type VisaCategory } from "@/lib/journey";
 import { tripStore, useTrip, type Trip } from "@/lib/trip";
@@ -26,7 +26,6 @@ const SAVE_ERRORS = {
   save: "trip.err.save",
 } as const;
 
-const ORIGINS = COUNTRIES.filter((c) => c.origin).map((c) => c.code);
 const DESTINATIONS = COUNTRIES.filter((c) => c.destination).map((c) => c.code);
 
 /** The Account page's editable trip answers, so signed-in users never redo the intake. */
@@ -40,7 +39,7 @@ export function TripDetailsCard() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   const form: Draft = draft ?? {
-    from: trip.from || "IN",
+    from: trip.from || ORIGIN_CODES[0],
     homeCity: trip.homeCity,
     to: trip.to || "US",
     destCity: trip.destCity,
@@ -123,7 +122,7 @@ export function TripDetailsCard() {
           <PlaceSelect
             id="trip-from"
             label={t("trip.from")}
-            enabled={ORIGINS}
+            enabled={ORIGIN_CODES}
             value={form.from}
             onChange={(code) => edit({ from: code as Trip["from"], homeCity: firstCity(code) })}
           />

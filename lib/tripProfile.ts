@@ -12,6 +12,20 @@ export const CITIES_BY_COUNTRY: Record<string, { city: string; airport: string }
     { city: "Hyderabad", airport: "HYD" },
     { city: "Chennai", airport: "MAA" },
   ],
+  GB: [
+    { city: "London", airport: "LHR" },
+    { city: "Manchester", airport: "MAN" },
+    { city: "Birmingham", airport: "BHX" },
+    { city: "Edinburgh", airport: "EDI" },
+    { city: "Glasgow", airport: "GLA" },
+  ],
+  MX: [
+    { city: "Mexico City", airport: "MEX" },
+    { city: "Guadalajara", airport: "GDL" },
+    { city: "Monterrey", airport: "MTY" },
+    { city: "Cancún", airport: "CUN" },
+    { city: "Tijuana", airport: "TIJ" },
+  ],
   US: [
     { city: "New York", airport: "JFK" },
     { city: "San Francisco", airport: "SFO" },

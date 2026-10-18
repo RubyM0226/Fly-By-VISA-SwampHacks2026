@@ -1,11 +1,12 @@
 import { LINKS } from "@/lib/config";
 import type { Lang } from "@/lib/settings";
 
-// Common document questions for the India -> U.S. visitor (B-2) visa, for the
+// Common document questions for the U.S. visitor (B-2) visa, for the
 // Information Lookup page. Keep answers short and plain: an elderly reader
 // in India, need-to-know only. Facts match content/steps.ts; every answer
 // links to an official page. Hindi is a first draft: have a fluent reader
-// check it. Use [[term|Shown text]] for glossary chips.
+// check it. Use [[term|Shown text]] for glossary chips. Home-country tokens
+// ({home}, {vac}) and India's links are filled in by lib/homeCountry.ts.
 
 export interface DocAnswer {
   id: string;
@@ -65,25 +66,25 @@ export const DOC_FAQ: DocAnswer[] = [
       en: "When you book your interview, you get a confirmation. Print it and bring it on the day. Booking steps can change, so follow the U.S. Embassy website.",
       hi: "इंटरव्यू बुक करने पर एक पुष्टि मिलती है। उसे प्रिंट करें और उस दिन साथ ले जाएँ। बुकिंग के तरीके बदल सकते हैं, इसलिए अमेरिकी दूतावास की वेबसाइट देखें।",
     },
-    source: { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
   },
   {
     id: "vac",
-    keywords: ["vac", "fingerprint", "fingerprints", "biometric", "biometrics", "visa application center", "उंगलियों", "निशान"],
-    question: { en: "What is the VAC visit?", hi: "VAC जाना क्या होता है?" },
+    keywords: ["vac", "fingerprint", "fingerprints", "biometric", "biometrics", "visa application center", "cas", "उंगलियों", "निशान"],
+    question: { en: "What is the {vac} visit?", hi: "{vac} जाना क्या होता है?" },
     answer: {
-      en: "Many people in India first visit a [[vac|VAC]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.",
-      hi: "भारत में कई लोग पहले [[vac|VAC]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
+      en: "Many people in {home} first visit a [[vac|{vac}]], where your fingerprints and photo are taken. Then you go to your interview. Bring your passport and appointment letter.",
+      hi: "{home} में कई लोग पहले [[vac|{vac}]] जाते हैं, जहाँ उंगलियों के निशान और फ़ोटो लिए जाते हैं। फिर इंटरव्यू होता है। पासपोर्ट और अपॉइंटमेंट पत्र साथ ले जाएँ।",
     },
-    source: { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
+    source: { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा" }, url: LINKS.embassyIndia },
   },
   {
     id: "supporting",
     keywords: ["supporting", "documents", "papers", "proof", "ties", "home", "pension", "family", "property", "job", "कागज़", "कागज", "प्रमाण", "पेंशन", "घर", "परिवार"],
     question: { en: "Which supporting papers should I bring?", hi: "मुझे कौन-से सहायक कागज़ात ले जाने चाहिए?" },
     answer: {
-      en: "Bring papers that show your life is in India and that you will come home. For example: family, a home, a pension or work. The officer may ask to see them.",
-      hi: "ऐसे कागज़ात ले जाएँ जो दिखाएँ कि आपका जीवन भारत में है और आप लौटेंगे। जैसे: परिवार, घर, पेंशन या काम। अधिकारी इन्हें देखना चाह सकते हैं।",
+      en: "Bring papers that show your life is in {home} and that you will come home. For example: family, a home, a pension or work. The officer may ask to see them.",
+      hi: "ऐसे कागज़ात ले जाएँ जो दिखाएँ कि आपका जीवन {home} में है और आप लौटेंगे। जैसे: परिवार, घर, पेंशन या काम। अधिकारी इन्हें देखना चाह सकते हैं।",
     },
     source: { label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" }, url: LINKS.visitorVisa },
   },

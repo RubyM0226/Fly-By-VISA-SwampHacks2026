@@ -16,6 +16,9 @@ const good = {
   arrival: "2026-10-28",
   stayMonths: 3,
   purpose: "family" as VisaPurpose,
+  // cleanProfile always returns the (trimmed) names, empty when not given.
+  firstName: "",
+  lastName: "",
 };
 
 // Valid: airports come from the city list, not the browser.
@@ -33,7 +36,9 @@ for (const p of ["family", "study", "work"] as const) {
 
 // Coming-soon countries, unknown cities, a city from the other country: rejected.
 for (const bad of [
-  { from: "GB" },
+  { from: "CA" },
+  { from: "MX", fromCity: "London" },
+  { from: "GB", fromCity: "Mumbai" },
   { to: "CA" },
   { from: "US", to: "IN" },
   { fromCity: "Paris" },
@@ -52,6 +57,30 @@ for (const bad of [
 assert.deepEqual(cleanProfile(null, today), { ok: false, error: "invalid" });
 assert.deepEqual(cleanProfile({ ...good, arrival: "2026-10-16" }, today), { ok: false, error: "pastDate" });
 assert.equal(cleanProfile({ ...good, arrival: today }, today).ok, true);
+
+// The UK and Mexico are live, each with its own cities and airports.
+assert.deepEqual(cleanProfile({ ...good, from: "GB", fromCity: "London" }, today), {
+  ok: true,
+  profile: { ...good, from: "GB", fromCity: "London", homeAirport: "LHR", destAirport: "SEA" },
+});
+assert.deepEqual(cleanProfile({ ...good, from: "MX", fromCity: "Cancún" }, today), {
+  ok: true,
+  profile: { ...good, from: "MX", fromCity: "Cancún", homeAirport: "CUN", destAirport: "SEA" },
+});
+
+// Home country and purpose survive a save and restore together.
+const ukStudy = cleanProfile({ ...good, from: "GB", fromCity: "Edinburgh", purpose: "study" }, today);
+assert.ok(ukStudy.ok);
+if (ukStudy.ok) {
+  const back = tripFromProfile(ukStudy.profile);
+  assert.equal(back.from, "GB");
+  assert.equal(back.homeCity, "Edinburgh");
+  assert.equal(back.homeAirport, "EDI");
+  assert.equal(back.purpose, "study");
+}
+// Old rows: no purpose -> family; no country -> India.
+assert.equal(tripFromProfile({ from: "MX", fromCity: "Tijuana" }).purpose, "family");
+assert.equal(tripFromProfile({ purpose: "work" }).from, "IN");
 
 // Saved rows: new keys (fromCity/toCity) and old keys (homeCity/destCity) both restore.
 assert.equal(tripFromProfile(good).homeCity, "Mumbai");
