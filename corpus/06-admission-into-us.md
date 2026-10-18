@@ -1,6 +1,5 @@
 ---
-source_url: >-
-  https://www.cbp.gov/travel/international-visitors/applying-admission-united-states
+source_url: https://www.cbp.gov/travel/international-visitors/applying-admission-united-states
 title: Admission into United States
 saved_on: '2026-10-17'
 ---
