@@ -17,5 +17,6 @@ export const LINKS = {
   fraudWarning: "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/fraud.html",
   cbpVisitors: "https://www.cbp.gov/travel/international-visitors",
   i94: "https://i94.cbp.dhs.gov/",
+  passportIndia: "https://www.passportindia.gov.in/",
   uscisExtend: "https://www.uscis.gov/visit-the-united-states/extend-your-stay",
 } as const;

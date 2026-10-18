@@ -175,8 +175,36 @@ export const LogoIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const InfoIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5.5M12 7.5h.01" />
+  </svg>
+);
+
 export const CloseIcon = ({ className }: IconProps) => (
   <svg {...base} className={className}>
     <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+);
+
+export const ShieldIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z" />
+    <path d="M12 8v4M12 15.5v.01" />
+  </svg>
+);
+
+export const QuestionIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5v.7M12 17v.01" />
+  </svg>
+);
+
+export const SearchIcon = ({ className }: IconProps) => (
+  <svg {...base} className={className}>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="m16 16 4.5 4.5" />
   </svg>
 );

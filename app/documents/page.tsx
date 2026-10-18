@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { DocumentsScreen } from "@/components/DocumentsScreen";
+import { SignInGate } from "@/components/SignInGate";
 
-export const metadata: Metadata = { title: "Important Documents — FlyByVisa" };
+export const metadata: Metadata = { title: "Documents: FlyByVisa" };
 
 export default function DocumentsPage() {
-  return <DocumentsScreen />;
+  return (
+    <SignInGate returnTo="/documents">
+      <DocumentsScreen />
+    </SignInGate>
+  );
 }

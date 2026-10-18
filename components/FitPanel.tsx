@@ -59,7 +59,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
         <div className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[14rem_1fr]">
           <dt className="text-muted">{t(best.slackDays < 0 ? "fit.late" : "fit.spare")}</dt>
           <dd className={`font-bold ${best.slackDays < 0 ? "text-danger" : ""}`}>
-            {t("fit.aboutDays", { n: Math.abs(best.slackDays) })}
+            {Math.abs(best.slackDays) === 1 ? t("fit.aboutDay") : t("fit.aboutDays", { n: Math.abs(best.slackDays) })}
           </dd>
         </div>
         <div className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[14rem_1fr]">
@@ -83,7 +83,7 @@ export function FitPanel({ journey }: { journey: Journey }) {
                 <p className="text-lg font-bold">{t(`post.${p.id}`)}</p>
                 <FitBadge fit={p.fit} />
               </div>
-              <p className="text-base">{t("fit.wait", { n: p.waitMonths })}</p>
+              <p className="text-base">{p.waitMonths === 1 ? t("fit.waitOne") : t("fit.wait", { n: p.waitMonths })}</p>
               <p className="text-base">{t("fit.interview", { date: formatDate(p.interviewDate, lang) })}</p>
               {i === 0 && (
                 <div className="flex flex-wrap gap-2">

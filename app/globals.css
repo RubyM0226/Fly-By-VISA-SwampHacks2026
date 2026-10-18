@@ -45,7 +45,24 @@
   /* Backgrounds. Set to none in high contrast. */
   --sky: url("/textures/sky.svg");
   --grain: url("/textures/grain.svg");
-  --grain-opacity: 0.05;
+  --grain-opacity: 0.07;
+  /* Paper fleck (ink at ≤0.12 alpha) for light surfaces, white meadow
+     speckles for the sky and hills, and a faint speckle for green fills. */
+  --paper: url("/textures/paper.svg");
+  --speckle: url("/textures/speckle.svg");
+  --speckle-soft: url("/textures/speckle-soft.svg");
+  /* Wash that keeps tinted surfaces as light as before the grain. */
+  --surface-wash: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55));
+
+  /* Raised look for buttons, pills and toggles; a softer lift for cards. */
+  --raise: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 0 rgb(27 43 48 / 0.12), 0 3px 6px -3px rgb(27 43 48 / 0.3);
+  --raise-hover: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 2px 0 rgb(27 43 48 / 0.12), 0 6px 10px -5px rgb(27 43 48 / 0.32);
+  --raise-filled: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 0 rgb(14 40 30 / 0.35), 0 3px 6px -3px rgb(14 40 30 / 0.45);
+  --raise-filled-hover: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 2px 0 rgb(14 40 30 / 0.35), 0 6px 10px -5px rgb(14 40 30 / 0.45);
+  --pressed: inset 0 2px 3px rgb(27 43 48 / 0.18);
+  --pressed-filled: inset 0 2px 4px rgb(0 0 0 / 0.3);
+  --card-lift: 0 1px 1px rgb(27 43 48 / 0.05), 0 4px 12px -6px rgb(27 43 48 / 0.2);
+  --press-shift: 1px;
 
   color-scheme: light;
 }
@@ -77,6 +94,22 @@ html[data-contrast="high"] {
   --glossary-cat-forms: #ffd400;
   --glossary-cat-agencies: #ffd400;
   --glossary-cat-process: #ffd400;
+}
+
+/* High contrast and black-and-white: flat, untextured, nothing raised. */
+html:is([data-contrast="high"], [data-mono="true"]) {
+  --grain: none;
+  --paper: none;
+  --speckle: none;
+  --speckle-soft: none;
+  --raise: none;
+  --raise-hover: none;
+  --raise-filled: none;
+  --raise-filled-hover: none;
+  --pressed: none;
+  --pressed-filled: none;
+  --card-lift: none;
+  --press-shift: 0px;
 }
 
 @theme inline {
@@ -176,7 +209,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: var(--sky) center top / cover no-repeat, var(--bg);
+  background: var(--speckle) 0 0 / 160px 160px, var(--sky) center top / cover no-repeat, var(--bg);
   pointer-events: none;
 }
 
@@ -191,13 +224,78 @@ body::after {
   opacity: var(--grain-opacity);
   pointer-events: none;
 }
+/* Light surfaces: a faint paper fleck over the wash and the soft grain.
+   Text pairs stay above 4.5:1 at the darkest fleck. */
 .bg-surface,
 .bg-accent-soft,
 .bg-warm {
-  background-image: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)), var(--grain);
-  background-blend-mode: normal, soft-light;
+  background-image: var(--paper), var(--surface-wash), var(--grain);
+  background-blend-mode: normal, normal, soft-light;
 }
-html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-image: none; }
+.bg-danger-soft { background-image: var(--paper); }
+/* Green fills (main buttons, the current nav item, On pills): a few soft
+   light speckles (alpha ≤0.1). White text stays above 4.5:1 even on a
+   speckle and on the 90% hover fill. */
+.bg-accent { background-image: var(--speckle-soft), var(--paper); }
+/* The launch button fades to transparent as it turns into a plane. */
+.launch-btn[data-launching] { background-image: none; box-shadow: none; }
+html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm, .bg-danger-soft, .bg-accent) { background-image: none; }
+/* Black-and-white keeps the light wash so tints look as before, minus texture. */
+html[data-mono="true"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { background-image: var(--surface-wash); }
+
+/* Anything clickable shows the hand. In the base layer so cursor-* utilities still win. */
+@layer base {
+  :is(button, a[href], [role="button"], [role="option"], [role="switch"], [role="tab"], summary, label[for], label:has(input:is([type="checkbox"], [type="radio"], [type="file"])), select,
+    input:is([type="checkbox"], [type="radio"], [type="file"], [type="submit"], [type="button"])),
+  input[type="file"]::file-selector-button {
+    cursor: pointer;
+  }
+  :is(button, select, input):disabled,
+  :is(button, select, input):disabled::file-selector-button,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Tactile controls: buttons, pills and toggles sit slightly raised and  */
+/* press in. Selected options rest pressed in. In a layer so Tailwind     */
+/* shadow utilities and the roadmap pills keep their own look.            */
+/* ------------------------------------------------------------------ */
+@layer components {
+  :is(button, a, summary, label, [role="button"]):is(.bg-surface, .bg-accent-soft, .bg-warm, .border-2):not(.border-dashed, .sr-only, .bg-accent) {
+    box-shadow: var(--raise);
+    transition: box-shadow 140ms ease-out, transform 140ms ease-out;
+  }
+  :is(button, a, summary, label, [role="button"]):is(.bg-accent) {
+    box-shadow: var(--raise-filled);
+    transition: box-shadow 140ms ease-out, transform 140ms ease-out;
+  }
+  :is(button, a, summary, label, [role="button"]):is(.bg-surface, .bg-accent-soft, .bg-warm, .border-2):not(.border-dashed, .sr-only, .bg-accent):hover {
+    box-shadow: var(--raise-hover);
+  }
+  :is(button, a, summary, label, [role="button"]).bg-accent:hover { box-shadow: var(--raise-filled-hover); }
+
+  /* Pressed (while held) and selected (aria-pressed / aria-checked / current page). */
+  :is(button, a, summary, label, [role="button"]):is(.bg-surface, .bg-accent-soft, .bg-warm, .border-2):not(.border-dashed, .sr-only, .bg-accent):is(:active, [aria-pressed="true"], [aria-checked="true"]) {
+    box-shadow: var(--pressed);
+  }
+  :is(button, a, summary, label, [role="button"]).bg-accent:is(:active, [aria-pressed="true"], [aria-checked="true"], [aria-current="page"]) {
+    box-shadow: var(--pressed-filled);
+  }
+  :is(button, a, summary, label, [role="button"]):is(.bg-surface, .bg-accent-soft, .bg-warm, .bg-accent, .border-2):not(.border-dashed, .sr-only):active {
+    transform: translateY(var(--press-shift));
+  }
+  :is(button, a, summary, label, [role="button"]):is(:disabled, [aria-disabled="true"]) {
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Cards and boxes: a soft paper lift. */
+  :is(div, section, article, aside, li, details, form, fieldset, dl):is(.bg-surface, .bg-accent-soft, .bg-warm):is(.rounded-lg, .rounded-xl, .rounded-2xl) {
+    box-shadow: var(--card-lift);
+  }
+}
 
 .site-footer {
   position: relative;
@@ -218,11 +316,23 @@ html[data-contrast="high"] :is(.bg-surface, .bg-accent-soft, .bg-warm) { backgro
   mix-blend-mode: soft-light;
   pointer-events: none;
 }
+/* Meadow speckles on the hills only, fading out toward the sky; the text
+   area below stays clear. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--hills-h);
+  background: var(--speckle) 0 0 / 160px 160px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 15%, #000 70%);
+  mask-image: linear-gradient(to bottom, transparent 15%, #000 70%);
+  pointer-events: none;
+}
 .site-footer a { color: var(--footer-link); }
 html[data-contrast="high"] .site-footer__hills { display: none; }
 html[data-contrast="high"] .site-footer__body { border-top: 2px solid var(--line); margin-top: 0; }
 
-/* Pages marked data-hills-peek (home, Important Documents, Location Map)
+/* Pages marked data-hills-peek (home, Information Lookup, Location Map)
    fill the first screen down to where the footer hills begin, so the top of
    the hills shows without scrolling and the dark footer stays below the
    fold. Longer content just pushes the hills down; they never cover it. */
@@ -238,6 +348,92 @@ main:has([data-hills-peek]) {
   padding-bottom: 0;
 }
 body:has([data-hills-peek]) .site-footer { margin-top: 0; }
+
+/* ------------------------------------------------------------------ */
+/* Globe stage: the landing page and the country picker share one globe */
+/* (components/GlobeStage.tsx). On the landing page (no nav) the stage   */
+/* spans the whole page but keeps the nav's room on the left, so the box */
+/* sits where it always has. On the picker (data-nav) it spans only the  */
+/* column right of the nav, so box and globe are centred in that space.  */
+/* Left and right spacers share the free space. Vertically the stage     */
+/* fills the first screen between the header and the hills, and the      */
+/* globe itself (not globe + hint) is centred in it.                     */
+/* ------------------------------------------------------------------ */
+.globe-stage {
+  /* Room kept for the nav on the landing page (SideNav: 64px, md:w-48).
+     Used inside the stage, where cqw is the stage. */
+  --nav-w: 64px;
+  --pad: 0.75rem;
+  --box-w: 26rem;
+  --gap: 1rem;
+  --stage-h: max(34rem, 100dvh - var(--sticky-header-h, 0px) - var(--hills-peek));
+  container-type: inline-size;
+  position: relative;
+  margin-top: -1.5rem;
+  /* Cancel main's side padding: span the whole content column. */
+  margin-left: calc(50% - 50cqw);
+  width: 100cqw;
+  min-height: var(--stage-h);
+  padding-block: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  /* Narrow screens: the globe goes on top, as wide as fits (up to half the
+     screen height, so the box under it starts on the first screen). */
+  --globe: min(50dvh, 100cqw - var(--nav-w) - 2 * var(--pad));
+}
+/* The picker's stage is already right of the nav. */
+.globe-stage[data-nav] { --nav-w: 0px; }
+@media (min-width: 40rem) {
+  .globe-stage { margin-top: -2.5rem; --pad: 1.25rem; }
+}
+@media (min-width: 48rem) {
+  .globe-stage:not([data-nav]) { --nav-w: 12rem; }
+}
+.globe-stage__slot { display: flex; }
+.globe-stage__slot--globe { order: -1; }
+/* The spacers: one pair per row on narrow screens, one pair on the stage
+   on wide screens. */
+@media (width < 75rem) {
+  .globe-stage__slot::before,
+  .globe-stage__slot::after { content: ""; flex: 1 1 0; min-width: var(--pad); }
+  .globe-stage__slot::before { min-width: calc(var(--nav-w) + var(--pad)); }
+  /* The globe is on top here, so the landing page needs no room under it
+     for the picker's zoom buttons and hint. */
+  .globe-stage:not([data-nav]) :is(.globe-stage__zoom, .globe-stage__hint) { display: none; }
+}
+.globe-stage__box { flex: 0 1 36rem; min-width: 0; }
+.globe-stage__globe { flex: 0 1 var(--globe); min-width: 0; }
+.globe-stage__zoom { margin-top: 0.5rem; }
+
+/* Wide screens: box and globe side by side, filling the first screen down
+   to the hills. The globe's centre is the stage's centre: the hint under it
+   (measured, --hint-h) hangs below without counting for centring. On the
+   picker the globe leaves room for the hint on both sides; on the landing
+   page the hint is hidden, so it keeps its size (and the box its place).
+   It is also no wider than the room beside the box. */
+@media (min-width: 75rem) {
+  .globe-stage {
+    height: var(--stage-h);
+    flex-direction: row;
+    align-items: center;
+    justify-content: normal;
+    gap: 0;
+    --hint-n: 1;
+    --globe: max(16rem, min(var(--stage-h) - 1.5rem - var(--hint-n) * (var(--hint-h, 4rem) + 0.5rem), 100cqw - var(--nav-w) - 2 * var(--pad) - var(--box-w) - var(--gap)));
+  }
+  .globe-stage[data-nav] { --hint-n: 2; }
+  .globe-stage::before,
+  .globe-stage::after { content: ""; flex: 1 1 0; min-width: var(--pad); }
+  .globe-stage::before { min-width: calc(var(--nav-w) + var(--pad)); }
+  .globe-stage__slot { display: contents; }
+  .globe-stage__box { flex: 0 1 var(--box-w); min-width: 18rem; margin-right: var(--gap); }
+  /* The hint and its gap (gap-2) take no room when centring. */
+  .globe-stage__globe { flex: 0 0 var(--globe); margin-bottom: calc(-0.5rem - var(--hint-h, 4rem)); }
+  /* Zoom buttons on the globe's lower right corner. */
+  .globe-stage__zoom { position: absolute; right: 0.5rem; bottom: 0.5rem; margin-top: 0; flex-direction: column; }
+}
 
 :focus-visible {
   outline: 3px solid var(--focus);

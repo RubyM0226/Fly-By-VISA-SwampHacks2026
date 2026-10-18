@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { MyPlanScreen } from "@/components/MyPlanScreen";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "My Plan — FlyByVisa" };
-
+// My Plan merged into Account; keep old links working.
 export default function MyPlanPage() {
-  return <MyPlanScreen />;
+  redirect("/account");
 }
