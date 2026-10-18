@@ -8,6 +8,9 @@ export type VisaCategory = "family" | "study" | "work";
 
 export type StepId =
   | "ready"
+  | "i20"
+  | "sevis"
+  | "petition"
   | "ds160"
   | "book"
   | "documents"
@@ -16,16 +19,11 @@ export type StepId =
   | "arrive"
   | "return";
 
-export const STEP_ORDER: StepId[] = [
-  "ready",
-  "ds160",
-  "book",
-  "documents",
-  "practice",
-  "travel",
-  "arrive",
-  "return",
-];
+export const STEPS_BY_PURPOSE: Record<VisaCategory, StepId[]> = {
+  family: ["ready", "ds160", "book", "documents", "practice", "travel", "arrive", "return"],
+  study: ["ready", "i20", "sevis", "ds160", "book", "documents", "practice", "travel", "arrive", "return"],
+  work: ["ready", "petition", "ds160", "book", "documents", "practice", "travel", "arrive", "return"],
+};
 
 // ---------------------------------------------------------------------------
 // SEED DATA: interview wait times by visa category, in months.
@@ -185,16 +183,21 @@ export function buildJourney({
   const travelEnd = maxIso(travelStart, addDays(arrival, -A.daysBeforeArrivalBuffer));
   const returnBy = addMonths(arrival, Math.max(1, Math.round(stayMonths)));
 
-  const steps: StepPlan[] = [
-    { id: "ready", start: today, end: addDays(today, 4), showsInterview: false },
-    { id: "ds160", start: addDays(today, 4), end: addDays(today, 9), showsInterview: false },
-    { id: "book", start: addDays(today, 9), end: bookDate, showsInterview: true },
-    { id: "documents", start: docsStart, end: docsEnd, showsInterview: false },
-    { id: "practice", start: practiceStart, end: practiceEnd, showsInterview: true },
-    { id: "travel", start: travelStart, end: travelEnd, showsInterview: false },
-    { id: "arrive", start: arrival, end: arrival, showsInterview: false },
-    { id: "return", start: returnBy, end: returnBy, showsInterview: false },
-  ];
+  const allPossibleSteps: Record<StepId, StepPlan> = {
+    ready: { id: "ready", start: today, end: addDays(today, 4), showsInterview: false },
+    i20: { id: "i20", start: today, end: addDays(today, 4), showsInterview: false },
+    sevis: { id: "sevis", start: addDays(today, 4), end: addDays(today, 9), showsInterview: false },
+    petition: { id: "petition", start: today, end: addDays(today, 9), showsInterview: false },
+    ds160: { id: "ds160", start: addDays(today, 4), end: addDays(today, 9), showsInterview: false },
+    book: { id: "book", start: addDays(today, 9), end: bookDate, showsInterview: true },
+    documents: { id: "documents", start: docsStart, end: docsEnd, showsInterview: false },
+    practice: { id: "practice", start: practiceStart, end: practiceEnd, showsInterview: true },
+    travel: { id: "travel", start: travelStart, end: travelEnd, showsInterview: false },
+    arrive: { id: "arrive", start: arrival, end: arrival, showsInterview: false },
+    return: { id: "return", start: returnBy, end: returnBy, showsInterview: false },
+  };
+
+  const steps: StepPlan[] = STEPS_BY_PURPOSE[visaType].map((id) => allPossibleSteps[id]);
 
   return { today, arrival, bookDate, visaType, posts, best, steps, returnBy };
 }
