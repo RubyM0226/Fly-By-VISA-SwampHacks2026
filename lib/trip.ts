@@ -2,23 +2,21 @@ import type { OriginCode } from "./countries";
 import { createPersistedStore, useStore } from "./store";
 
 /** What the traveler told us. Stored only in this browser. */
+export type VisaPurpose = "family" | "study" | "work";
+
 export interface Trip {
   from: "" | OriginCode;
   to: "" | "US";
-  purpose: "family";
+  purpose: VisaPurpose;
   stayMonths: number;
-  /** yyyy-mm-dd, the day they want to arrive */
   arrival: string;
-  /** step ids the traveler marked as done */
   done: Record<string, boolean>;
-  /** IATA code, e.g. "DEL" */
   homeAirport: string;
-  /** City name, e.g. "New Delhi" */
   homeCity: string;
-  /** IATA code, e.g. "JFK" */
   destAirport: string;
-  /** City name, e.g. "New York" */
   destCity: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const DEFAULT_TRIP: Trip = {
@@ -32,6 +30,8 @@ export const DEFAULT_TRIP: Trip = {
   homeCity: "New Delhi",
   destAirport: "JFK",
   destCity: "New York",
+  firstName: "",
+  lastName: "",
 };
 
 export const tripStore = createPersistedStore<Trip>("flybyvisa:trip", DEFAULT_TRIP);

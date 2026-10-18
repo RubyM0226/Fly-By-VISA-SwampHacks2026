@@ -7,8 +7,7 @@ import { DICTIONARY, useT } from "@/lib/i18n";
 import { COUNTRY_BY_CODE, type CountryCode } from "@/lib/countries";
 import { useProfile } from "@/lib/useProfile";
 import { useTrip, tripStore, type Trip } from "@/lib/trip";
-import { formatDate, STEP_ORDER } from "@/lib/journey";
-import { STEP_BY_ID } from "@/content/steps";
+import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { tripFromProfile } from "@/lib/tripProfile";
@@ -23,6 +22,8 @@ export function AccountScreen() {
   const consent = useSavedConsent();
   const [helperUrl, setHelperUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const formatDate = (date: string, locale: string) =>
+    new Intl.DateTimeFormat(locale).format(new Date(`${date}T00:00:00`));
 
   // Gatekeeper to prevent React infinite loops
   const hasSynced = useRef(false);
@@ -50,8 +51,8 @@ export function AccountScreen() {
   }, [auth0User?.sub]);
 
   // Calculate their current place on the roadmap
-  const currentId = STEP_ORDER.find((id) => !trip.done[id]);
-  const currentStepTitle = currentId 
+  const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
+  const currentId = stepOrder.find((id) => !trip.done[id]);  const currentStepTitle = currentId 
     ? STEP_BY_ID[currentId]?.text[lang]?.title || "Next Step"
     : "All steps completed! You are ready to fly.";
 
@@ -148,7 +149,13 @@ export function AccountScreen() {
 
               <div className="space-y-1">
                 <p className="text-sm font-bold uppercase tracking-wide text-muted">Reason for Visit</p>
-                <p className="text-lg font-medium text-slate-800">Tourism / Business (B1/B2)</p>
+                <p className="text-lg font-medium text-slate-800 capitalize">
+                  {trip.purpose === "study"
+                    ? "Study (F-1 Visa)"
+                    : trip.purpose === "work"
+                    ? "Work (H-1B Visa)"
+                    : "Tourism / Family (B1/B2)"}
+                </p>
               </div>
             </div>
 

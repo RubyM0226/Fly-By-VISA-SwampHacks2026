@@ -5,14 +5,14 @@ import { updateJourneyProfile } from "@/app/actions/journey";
 import { useToday } from "@/lib/clock";
 import { COUNTRIES, COUNTRY_BY_CODE, ORIGIN_CODES, type CountryCode } from "@/lib/countries";
 import { useT } from "@/lib/i18n";
-import { addDays, formatDate } from "@/lib/journey";
+import { addDays, formatDate, type VisaCategory } from "@/lib/journey";
 import { tripStore, useTrip, type Trip } from "@/lib/trip";
 import { CITIES_BY_COUNTRY, MONTH_CHOICES, tripFromProfile } from "@/lib/tripProfile";
 import { DatePicker } from "./DatePicker";
 import { Dropdown } from "./Dropdown";
 import { PlaceSelect } from "./PlaceSelect";
 
-type Draft = Pick<Trip, "from" | "homeCity" | "to" | "destCity" | "arrival" | "stayMonths">;
+type Draft = Pick<Trip, "from" | "homeCity" | "to" | "destCity" | "arrival" | "stayMonths" | "purpose">;
 type Status =
   | { kind: "idle" }
   | { kind: "saving" }
@@ -45,6 +45,7 @@ export function TripDetailsCard() {
     destCity: trip.destCity,
     arrival: trip.arrival,
     stayMonths: trip.stayMonths,
+    purpose: trip.purpose || "family",
   };
   const edit = (patch: Partial<Draft>) => {
     setDraft({ ...form, ...patch });
@@ -76,7 +77,7 @@ export function TripDetailsCard() {
         destAirport: "",
         arrival: form.arrival,
         stayMonths: form.stayMonths,
-        purpose: "family",
+        purpose: form.purpose,
       });
       if (!res.ok) {
         return setStatus({ kind: "error", key: SAVE_ERRORS[res.error] });
@@ -161,23 +162,39 @@ export function TripDetailsCard() {
         </div>
       </div>
 
+      {/* Purpose of Visit Selection */}
       <fieldset className="space-y-3">
         <legend className="mb-1 text-xl font-bold">{t("start.why")}</legend>
-        <label className="block cursor-pointer">
-          <input type="radio" name="trip-purpose" value="family" checked readOnly className="peer sr-only" />
-          <span className="flex min-h-14 items-center rounded-xl border-2 border-accent bg-accent px-4 py-3 text-lg font-semibold text-accent-ink peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]">
-            {t("start.why.family")}
-          </span>
-        </label>
-        {(["study", "work"] as const).map((p) => (
-          <label key={p} className="block">
-            <input type="radio" name="trip-purpose" disabled className="peer sr-only" />
-            <span className="flex min-h-14 items-center justify-between gap-3 rounded-xl border-2 border-dashed border-line-strong px-4 py-3 text-lg text-muted">
-              <span>{t(p === "study" ? "start.why.study" : "start.why.work")}</span>
-              <span className="text-base font-semibold">{t("home.comingSoon")}</span>
-            </span>
-          </label>
-        ))}
+        {(
+          [
+            { value: "family", labelKey: "start.why.family" },
+            { value: "study", labelKey: "start.why.study" },
+            { value: "work", labelKey: "start.why.work" },
+          ] as const
+        ).map((item) => {
+          const isSelected = form.purpose === item.value;
+          return (
+            <label key={item.value} className="block cursor-pointer">
+              <input
+                type="radio"
+                name="trip-purpose"
+                value={item.value}
+                checked={isSelected}
+                onChange={() => edit({ purpose: item.value as VisaCategory })}
+                className="peer sr-only"
+              />
+              <span
+                className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
+                  isSelected
+                    ? "border-accent bg-accent text-accent-ink"
+                    : "border-line-strong bg-surface text-slate-800 hover:bg-accent-soft"
+                }`}
+              >
+                {t(item.labelKey)}
+              </span>
+            </label>
+          );
+        })}
       </fieldset>
 
       <div className="space-y-2">

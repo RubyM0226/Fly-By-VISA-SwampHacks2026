@@ -51,11 +51,6 @@ function pool(): Pool {
   return globals.corpusPool;
 }
 
-/** The shared Gemini client for GEMINI_API_KEY (also used by Scam Check in lib/scam/service.ts). */
-export function ai(): GoogleGenAI {
-  return client(process.env.GEMINI_API_KEY ?? "");
-}
-
 function client(apiKey: string): GoogleGenAI {
   globals.corpusAi ??= new Map();
   let ai = globals.corpusAi.get(apiKey);
@@ -63,34 +58,123 @@ function client(apiKey: string): GoogleGenAI {
   return ai;
 }
 
-/** Embeds the query with the first key that works. Throws if none do. */
-async function embedQuery(query: string): Promise<number[]> {
-  const keys = [process.env.GEMINI_API_KEY, process.env.GEMINI_INDEX_API_KEY].filter(
-    (k, i, all): k is string => !!k && all.indexOf(k) === i
-  );
+/** Env variables holding Gemini keys, tried in order. */
+export type GeminiKeyName = "GEMINI_SCAM_API_KEY" | "GEMINI_API_KEY" | "GEMINI_INDEX_API_KEY";
+const DEFAULT_KEYS: GeminiKeyName[] = ["GEMINI_API_KEY", "GEMINI_INDEX_API_KEY"];
+
+/** True if any of `names` (by default GEMINI_API_KEY or GEMINI_INDEX_API_KEY) is set. */
+export function hasGeminiKey(names: GeminiKeyName[] = DEFAULT_KEYS): boolean {
+  return names.some((n) => !!process.env[n]);
+}
+
+type FailKind = "daily" | "minute" | "transient" | "auth" | "fatal";
+
+// Reads the error message to classify it, but never logs it (it can echo the request).
+function classify(err: unknown): { kind: FailKind; retryMs?: number } {
+  const e = err as { status?: unknown; message?: unknown };
+  const status = typeof e?.status === "number" ? e.status : undefined;
+  const msg = typeof e?.message === "string" ? e.message : "";
+  if (status === 429 || msg.includes("RESOURCE_EXHAUSTED")) {
+    if (/PerDay/i.test(msg)) return { kind: "daily" };
+    const m = /retry in ([\d.]+)s/i.exec(msg) ?? /"retryDelay":\s*"(\d+)s"/.exec(msg);
+    return { kind: "minute", retryMs: m ? Math.ceil(Number(m[1]) * 1000) + 500 : undefined };
+  }
+  if (status === 401 || status === 403 || /API key/i.test(msg)) return { kind: "auth" };
+  if (status === 400 || status === 404) return { kind: "fatal" };
+  return { kind: "transient" }; // 500 / 503 / 504, network errors, anything unknown
+}
+
+// Google documents daily quotas as resetting at midnight Pacific; verify in their docs.
+function msUntilMidnightPT(): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles", hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const n = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  const elapsed = ((n("hour") * 60 + n("minute")) * 60 + n("second")) * 1000;
+  return 24 * 3600_000 - elapsed + 1000;
+}
+
+const sleepAbortable = (ms: number, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) return reject(signal.reason ?? new Error("aborted"));
+    const t = setTimeout(resolve, ms);
+    signal?.addEventListener("abort", () => { clearTimeout(t); reject(signal.reason ?? new Error("aborted")); }, { once: true });
+  });
+
+const TRANSIENT_TRIES = 2; // keep low: the scam check has a 15 s timeout
+
+/**
+ * Runs `call` with each key in `names` until one works (by default
+ * GEMINI_API_KEY, then GEMINI_INDEX_API_KEY). Throws the last error if no key
+ * works. Also used by Scam Check in lib/scam/service.ts, which tries
+ * GEMINI_SCAM_API_KEY first. `model` scopes the cooldown: quotas are per
+ * model, so a key out of embedding quota may still generate. Pass `signal` so
+ * a timeout stops here instead of trying (and cooling down) the next key.
+ */
+export async function withGemini<T>(
+  model: string,
+  call: (ai: GoogleGenAI) => Promise<T>,
+  signal?: AbortSignal,
+  names: GeminiKeyName[] = DEFAULT_KEYS
+): Promise<T> {
+  const keys = names
+    .map((name) => ({ name, key: process.env[name] }))
+    .filter((k, i, all): k is { name: GeminiKeyName; key: string } => !!k.key && all.findIndex((o) => o.key === k.key) === i);
   globals.corpusKeyDownUntil ??= new Map();
   const downUntil = globals.corpusKeyDownUntil;
-  let lastErr: unknown = new Error("no Gemini key configured");
+  let lastErr: unknown;
+  let tried = 0;
 
-  for (const key of keys) {
-    if ((downUntil.get(key) ?? 0) > Date.now()) continue;
-    try {
-      const res = await client(key).models.embedContent({
-        model: EMBED_MODEL,
-        contents: query,
-        config: { outputDimensionality: EMBED_DIMS },
-      });
-      const vector = res.embeddings?.[0]?.values;
-      if (!vector) throw new Error("No embedding returned");
-      return vector;
-    } catch (err) {
-      lastErr = err;
-      downUntil.set(key, Date.now() + KEY_COOLDOWN_MS);
-      const name = key === process.env.GEMINI_API_KEY ? "GEMINI_API_KEY" : "GEMINI_INDEX_API_KEY";
-      console.warn(`${name} failed, trying the next option:`, String((err as Error).message ?? err).slice(0, 160));
+  for (const { name, key } of keys) {
+    const slot = `${model}:${key}`;
+    if ((downUntil.get(slot) ?? 0) > Date.now()) continue;
+
+    for (let attempt = 1; attempt <= TRANSIENT_TRIES; attempt++) {
+      tried++;
+      try {
+        return await call(client(key));
+      } catch (err) {
+        // Out of time: the key is fine, and there is no time left for the next one.
+        if (signal?.aborted) throw err;
+        lastErr = err;
+        const { kind, retryMs } = classify(err);
+        const status = (err as { status?: unknown }).status;
+        // Name, status and kind only: Scam Check errors can echo the (redacted) request.
+        console.warn(`${name} failed (${(err as Error).name ?? "error"}${typeof status === "number" ? " " + status : ""}) [${kind}]`);
+
+        if (kind === "fatal") throw err; // a bad request fails on every key
+        if (kind === "transient" && attempt < TRANSIENT_TRIES) {
+          await sleepAbortable(1500, signal); // retry the SAME key, no cooldown
+          continue;
+        }
+        if (kind === "daily") downUntil.set(slot, Date.now() + msUntilMidnightPT());
+        else if (kind === "minute") downUntil.set(slot, Date.now() + Math.min(retryMs ?? KEY_COOLDOWN_MS, 65_000));
+        else if (kind === "auth") downUntil.set(slot, Date.now() + 3600_000);
+        break; // next key
+      }
     }
   }
-  throw lastErr;
+
+  if (tried > 0) throw lastErr;
+  // Nothing was tried: say why, instead of the old misleading placeholder.
+  throw Object.assign(
+    new Error(keys.length ? "all Gemini keys are cooling down" : "no Gemini key configured"),
+    keys.length ? { status: 429 } : {}
+  );
+}
+
+/** Embeds the query with the first key that works. Throws if none do. */
+async function embedQuery(query: string): Promise<number[]> {
+  return withGemini(EMBED_MODEL, async (ai) => {
+    const res = await ai.models.embedContent({
+      model: EMBED_MODEL,
+      contents: query,
+      config: { outputDimensionality: EMBED_DIMS },
+    });
+    const vector = res.embeddings?.[0]?.values;
+    if (!vector) throw new Error("No embedding returned");
+    return vector;
+  });
 }
 
 /**

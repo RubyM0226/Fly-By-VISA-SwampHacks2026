@@ -3,7 +3,9 @@
 import assert from "node:assert/strict";
 import { cleanProfile, tripFromProfile } from "../lib/tripProfile";
 
-const today = "2026-10-17";
+const today = "2026-10-18";
+import type { VisaPurpose } from "../lib/tripProfile";
+
 const good = {
   from: "IN",
   fromCity: "Mumbai",
@@ -13,12 +15,24 @@ const good = {
   destAirport: "",
   arrival: "2026-10-28",
   stayMonths: 3,
-  purpose: "family",
+  purpose: "family" as VisaPurpose,
+  // cleanProfile always returns the (trimmed) names, empty when not given.
+  firstName: "",
+  lastName: "",
 };
 
 // Valid: airports come from the city list, not the browser.
 const ok = cleanProfile(good, today);
-assert.deepEqual(ok, { ok: true, profile: { ...good, homeAirport: "BOM", destAirport: "SEA" } });
+assert.deepEqual(ok, { ok: true, profile: { ...good, homeAirport: "BOM", destAirport: "SEA", purpose: "family" } });
+
+// Valid purpose variations (family, study, work)
+for (const p of ["family", "study", "work"] as const) {
+  const result = cleanProfile({ ...good, purpose: p }, today);
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.equal(result.profile.purpose, p);
+  }
+}
 
 // Coming-soon countries, unknown cities, a city from the other country: rejected.
 for (const bad of [
@@ -32,7 +46,7 @@ for (const bad of [
   { stayMonths: 0 },
   { stayMonths: 7 },
   { stayMonths: "3" },
-  { purpose: "work" },
+  { purpose: "tourism" }, // Invalid purpose category
   { arrival: "" },
   { arrival: "2026-02-30" },
   { arrival: "2026-13-01" },
@@ -54,6 +68,20 @@ assert.deepEqual(cleanProfile({ ...good, from: "MX", fromCity: "Cancún" }, toda
   profile: { ...good, from: "MX", fromCity: "Cancún", homeAirport: "CUN", destAirport: "SEA" },
 });
 
+// Home country and purpose survive a save and restore together.
+const ukStudy = cleanProfile({ ...good, from: "GB", fromCity: "Edinburgh", purpose: "study" }, today);
+assert.ok(ukStudy.ok);
+if (ukStudy.ok) {
+  const back = tripFromProfile(ukStudy.profile);
+  assert.equal(back.from, "GB");
+  assert.equal(back.homeCity, "Edinburgh");
+  assert.equal(back.homeAirport, "EDI");
+  assert.equal(back.purpose, "study");
+}
+// Old rows: no purpose -> family; no country -> India.
+assert.equal(tripFromProfile({ from: "MX", fromCity: "Tijuana" }).purpose, "family");
+assert.equal(tripFromProfile({ purpose: "work" }).from, "IN");
+
 // Saved rows: new keys (fromCity/toCity) and old keys (homeCity/destCity) both restore.
 assert.equal(tripFromProfile(good).homeCity, "Mumbai");
 assert.equal(tripFromProfile(good).destCity, "Seattle");
@@ -69,6 +97,8 @@ assert.deepEqual(tripFromProfile(null), {
   arrival: "",
   stayMonths: 1,
   purpose: "family",
+  firstName: "",
+  lastName: "",
 });
 
 console.log("trip profile checks passed");

@@ -1,0 +1,137 @@
+[
+  {
+    "id": "en-fee",
+    "lang": "en",
+    "question": "What is the visa fee?",
+    "expectedSourceUrls": [
+      "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/fees/fees-visa-services.html",
+      "https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html"
+    ],
+    "mustMention": ["$185"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-photo-size",
+    "lang": "en",
+    "question": "What photo size do I need?",
+    "expectedSourceUrls": ["https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html"],
+    "mustMention": ["1 inch", "1 3/8"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-b2-stay-length",
+    "lang": "en",
+    "question": "How long can I stay on a B-2?",
+    "expectedSourceUrls": [
+      "https://i94.cbp.dhs.gov/help",
+      "https://www.cbp.gov/travel/international-visitors/applying-admission-united-states"
+    ],
+    "mustMention": ["I-94", "Admit Until"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-extend-stay",
+    "lang": "en",
+    "question": "How do I extend my stay?",
+    "expectedSourceUrls": ["https://www.uscis.gov/visit-the-united-states/extend-your-stay"],
+    "mustMention": ["I-539", "45 days"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-what-is-i94",
+    "lang": "en",
+    "question": "What is an I-94?",
+    "expectedSourceUrls": ["https://i94.cbp.dhs.gov/help"],
+    "mustMention": ["Arrival/Departure"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-interview-documents",
+    "lang": "en",
+    "question": "What should I bring to the interview?",
+    "expectedSourceUrls": [
+      "https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html",
+      "https://in.usembassy.gov/nonimmigrant-visas/"
+    ],
+    "mustMention": ["passport", "DS-160", "receipt"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-hyderabad-wait",
+    "lang": "en",
+    "question": "How do I find wait times?",
+    "expectedSourceUrls": ["https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/wait-times.html"],
+    "mustMention": ["Wait Times"],
+    "expectNoHits": false
+  },
+  {
+    "id": "en-invitation-letter",
+    "lang": "en",
+    "question": "Do I need an invitation letter?",
+    "expectedSourceUrls": ["https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html"],
+    "mustMention": ["not needed|do not need|don't need|not required"],
+    "expectNoHits": false
+  },
+  {
+    "id": "hi-fee",
+    "lang": "hi",
+    "question": "वीज़ा की फीस कितनी है?",
+    "expectedSourceUrls": [
+      "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/fees/fees-visa-services.html",
+      "https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html"
+    ],
+    "mustMention": ["185"],
+    "expectNoHits": false
+  },
+  {
+    "id": "hi-extend-stay",
+    "lang": "hi",
+    "question": "मैं अपना ठहराव कैसे बढ़ाऊँ?",
+    "expectedSourceUrls": ["https://www.uscis.gov/visit-the-united-states/extend-your-stay"],
+    "mustMention": ["I-539", "45"],
+    "expectNoHits": false
+  },
+  {
+    "id": "hi-what-is-i94",
+    "lang": "hi",
+    "question": "I-94 क्या है?",
+    "expectedSourceUrls": ["https://i94.cbp.dhs.gov/help"],
+    "mustMention": ["I-94"],
+    "expectNoHits": false
+  },
+  {
+    "id": "hi-interview-documents",
+    "lang": "hi",
+    "question": "इंटरव्यू में मुझे क्या-क्या लेकर जाना चाहिए?",
+    "expectedSourceUrls": [
+      "https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visitor.html",
+      "https://in.usembassy.gov/nonimmigrant-visas/"
+    ],
+    "mustMention": ["DS-160"],
+    "expectNoHits": false
+  },
+  {
+    "id": "none-off-topic",
+    "lang": "en",
+    "question": "What is the best restaurant in Gainesville?",
+    "expectedSourceUrls": [],
+    "mustMention": [],
+    "expectNoHits": true
+  },
+  {
+    "id": "none-off-topic",
+    "lang": "en",
+    "question": "How is traffic right now?",
+    "expectedSourceUrls": [],
+    "mustMention": [],
+    "expectNoHits": true
+  },
+  {
+    "id": "none-off-topic",
+    "lang": "en",
+    "question": "Where is my package?",
+    "expectedSourceUrls": [],
+    "mustMention": [],
+    "expectNoHits": true
+  }
+]

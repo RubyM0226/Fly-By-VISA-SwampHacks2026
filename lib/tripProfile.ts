@@ -36,7 +36,9 @@ export const CITIES_BY_COUNTRY: Record<string, { city: string; airport: string }
 };
 
 /** The journeys.profile column. Cities are saved as fromCity / toCity. */
-export type JourneyProfile = {
+export type VisaPurpose = "family" | "study" | "work";
+
+export interface JourneyProfile {
   from: string;
   fromCity: string;
   homeAirport: string;
@@ -45,8 +47,10 @@ export type JourneyProfile = {
   destAirport: string;
   arrival: string;
   stayMonths: number;
-  purpose: string;
-};
+  purpose: VisaPurpose;
+  firstName?: string;
+  lastName?: string;
+}
 
 /** Rows saved before the key fix used homeCity / destCity, so read both. */
 type StoredProfile = Partial<JourneyProfile> & { homeCity?: string; destCity?: string };
@@ -62,7 +66,9 @@ export function tripFromProfile(p: StoredProfile | null | undefined): Omit<Trip,
     destAirport: p?.destAirport || "JFK",
     arrival: p?.arrival || "",
     stayMonths: p?.stayMonths || 1,
-    purpose: "family",
+    purpose: (["family", "study", "work"].includes(p?.purpose as string) ? p?.purpose : "family") as VisaPurpose,
+    firstName: p?.firstName || "",
+    lastName: p?.lastName || "",
   };
 }
 
@@ -92,7 +98,9 @@ export function cleanProfile(
   }
   if (arrival < today) return { ok: false, error: "pastDate" };
   if (!MONTH_CHOICES.includes(p.stayMonths as number)) return { ok: false, error: "invalid" };
-  if (p.purpose !== "family") return { ok: false, error: "invalid" };
+  if (!["family", "study", "work"].includes(p.purpose as string)) {
+  return { ok: false, error: "invalid" };
+}
   return {
     ok: true,
     profile: {
@@ -104,7 +112,9 @@ export function cleanProfile(
       destAirport: dest.airport,
       arrival,
       stayMonths: p.stayMonths as number,
-      purpose: "family",
+      purpose: (["family", "study", "work"].includes(p.purpose as string) ? p.purpose : "family") as VisaPurpose,
+      firstName: typeof p.firstName === "string" ? p.firstName.trim() : "",
+      lastName: typeof p.lastName === "string" ? p.lastName.trim() : "",
     },
   };
 }

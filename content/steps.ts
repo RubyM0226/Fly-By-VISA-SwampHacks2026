@@ -3,7 +3,7 @@ import type { DocId } from "./documents";
 import type { StepId } from "@/lib/journey";
 import type { Lang } from "@/lib/settings";
 
-// Step content for the U.S. B-2 visitor visa journey, from India, the UK or Mexico.
+// Step content for the U.S. visa journey (visit, study or work), from India, the UK or Mexico.
 // Written once with home-country tokens ({home}, {vac}) and India's links; see
 // lib/homeCountry.ts. Render through useHome().loc, never raw.
 //
@@ -319,6 +319,87 @@ export const STEPS: StepContent[] = [
       { label: { en: "USCIS: extend your stay", hi: "USCIS: ठहराव बढ़ाना" }, url: LINKS.uscisExtend },
       { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
     ],
+  }, {
+    id: "i20",
+    documents: [], 
+    links: [],
+    text: {
+      en: {
+        title: "Receive your Form I-20",
+        what: [
+          "Once accepted, your U.S. university's international office will issue a Form I-20.",
+          "Check that your name and birthdate exactly match your passport.",
+          "You must have this document before you can pay your SEVIS fee or apply for a visa.",
+        ],
+        simple: "Wait for your U.S. university to send your official I-20 document.",
+      },
+      hi: {
+        title: "अपना फॉर्म I-20 प्राप्त करें",
+        what: [
+          "स्वीकार किए जाने के बाद, आपका अमेरिकी विश्वविद्यालय एक फॉर्म I-20 जारी करेगा।",
+          "जांचें कि आपका नाम और जन्म तिथि आपके पासपोर्ट से बिल्कुल मेल खाते हैं।",
+          "वीज़ा के लिए आवेदन करने या SEVIS शुल्क का भुगतान करने से पहले आपके पास यह दस्तावेज़ होना चाहिए।",
+        ],
+        simple: "अपने अमेरिकी विश्वविद्यालय से आधिकारिक I-20 दस्तावेज़ आने की प्रतीक्षा करें।",
+      },
+    },
+  },
+  {
+    id: "sevis",
+    documents: [],
+    links: [
+      { 
+        url: "https://www.fmjfee.com/i901fee/index.html", 
+        label: { en: "Pay SEVIS Fee (Official)", hi: "SEVIS शुल्क भरें (आधिकारिक)" } 
+      }
+    ],
+    text: {
+      en: {
+        title: "Pay the SEVIS I-901 Fee",
+        cost: ["$350 for F-1 students"],
+        what: [
+          "You must pay the SEVIS fee before applying for your visa.",
+          "Go to the official FMJfee website to submit your payment.",
+          "Keep the payment receipt and print it out, as you must bring it to your interview.",
+        ],
+        simple: "Pay your mandatory student tracking fee to the U.S. government.",
+      },
+      hi: {
+        title: "SEVIS I-901 शुल्क भरें",
+        cost: ["F-1 छात्रों के लिए $350"],
+        what: [
+          "वीज़ा के लिए आवेदन करने से पहले आपको SEVIS शुल्क का भुगतान करना होगा।",
+          "भुगतान करने के लिए आधिकारिक FMJfee वेबसाइट पर जाएं।",
+          "भुगतान की रसीद संभाल कर रखें और उसका प्रिंट निकाल लें, इसे इंटरव्यू में ले जाना ज़रूरी है।",
+        ],
+        simple: "अमेरिकी सरकार को अपना अनिवार्य छात्र ट्रैकिंग शुल्क भरें।",
+      },
+    },
+  },
+  {
+    id: "petition",
+    documents: [],
+    links: [],
+    text: {
+      en: {
+        title: "Wait for I-797 Approval",
+        what: [
+          "Your U.S. employer must file an I-129 petition with USCIS on your behalf.",
+          "You cannot apply for your visa or schedule an interview until you receive the approved Form I-797 Notice of Action.",
+          "Coordinate with your employer's immigration lawyer for updates.",
+        ],
+        simple: "Wait for your employer's petition to be approved by USCIS.",
+      },
+      hi: {
+        title: "I-797 स्वीकृति की प्रतीक्षा करें",
+        what: [
+          "आपका अमेरिकी नियोक्ता आपकी ओर से USCIS में I-129 याचिका दायर करेगा।",
+          "जब तक आपको स्वीकृत फॉर्म I-797 नोटिस नहीं मिल जाता, तब तक आप वीज़ा आवेदन या इंटरव्यू बुक नहीं कर सकते।",
+          "अपडेट के लिए अपने नियोक्ता के इमिग्रेशन वकील से संपर्क में रहें।",
+        ],
+        simple: "USCIS द्वारा आपके नियोक्ता की याचिका स्वीकृत होने की प्रतीक्षा करें।",
+      },
+    },
   },
 ];
 

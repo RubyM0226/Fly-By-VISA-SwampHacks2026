@@ -1,11 +1,12 @@
 import { ThinkingLevel, Type } from "@google/genai";
 import { GLOSSARY } from "../../content/glossary";
 import { LINKS } from "../config";
-import { ai, searchCorpus } from "../corpusSearch";
+import { hasGeminiKey, searchCorpus, withGemini, type GeminiKeyName } from "../corpusSearch";
 import { rulesOnlyResponse, type ScamCheckRequest, type ScamCheckResponse, type Source } from "./api";
 import { enforceFloor, checkMessage } from "./check";
 import { redact } from "./redact";
 import { VERDICTS, type Verdict } from "./types";
+import { cachedAnswer, rememberAnswer } from "./demoCache";
 
 // Layer 2 of Scam Check: an optional Gemini review. Server only.
 //
@@ -16,11 +17,21 @@ import { VERDICTS, type Verdict } from "./types";
 // PRIVACY: never log, store or forward the message. Errors are logged by
 // name only, because some error messages echo the request.
 
-export const GEN_MODEL = "gemini-3.8-flash";
-const AI_TIMEOUT_MS = 15_000;
-const SEARCH_TIMEOUT_MS = 5_000;
+// Also used by Information Lookup (lib/ask.ts).
+export const GEN_MODEL = process.env.SCAM_GEN_MODEL ?? "gemini-3.8-flash";
+// The eval (scripts/eval/run-eval.ts) raises these with SCAM_AI_TIMEOUT_MS and
+// SCAM_SEARCH_TIMEOUT_MS so a slow key does not fail a run. The app uses the defaults.
+const timeoutMs = (name: string, fallback: number) => Number(process.env[name]) || fallback;
+const AI_TIMEOUT_MS = () => timeoutMs("SCAM_AI_TIMEOUT_MS", 15_000);
+const SEARCH_TIMEOUT_MS = () => timeoutMs("SCAM_SEARCH_TIMEOUT_MS", 5_000);
 const MAX_SUMMARY_CHARS = 900;
+// Scam Check has its own key (its own Google project and quota), so heavy
+// document search cannot use it up. The shared keys are the fallback.
+export const SCAM_KEYS: GeminiKeyName[] = ["GEMINI_SCAM_API_KEY", "GEMINI_INDEX_API_KEY"];
 const MAX_REASONS = 3;
+
+const FRAUD_QUERY = "visa fraud scams fake agents fees";
+let fraudMemo: Passage[] | null = null;
 
 export interface Passage extends Source {
   text: string;
@@ -39,46 +50,59 @@ export interface ScamDeps {
 /** The real Gemini client and corpus search, when their env variables are set. */
 export function defaultDeps(): ScamDeps {
   return {
-    generate: process.env.GEMINI_API_KEY
+    generate: hasGeminiKey(SCAM_KEYS)
       ? async (system, prompt, signal) => {
-          const res = await ai().models.generateContent({
-            model: GEN_MODEL,
-            contents: prompt,
-            config: {
-              systemInstruction: system,
-              responseMimeType: "application/json",
-              responseSchema: RESPONSE_SCHEMA,
-              temperature: 0.2,
-              maxOutputTokens: 1200,
-              // Low thinking keeps answers within the timeout.
-              thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-              abortSignal: signal,
-            },
-          });
-          return res.text ?? "";
+        const hit = cachedAnswer(system, prompt);
+        if (hit) return hit;
+          // Uses GEMINI_SCAM_API_KEY, then the shared keys when it is out of quota.
+          const raw = await withGemini(GEN_MODEL, async (ai) => {
+            const res = await ai.models.generateContent({
+              model: GEN_MODEL,
+              contents: prompt,
+              config: {
+                systemInstruction: system,
+                responseMimeType: "application/json",
+                responseSchema: RESPONSE_SCHEMA,
+                temperature: 0.2,
+                maxOutputTokens: 1200,
+                // Low thinking keeps answers within the timeout.
+                thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+                abortSignal: signal,
+              },
+            });
+            return res.text ?? "";
+          }, signal, SCAM_KEYS);
+          rememberAnswer(system, prompt, raw);
+          return raw;
         }
       : null,
     search:
-      process.env.GEMINI_API_KEY && process.env.DATABASE_URL
-        ? async (q) => (await searchCorpus(q, 3)).map((h) => ({ title: h.title, url: h.url, text: h.text }))
-        : null,
-    readImage: process.env.GEMINI_API_KEY
-      ? async (bytes, mimeType, signal) => {
-          const res = await ai().models.generateContent({
-            model: GEN_MODEL,
-            contents: [
-              {
-                role: "user",
-                parts: [
-                  { inlineData: { mimeType, data: Buffer.from(bytes).toString("base64") } },
-                  { text: "Copy all the text in this screenshot exactly as written, in reading order. Reply with only that text. If there is no text, reply with nothing." },
-                ],
-              },
-            ],
-            config: { temperature: 0, maxOutputTokens: 2000, thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }, abortSignal: signal },
-          });
-          return res.text ?? "";
+      hasGeminiKey() && process.env.DATABASE_URL
+        ? async (q) => {
+          if (q === FRAUD_QUERY && fraudMemo) return fraudMemo;
+          const out = (await searchCorpus(q, 3)).map((h) => ({ title: h.title, url: h.url, text: h.text}));
+          if (q === FRAUD_QUERY && out.length) fraudMemo = out;
+          return out;
         }
+        : null,
+    readImage: hasGeminiKey(SCAM_KEYS)
+      ? (bytes, mimeType, signal) =>
+          withGemini(GEN_MODEL, async (ai) => {
+            const res = await ai.models.generateContent({
+              model: GEN_MODEL,
+              contents: [
+                {
+                  role: "user",
+                  parts: [
+                    { inlineData: { mimeType, data: Buffer.from(bytes).toString("base64") } },
+                    { text: "Copy all the text in this screenshot exactly as written, in reading order. Reply with only that text. If there is no text, reply with nothing." },
+                  ],
+                },
+              ],
+              config: { temperature: 0, maxOutputTokens: 2000, thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }, abortSignal: signal },
+            });
+            return res.text ?? "";
+          }, signal, SCAM_KEYS)
       : null,
   };
 }
@@ -137,14 +161,14 @@ export async function runScamCheck(req: ScamCheckRequest, deps: ScamDeps): Promi
   const history = req.history.map((t) => ({ question: redact(t.question).text, answer: redact(t.answer).text }));
   const followUp = req.followUp ? redact(req.followUp).text : undefined;
 
-  const passages = await findPassages(deps, "visa fraud scams fake agents fees");
+  const passages = await findPassages(deps, FRAUD_QUERY);
   const sources = [...FIXED_SOURCES, ...passages.filter((p) => !FIXED_SOURCES.some((f) => f.url === p.url))];
 
   const prompt = buildPrompt({ message, history, followUp, lang: req.lang, rules, sources, passages });
 
   let raw: string;
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
+  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS());
   try {
     raw = await deps.generate(SYSTEM_PROMPT, prompt, ctrl.signal);
   } catch (err) {
@@ -173,7 +197,7 @@ export type ScreenshotText = { ok: true; text: string } | { ok: false; error: "i
 export async function readScreenshot(bytes: Uint8Array, mimeType: string, deps: ScamDeps): Promise<ScreenshotText> {
   if (!deps.readImage) return { ok: false, error: "image-unavailable" };
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
+  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS());
   try {
     const text = (await deps.readImage(bytes, mimeType, ctrl.signal)).trim();
     return text ? { ok: true, text } : { ok: false, error: "no-text" };
@@ -197,7 +221,7 @@ async function findPassages(deps: ScamDeps, query: string): Promise<Passage[]> {
   try {
     return await Promise.race([
       deps.search(query),
-      new Promise<Passage[]>((_, reject) => setTimeout(() => reject(new Error("timeout")), SEARCH_TIMEOUT_MS)),
+      new Promise<Passage[]>((_, reject) => setTimeout(() => reject(new Error("timeout")), SEARCH_TIMEOUT_MS())),
     ]);
   } catch (err) {
     console.error("scam-check: corpus search failed:", errorTag(err));

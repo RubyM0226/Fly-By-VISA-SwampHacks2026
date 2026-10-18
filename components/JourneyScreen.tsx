@@ -8,7 +8,7 @@ import { STEP_BY_ID } from "@/content/steps";
 import { CONTENT_LAST_CHECKED, LINKS } from "@/lib/config";
 import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
-import { buildJourney, formatDate, STEP_ORDER, WAIT_TIMES_BY_COUNTRY, type StepId } from "@/lib/journey";
+import { buildJourney, formatDate, STEPS_BY_PURPOSE, WAIT_TIMES_BY_COUNTRY, type StepId, type VisaCategory } from "@/lib/journey";
 import { tripStore, useTrip } from "@/lib/trip";
 import { tripFromProfile } from "@/lib/tripProfile";
 import { COUNTRY_BY_CODE, isOrigin } from "@/lib/countries";
@@ -40,9 +40,15 @@ export function JourneyScreen() {
   const journey = useMemo(
     () =>
       ready && home
-        ? buildJourney({ today, arrival: trip.arrival, stayMonths: trip.stayMonths, waits: WAIT_TIMES_BY_COUNTRY[home] })
+        ? buildJourney({
+            today,
+            arrival: trip.arrival,
+            stayMonths: trip.stayMonths,
+            visaType: (trip.purpose as VisaCategory) || "family",
+            waits: WAIT_TIMES_BY_COUNTRY[home],
+          })
         : null,
-    [ready, home, today, trip.arrival, trip.stayMonths],
+    [ready, home, today, trip.arrival, trip.stayMonths, trip.purpose],
   );
 
   // 1. Claim anonymous data, then fetch from Tiger Data
@@ -71,6 +77,9 @@ export function JourneyScreen() {
     }
   }, [user?.sub]); // <-- Depend on the string ID, not the object
 
+ // Determine the dynamic step order based on visa type
+  const stepOrder = STEPS_BY_PURPOSE[(trip.purpose as VisaCategory) || "family"];
+
   // 2. Save to Tiger Data when they click a step
   const handleToggleDone = async (id: StepId) => {
     const isNowDone = !trip.done[id];
@@ -80,7 +89,7 @@ export function JourneyScreen() {
 
     // Background Database Save
     if (user) {
-      const stepIndex = STEP_ORDER.findIndex(step => step === id);
+      const stepIndex = stepOrder.findIndex(step => step === id);
       await updateJourneyProgress(
         stepIndex + 1, 
         id, 
@@ -114,7 +123,7 @@ export function JourneyScreen() {
     );
   }
 
-  const currentId = STEP_ORDER.find((id) => !trip.done[id]);
+  const currentId = stepOrder.find((id) => !trip.done[id]);
   const statusOf = (id: StepId): StepStatus => (trip.done[id] ? "done" : id === currentId ? "current" : "upcoming");
 
   function showStep(id: StepId) {
@@ -239,7 +248,7 @@ export function JourneyScreen() {
         <RoadmapPath
           journey={journey}
           statusOf={statusOf}
-          open={openStep ?? { id: currentId ?? STEP_ORDER[0], focus: false }}
+          open={openStep ?? { id: currentId ?? stepOrder[0], focus: false }}
           onOpen={setOpenStep}
           onToggleDone={handleToggleDone} 
         />

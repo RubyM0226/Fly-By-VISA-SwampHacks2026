@@ -5,19 +5,25 @@ import { DOC_FAQ } from "../content/documentsFaq";
 import { DOCUMENTS } from "../content/documents";
 import { STEPS } from "../content/steps";
 import { HOME, localize } from "../lib/homeCountry";
-import { buildJourney, WAIT_TIMES_BY_COUNTRY } from "../lib/journey";
+import { buildJourney, STEPS_BY_PURPOSE, WAIT_TIMES_BY_COUNTRY, type VisaCategory } from "../lib/journey";
 import { OFFICE_MAPS } from "../lib/offices";
 
 const input = { today: "2026-10-18", arrival: "2027-09-01", stayMonths: 2 };
 for (const from of ["IN", "GB", "MX"] as const) {
-  const j = buildJourney({ ...input, waits: WAIT_TIMES_BY_COUNTRY[from] });
-  console.log(`${from}: best=${j.best.id} fit=${j.best.fit} interview=${j.best.interviewDate} slack=${j.best.slackDays}`);
-  if (from === "IN") console.log(JSON.stringify(j));
+  const seeds = WAIT_TIMES_BY_COUNTRY[from];
   // Every post with a wait time has a map pin, and the other way round.
-  assert.deepEqual(
-    WAIT_TIMES_BY_COUNTRY[from].map((w) => w.id).sort(),
-    OFFICE_MAPS[from].offices.map((o) => o.id).sort(),
-  );
+  assert.deepEqual(seeds.map((w) => w.id).sort(), OFFICE_MAPS[from].offices.map((o) => o.id).sort());
+  for (const visaType of ["family", "study", "work"] as VisaCategory[]) {
+    const j = buildJourney({ ...input, visaType, waits: seeds });
+    console.log(
+      `${from} ${visaType}: best=${j.best.id} wait=${j.best.waitMonths} fit=${j.best.fit} interview=${j.best.interviewDate} slack=${j.best.slackDays}`,
+    );
+    // Only this country's posts, each with this purpose's wait; only this purpose's steps, in order.
+    assert.deepEqual(j.posts.map((p) => p.id).sort(), seeds.map((w) => w.id).sort());
+    for (const p of j.posts) assert.equal(p.waitMonths, seeds.find((w) => w.id === p.id)!.waitMonths[visaType]);
+    assert.deepEqual(j.steps.map((st) => st.id), STEPS_BY_PURPOSE[visaType]);
+    assert.equal(j.visaType, visaType);
+  }
 }
 
 const content = { STEPS, DOCUMENTS, DOC_FAQ };

@@ -26,14 +26,12 @@ export function StartScreen() {
   const { user } = useUser();
   const [error, setError] = useState<"" | "needDate" | "pastDate" | "saveFailed">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Next keeps this screen alive (hidden) after we leave, so a pending
-  // "Saving..." would still be there on return. Reset it when hidden.
+  
   useLayoutEffect(() => () => setIsSubmitting(false), []);
   const dateRef = useRef<{ focus: () => void } | null>(null);
 
   const placesChosen = isOrigin(trip.from) && trip.to === "US";
 
-  // Default cities if not set
   const homeCityOptions = CITIES_BY_COUNTRY[trip.from] || [];
   const destCityOptions = CITIES_BY_COUNTRY["US"] || [];
 
@@ -80,10 +78,11 @@ export function StartScreen() {
       arrival: trip.arrival,
       stayMonths: trip.stayMonths,
       purpose: trip.purpose || "family",
+      firstName: trip.firstName || "",
+      lastName: trip.lastName || "",
     };
 
     if (user) {
-      // Signed in: change only their answers, never reset the steps they checked off.
       const res = await updateJourneyProfile(profile).catch(() => null);
       if (!res?.ok) {
         setIsSubmitting(false);
@@ -92,11 +91,8 @@ export function StartScreen() {
       }
     } else {
       try {
-        // Create the row in Tiger Data WITH the full profile, city, and airport data
         const res = await createIntakeJourney(profile);
-
         if (res?.id) {
-          // Stash the UUID locally so Auth0 can claim it upon login
           localStorage.setItem("temp_journey_id", res.id);
         }
       } catch (err) {
@@ -119,6 +115,35 @@ export function StartScreen() {
           <InfoTip label={t("start.privacyLabel")}>{t("start.privacyTip")}</InfoTip>
         </div>
 
+        {/* Traveler First and Last Name Inputs */}
+        <div className="space-y-4 rounded-xl border-2 border-line bg-surface p-4">
+          <h2 className="text-lg font-bold text-slate-800">Traveler Name</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="block text-sm font-bold text-slate-700">First Name</label>
+              <input
+                type="text"
+                placeholder="First name"
+                value={trip.firstName || ""}
+                onChange={(e) => update({ firstName: e.target.value })}
+                className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"
+                required
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="block text-sm font-bold text-slate-700">Last Name</label>
+              <input
+                type="text"
+                placeholder="Last name"
+                value={trip.lastName || ""}
+                onChange={(e) => update({ lastName: e.target.value })}
+                className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
         {/* City and Airport Selection */}
         <div className="space-y-4 rounded-xl border-2 border-line bg-surface p-4">
           <div className="space-y-2">
@@ -131,7 +156,7 @@ export function StartScreen() {
                   update({ homeCity: selected.city, homeAirport: selected.airport });
                 }
               }}
-              className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white"
+              className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"
             >
               {homeCityOptions.map((item) => (
                 <option key={item.city} value={item.city}>
@@ -151,7 +176,7 @@ export function StartScreen() {
                   update({ destCity: selected.city, destAirport: selected.airport });
                 }
               }}
-              className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white"
+              className="w-full rounded-xl border-2 border-line px-4 py-3 text-base font-medium bg-white text-slate-900"
             >
               {destCityOptions.map((item) => (
                 <option key={item.city} value={item.city}>
@@ -162,25 +187,40 @@ export function StartScreen() {
           </div>
         </div>
 
-        {/* 1. Why */}
-        <fieldset className="space-y-3">
-          <legend className="mb-1 text-xl font-bold">{t("start.why")}</legend>
-          <label className="block cursor-pointer">
-            <input type="radio" name="purpose" value="family" checked readOnly className="peer sr-only" />
-            <span className="flex min-h-14 items-center rounded-xl border-2 border-accent bg-accent px-4 py-3 text-lg font-semibold text-accent-ink peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]">
-              {t("start.why.family")}
-            </span>
-          </label>
-          {(["study", "work"] as const).map((p) => (
-            <label key={p} className="block">
-              <input type="radio" name="purpose" disabled className="peer sr-only" />
-              <span className="flex min-h-14 items-center justify-between gap-3 rounded-xl border-2 border-dashed border-line-strong px-4 py-3 text-lg text-muted">
-                <span>{t(p === "study" ? "start.why.study" : "start.why.work")}</span>
-                <span className="text-base font-semibold">{t("home.comingSoon")}</span>
-              </span>
-            </label>
-          ))}
-        </fieldset>
+        {/* 1. Why / Visa Type */}
+<fieldset className="space-y-3">
+  <legend className="mb-1 text-xl font-bold">{t("start.why")}</legend>
+  {(
+    [
+      { value: "family", labelKey: "start.why.family" },
+      { value: "study", labelKey: "start.why.study" },
+      { value: "work", labelKey: "start.why.work" },
+    ] as const
+  ).map((item) => {
+    const isSelected = (trip.purpose || "family") === item.value;
+    return (
+      <label key={item.value} className="block cursor-pointer">
+        <input
+          type="radio"
+          name="purpose"
+          value={item.value}
+          checked={isSelected}
+          onChange={() => update({ purpose: item.value })}
+          className="peer sr-only"
+        />
+        <span
+          className={`flex min-h-14 items-center rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors ${
+            isSelected
+              ? "border-accent bg-accent text-accent-ink"
+              : "border-line-strong bg-surface text-slate-800 hover:bg-accent-soft"
+          }`}
+        >
+          {t(item.labelKey)}
+        </span>
+      </label>
+    );
+  })}
+</fieldset>
 
         {/* 2. How long */}
         <div className="space-y-2">

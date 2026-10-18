@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { STEP_BY_ID } from "@/content/steps";
 import { useT } from "@/lib/i18n";
-import { STEP_ORDER, type Journey, type StepId } from "@/lib/journey";
-import { ArrowIcon, CheckIcon, PinIcon } from "./Icons";
+import { STEPS_BY_PURPOSE, type Journey, type StepId } from "@/lib/journey";import { ArrowIcon, CheckIcon, PinIcon } from "./Icons";
 import { StepDetails, type StepStatus } from "./StepDetails";
 
 export interface OpenStep {
@@ -27,13 +26,14 @@ interface Props {
  * Picking a pill centres it and opens its details below.
  */
 export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: Props) {
+  const stepOrder = STEPS_BY_PURPOSE[journey.visaType];
   const { t, lang } = useT();
   const trackRef = useRef<HTMLOListElement>(null);
   const [centered, setCentered] = useState(0);
 
   const currentIndex = Math.max(
     0,
-    STEP_ORDER.findIndex((id) => statusOf(id) === "current"),
+    stepOrder.findIndex((id) => statusOf(id) === "current"),
   );
 
   // Where a smooth scroll is heading, so quick arrow presses keep moving on
@@ -64,7 +64,7 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
   // Opening a step (from a pill or "Show details") brings it to the middle.
   const openId = open.id;
   useEffect(() => {
-    center(STEP_ORDER.indexOf(openId));
+    center(stepOrder.indexOf(openId));
   }, [openId, center]);
 
   // Keep track of which step is in the middle, for the arrows. While an arrow
@@ -88,14 +88,14 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
 
   function pick(id: StepId) {
     if (open.id === id) {
-      center(STEP_ORDER.indexOf(id));
+      center(stepOrder.indexOf(id));
       return;
     }
     onOpen({ id, focus: false });
   }
 
   const openPlan = journey.steps.find((s) => s.id === open.id);
-  const last = STEP_ORDER.length - 1;
+  const last = stepOrder.length - 1;
 
   return (
     <div>
@@ -121,7 +121,7 @@ export function RoadmapPath({ journey, statusOf, open, onOpen, onToggleDone }: P
             onScroll();
           }}
         >
-          {STEP_ORDER.map((id, i) => {
+          {stepOrder.map((id, i) => {
             const status = statusOf(id);
             return (
               <li key={id} className="roadmap-stop" data-status={status}>
