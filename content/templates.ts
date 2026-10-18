@@ -3,7 +3,7 @@ import type { Lang } from "@/lib/settings";
 // FlyByVisa helper templates, built as Word files by app/api/templates/[id].
 // These are ours, never an official form. Each file is in the person's site
 // language plus English; a language with no text here falls back to English.
-// Hindi is a first draft: have a fluent reader check it.
+// Hindi and Spanish are first drafts: have a fluent reader check them.
 
 export interface TemplateText {
   title: string;
@@ -64,6 +64,25 @@ const TEMPLATES = {
           "आप क्यों लौटेंगे (परिवार, घर, पेंशन, काम)",
         ],
         closing: "सच्चाई से लिखें। इंटरव्यू में अपने शब्दों में बोलें।",
+      },
+      es: {
+        title: "Un plan de viaje sencillo",
+        intro: [
+          "Esta es una plantilla de ayuda de FlyByVisa. NO es un formulario oficial del gobierno.",
+          "Llénela, imprímala y guárdela con sus papeles.",
+        ],
+        items: [
+          "Su nombre",
+          "Por qué viaja",
+          "A quién visitará y qué parentesco tiene con esa persona",
+          "Dirección donde se quedará en EE. UU.",
+          "Fecha en que planea llegar",
+          "Fecha en que planea volver a casa",
+          "Lugares que planea visitar",
+          "Quién pagará el viaje",
+          "Por qué volverá a casa (familia, hogar, pensión, trabajo)",
+        ],
+        closing: "Responda con sinceridad. En la entrevista use sus propias palabras.",
       },
     },
   },

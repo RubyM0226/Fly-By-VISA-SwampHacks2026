@@ -1,42 +1,54 @@
 ---
-source_url: https://www.passporthealthusa.com/destination-advice/united-states/
-title: Travel Vaccines and Advice for the United States
+source_url: https://wwwnc.cdc.gov/travel/page/survival-guide
+title: Your Survival Guide to Safe and Healthy Travel
 saved_on: 2026-10-17
 ---
 
-# Travel Vaccines and Advice for the United States
+# Your Survival Guide to Safe and Healthy Travel
 
-## About the United States
+Wherever your travels may take you, be prepared when it comes to your health before, during, and after travel.
 
-Due to its history of being the “melting pot” of the world, the United States is a large country that is rich in diverse cultures, lifestyles, and populations. Due to its size and varying geographical features, every region in the United States has its own unique culture and traditions. This can make traveling to the United States exciting, for you are likely to experience a variety of cultures while there.
+## Before You Go
 
-The majority of the United States population, identify themselves as Christian, with about 70% of the population. Other common religions include Jewish, Muslim, and non-religious populations.
+Take these steps to prepare for your travels aboard and anticipate issues that might arise.
 
-There is no official language of the United States, though the national language is English. Spanish is also a common language spoken.
+-   **Check your destination** for country-specific health risks and safety concerns. You should also know your health status before you make travel plans. When you are sick, you can spread diseases to others. Postpone your travel and stay home when you are sick.
+-   **Make an appointment with your health care provider** to get destination-specific vaccines, medicines, and advice at least a month before you leave. Discuss your itinerary and any planned activities with your provider so that he or she can make customized recommendations to ensure a healthy and safe journey.
+-   **Make sure you are up-to-date on all of your routine vaccines**, including measles-mumps-rubella (MMR). Measles and other infectious diseases can spread quickly in a large group of unvaccinated people.
+-   **Plan for unexpected health and travel issues.** Find out if your health insurance covers medical care abroad—many plans don’t! Make sure you have a plan to get care overseas, in case you need it. Consider buying travel insurance that covers health care and emergency evacuation, especially if you will be traveling to remote areas.
+-   **Prepare for emergencies.** Leave copies of important travel documents (e.g. itinerary, contact information, credit cards, passport, proof of school enrollment) with someone at home, in case you lose them during travel. Make sure someone at home knows how to reach you in an emergency and carry your emergency contacts with you at all times.
+-   **Enroll with the Department of State’s Smart Traveler Enrollment Program (STEP).** Monitor travel warnings for your destination. Enrolling also ensures that the US Department of State knows where you are if you have serious legal, medical, or financial difficulties while traveling. In the event of an emergency at home, STEP can also help friends and family contact you.
 
-The capital city of the United States is Washington D.C. with other major cities including Chicago, New York, and Los Angeles.
+### Pack Smart
 
-## Do I Need Vaccines for United States?
+Prepare a travel health kit with items you may need, especially those that are difficult to find on your trip.
 
-Yes, some vaccines are recommended or required for United States. The CDC and WHO recommend the following vaccinations for United States: hepatitis A, polio, chikungunya, rabies, hepatitis B, influenza, COVID-19, pneumonia, meningitis, chickenpox, shingles, Tdap (tetanus, diphtheria and pertussis) and measles, mumps and rubella (MMR).
+Fill your travel health kit with:
 
-### Recommended Travel Vaccinations for United States
+-   your prescriptions and over-the-counter medicines (enough to last your whole trip, plus a little extra)
+-   a first aid kit
+-   insect repellent
+-   sunscreen (SPF15 or higher)
+-   aloe
+-   alcohol-based hand sanitizer
+-   water disinfection tablets
+-   your health insurance card
 
--   Hepatitis A (spreads through food & water): Recommended for most travelers.
--   Polio (spreads through food & water): Due to an increase in cases globally, an additional adult booster is recommended for most travelers to any destination.
--   Chikungunya (spreads through mosquitoes): Limited local transmission in Texas and Florida.
--   Rabies (spreads through saliva of infected animals): Vaccine recommended for long-term travelers and those who may come in contact with animals.
--   Hepatitis B (spreads through blood & body fluids): Recommended for travelers to most regions.
+Please visit the Traveling Abroad with Medicine for more information.
 
-### Routine Vaccinations for United States
+## During Your Trip
 
--   Influenza (airborne): Vaccine components change annually.
--   COVID-19 (airborne): Recommended for travel to all regions, both foreign and domestic.
--   Pneumonia (airborne): Two vaccines given separately. All 65+ or immunocompromised should receive both.
--   Meningitis (direct contact & airborne): Given to anyone unvaccinated or at an increased risk, especially students.
--   Chickenpox (direct contact & airborne): Given to those unvaccinated that did not have chickenpox.
--   Shingles (direct contact): Vaccine can still be given if you have had shingles.
--   TDAP (Tetanus, Diphtheria & Pertussis) (wounds & airborne): Only one adult booster of pertussis required.
--   Measles Mumps Rubella (MMR) (various vectors): Given to anyone unvaccinated and/or born after 1957. One time adult booster recommended.
+-   **Choose safe transportation.** Always wear a seat belt, and children should ride in car seats. Motor vehicle crashes are the leading cause of death among healthy travelers. Be alert when crossing the street, especially in countries where people drive on the left side of the road. Find out other steps you can take to stay safe on the roads.
+-   **Avoid bug bites.** Use insect repellent and take other steps to avoid bug bites. Bugs, including mosquitoes, ticks, and fleas, can spread diseases such as malaria, yellow fever, Zika, dengue, chikungunya, and Lyme. These bugs are typically more active during warm weather.
+-   **Get help if you are sick or injured.** If you or a travel companion gets an injury or sickness that can’t be helped with basic first aid or an over-the-counter medicine, seek medical attention right away. Visit Getting Health Care During Travel to learn how to connect with a doctor or medical services during your trip.
+-   **Choose safe food and drink.** Contaminated food or drinks can cause travelers’ diarrhea and other diseases and disrupt your travel. Travelers to low or middle income destinations are especially at risk. Generally, foods served hot are usually safe to eat as well as dry and packaged foods. Bottled, canned, and hot drinks are usually safe to drink. Learn more about how to choose safer food and drinks to prevent getting sick.
+-   **Protect yourself from the sun.** Apply sunscreen with SPF 15 or higher when traveling. Protecting yourself from the sun isn’t just for tropical beaches—you can get a sunburn even if it’s cloudy or cold. You are at the highest risk for UV exposure when you are traveling during summer months, near the equator, at high altitudes, or between 10 am to 4 pm.
+-   **Wash your hands.** Regular handwashing is one of the best ways to remove germs, avoid getting sick, and prevent the spread of germs to others. Wash your hands with soap and water. If soap and water are not available, use hand sanitizer containing at least 60% alcohol.
+-   **Be safe around animals.** Avoid animals, including pets, local farm animals, and wild animals. In addition to the risk of rabies, all animal bites carry a risk of bacterial infection.
+-   **Be careful during water activities.** Drowning is a major cause of death when traveling. Follow water safety recommendations, which includes swimming, boating and diving, especially in countries where emergency services may not be quickly available.
 
-Sources: CDC, WHO and ISTM
+## After Travel
+
+If you traveled and feel sick, particularly if you have a fever, talk to a healthcare provider and tell them about any areas you recently traveled to.
+
+If you need medical care abroad, see Getting Health Care During Travel.

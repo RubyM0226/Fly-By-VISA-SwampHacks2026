@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import type { Lang } from "./settings";
+import { SPEECH_TAG } from "./locale";
 
 // Read-aloud using the browser's built-in speech (no key, nothing sent anywhere).
 // Hindi needs a Hindi voice installed on the device; most Android phones and
@@ -55,7 +56,7 @@ export function speak(text: string, lang: Lang, ownerId: string) {
 
   session += 1;
   const mine = session;
-  const tag = lang === "hi" ? "hi-IN" : "en-IN";
+  const tag = SPEECH_TAG[lang];
   const voices = synth.getVoices();
   const voice =
     voices.find((v) => v.lang.replace("_", "-").toLowerCase() === tag.toLowerCase()) ??

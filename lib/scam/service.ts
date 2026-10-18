@@ -7,6 +7,8 @@ import { enforceFloor, checkMessage } from "./check";
 import { redact } from "./redact";
 import { VERDICTS, type Verdict } from "./types";
 import { cachedAnswer, rememberAnswer } from "./demoCache";
+import { AI_REPLY_LANGUAGE } from "../locale";
+import type { Lang } from "../settings";
 
 // Layer 2 of Scam Check: an optional Gemini review. Server only.
 //
@@ -233,7 +235,7 @@ function buildPrompt(p: {
   message: string;
   history: { question: string; answer: string }[];
   followUp?: string;
-  lang: "en" | "hi";
+  lang: Lang;
   rules: ReturnType<typeof checkMessage>;
   sources: Source[];
   passages: Passage[];
@@ -247,7 +249,7 @@ function buildPrompt(p: {
   const turns = p.history.map((t) => `User: ${t.question}\nYou: ${t.answer}`).join("\n");
 
   return [
-    `Reply language: ${p.lang === "hi" ? "Hindi in Devanagari script (simple everyday Hindi)" : "simple English"}.`,
+    `Reply language: ${AI_REPLY_LANGUAGE[p.lang]}.`,
     `RULES FOUND (fixed checks, already shown to the user; current verdict "${p.rules.verdict}"):\n${found}`,
     `SOURCES (cite only these URLs):\n${p.sources.map((s) => `- ${s.title}: ${s.url}`).join("\n")}`,
     excerpts ? `OFFICIAL EXCERPTS:\n${excerpts}` : "",

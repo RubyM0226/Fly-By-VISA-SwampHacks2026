@@ -1,6 +1,6 @@
 // Central place for names, dates and links the team will tweak often.
 
-export const APP_NAME = { en: "FlyByVisa", hi: "FlyByVisa" } as const;
+export const APP_NAME = { en: "FlyByVisa", hi: "FlyByVisa", es: "FlyByVisa" } as const;
 
 // Shown on every page. Update this whenever someone re-verifies the content
 // against the official pages.

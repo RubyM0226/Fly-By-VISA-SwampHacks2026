@@ -73,14 +73,25 @@ export const STEPS: StepContent[] = [
         time: ["लगभग 1 सप्ताह।"],
         simple: "देखिए कि पासपोर्ट जल्दी खत्म न हो रहा हो। जानिए कि आप क्यों जा रहे हैं।",
       },
+      es: {
+        title: "Prepárese",
+        what: [
+          "Revise su pasaporte.",
+          "Debe seguir vigente 6 meses después de que regrese a casa.",
+          "Sepa por qué viaja.",
+          "Sepa cuánto tiempo se quedará.",
+        ],
+        time: ["Aproximadamente 1 semana."],
+        simple: "Asegúrese de que su pasaporte no venza pronto. Sepa por qué viaja.",
+      },
     },
     links: [
       {
-        label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" },
+        label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ", es: "Página oficial de la visa de visitante" },
         url: LINKS.visitorVisa,
       },
       {
-        label: { en: "Official Visa Wizard", hi: "आधिकारिक वीज़ा विज़ार्ड" },
+        label: { en: "Official Visa Wizard", hi: "आधिकारिक वीज़ा विज़ार्ड", es: "Asistente oficial de visas (Visa Wizard)" },
         url: LINKS.visaWizard,
       },
     ],
@@ -117,10 +128,23 @@ export const STEPS: StepContent[] = [
         time: ["कुछ घंटे।", "आप फ़ॉर्म सेव करके बाद में पूरा कर सकते हैं।"],
         simple: "हर सवाल का जवाब सच्चाई से दें। अंत में पुष्टि पृष्ठ प्रिंट करें।",
       },
+      es: {
+        title: "Llene el formulario en línea",
+        what: [
+          "Llene el formulario en línea [[ds160|DS-160]].",
+          "Responda todas las preguntas con sinceridad.",
+          "Suba una foto que cumpla las reglas.",
+          "Al final, imprima la página con el código de barras.",
+          "Lleve esta página a su entrevista.",
+        ],
+        cost: ["El formulario es gratis.", "La tarifa de la visa se paga en el siguiente paso."],
+        time: ["Unas pocas horas.", "Puede guardar el formulario y terminarlo más tarde."],
+        simple: "Responda todas las preguntas con sinceridad. Imprima la página de confirmación al final.",
+      },
     },
     links: [
-      { label: { en: "Open the official DS-160 form", hi: "आधिकारिक DS-160 फ़ॉर्म खोलें" }, url: LINKS.ds160 },
-      { label: { en: "Official photo rules", hi: "फ़ोटो के आधिकारिक नियम" }, url: LINKS.photoRules },
+      { label: { en: "Open the official DS-160 form", hi: "आधिकारिक DS-160 फ़ॉर्म खोलें", es: "Abrir el formulario oficial DS-160" }, url: LINKS.ds160 },
+      { label: { en: "Official photo rules", hi: "फ़ोटो के आधिकारिक नियम", es: "Reglas oficiales de la foto" }, url: LINKS.photoRules },
     ],
   },
   {
@@ -155,14 +179,27 @@ export const STEPS: StepContent[] = [
         time: ["बुकिंग: लगभग 1 दिन।", "इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।"],
         simple: "पहले भुगतान करें, फिर बुक करें। जितना जल्दी हो सके बुक करें।",
       },
+      es: {
+        title: "Pague la tarifa y reserve sus citas",
+        what: [
+          "Pague la tarifa de la visa.",
+          "Luego reserve su entrevista en una oficina de EE. UU. en India.",
+          "Quizás deba ir primero a un [[vac|{vac}]], para las huellas digitales.",
+          "Reserve lo antes posible. La espera es larga.",
+          "Siga el sitio web de la Embajada de EE. UU. Los pasos pueden cambiar.",
+        ],
+        cost: ["Tarifa de la visa: $185.", "Pueden aplicarse otras tarifas."],
+        time: ["Reservar: aproximadamente 1 día.", "Esperar la entrevista: normalmente meses."],
+        simple: "Pague y luego reserve. Reserve lo antes posible.",
+      },
     },
     // VERIFY: the two-appointment (VAC + interview) flow and the booking portal
     // for India come from non-official guides that disagree. Confirm on the
     // embassy page before the demo.
     links: [
-      { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ" }, url: LINKS.fees },
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा" }, url: LINKS.embassyIndia },
-      { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय" }, url: LINKS.waitTimes },
+      { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ", es: "Página oficial de tarifas" }, url: LINKS.fees },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय", es: "Tiempos de espera oficiales" }, url: LINKS.waitTimes },
     ],
   },
   {
@@ -195,9 +232,21 @@ export const STEPS: StepContent[] = [
         time: ["1 से 2 सप्ताह।"],
         simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन {home} में है और आप यात्रा के बाद लौटेंगे।",
       },
+      es: {
+        title: "Reúna sus documentos",
+        what: [
+          "Reúna los papeles que el oficial puede pedir.",
+          "Demuestre que su vida está en {home}: familia, vivienda o pensión.",
+          "Demuestre que va a regresar a casa.",
+          "Demuestre cómo se pagará el viaje.",
+          "No hace falta una carta de familiares en EE. UU.",
+        ],
+        time: ["De 1 a 2 semanas."],
+        simple: "Reúna papeles que muestren que su vida está en {home} y que volverá a casa después del viaje.",
+      },
     },
     links: [
-      { label: { en: "What the officer may ask for (official)", hi: "अधिकारी क्या माँग सकते हैं (आधिकारिक)" }, url: LINKS.visitorVisa },
+      { label: { en: "What the officer may ask for (official)", hi: "अधिकारी क्या माँग सकते हैं (आधिकारिक)", es: "Qué puede pedir el oficial (oficial)" }, url: LINKS.visitorVisa },
     ],
   },
   {
@@ -230,9 +279,21 @@ export const STEPS: StepContent[] = [
         time: ["कुछ शामें।"],
         simple: "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
       },
+      es: {
+        title: "Practique para la entrevista",
+        what: [
+          "Practique sus respuestas en voz alta.",
+          "¿A quién va a visitar?",
+          "¿Cuánto tiempo se quedará?",
+          "¿Por qué va a regresar a casa?",
+          "Responda con sinceridad, con sus propias palabras. Sea breve.",
+        ],
+        time: ["Unas cuantas tardes."],
+        simple: "Practique decir sus respuestas en voz alta.",
+      },
     },
     links: [
-      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में U.S. Embassy: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
     ],
   },
   {
@@ -263,12 +324,23 @@ export const STEPS: StepContent[] = [
         ],
         simple: "वीज़ा मिलने के बाद ही टिकट खरीदें। हम उड़ानों की तुलना में मदद करते हैं।",
       },
+      es: {
+        title: "Reserve su vuelo",
+        what: [
+          "Espere hasta tener su visa y que le devuelvan el pasaporte.",
+          "Luego compare vuelos con el botón de arriba.",
+          "Elija un vuelo con pocas escalas y tiempo suficiente para cambiar de avión.",
+          "Pida ayuda con silla de ruedas a la aerolínea si la necesita.",
+          "Piense en un seguro de viaje.",
+        ],
+        simple: "Compre los boletos solo después de tener su visa. Le ayudamos a comparar vuelos.",
+      },
     },
     action: {
-      label: { en: "Find and compare flights", hi: "उड़ानें खोजें और तुलना करें" },
+      label: { en: "Find and compare flights", hi: "उड़ानें खोजें और तुलना करें", es: "Buscar y comparar vuelos" },
       href: "/flights",
     },
-    links: [{ label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ" }, url: LINKS.visitorVisa }],
+    links: [{ label: { en: "Official visitor visa page", hi: "आधिकारिक आगंतुक वीज़ा पृष्ठ", es: "Página oficial de la visa de visitante" }, url: LINKS.visitorVisa }],
   },
   {
     id: "arrive",
@@ -299,10 +371,21 @@ export const STEPS: StepContent[] = [
         ],
         simple: "कागज़ात तैयार रखें। अधिकारी तय करते हैं कि आप कितने दिन रुक सकते हैं।",
       },
+      es: {
+        title: "Llegue a EE. UU.",
+        what: [
+          "Tenga a mano su pasaporte, su visa y los datos de su viaje.",
+          "Un oficial de la frontera de EE. UU. ([[cbp|CBP]]) lo revisa en el aeropuerto.",
+          "El oficial decide si puede entrar y por cuánto tiempo.",
+          "La visa no garantiza la entrada.",
+          "Su fecha de salida está en su registro [[i94|I-94]].",
+        ],
+        simple: "Tenga sus papeles listos. El oficial decide cuánto tiempo puede quedarse.",
+      },
     },
     links: [
-      { label: { en: "CBP: information for visitors", hi: "CBP: आगंतुकों के लिए जानकारी" }, url: LINKS.cbpVisitors },
-      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
+      { label: { en: "CBP: information for visitors", hi: "CBP: आगंतुकों के लिए जानकारी", es: "CBP: información para visitantes" }, url: LINKS.cbpVisitors },
+      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें", es: "Consulte su I-94" }, url: LINKS.i94 },
     ],
   },
   {
@@ -333,14 +416,25 @@ export const STEPS: StepContent[] = [
         cost: ["ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है।", "शुल्क के बारे में [[uscis|USCIS]] से पूछें।"],
         simple: "समय पर घर लौटें। काम न करें।",
       },
+      es: {
+        title: "Regrese a tiempo",
+        what: [
+          "Salga de EE. UU. antes de la fecha de su registro [[i94|I-94]].",
+          "No trabaje durante su visita.",
+          "Quedarse demasiado puede cancelar su visa.",
+          "¿Quiere quedarse más tiempo? Lea las reglas antes de esa fecha.",
+        ],
+        cost: ["Pedir más tiempo puede costar una tarifa.", "Pregunte a [[uscis|USCIS]] por la tarifa."],
+        simple: "Regrese a casa a tiempo. No trabaje.",
+      },
     },
     links: [
-      { label: { en: "USCIS: extend your stay", hi: "USCIS: ठहराव बढ़ाना" }, url: LINKS.uscisExtend },
-      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें" }, url: LINKS.i94 },
+      { label: { en: "USCIS: extend your stay", hi: "USCIS: ठहराव बढ़ाना", es: "USCIS: extender su estadía" }, url: LINKS.uscisExtend },
+      { label: { en: "Look up your I-94", hi: "अपना I-94 देखें", es: "Consulte su I-94" }, url: LINKS.i94 },
     ],
   }, {
     id: "i20",
-    documents: [], 
+    documents: ["i20Form"],
     links: [],
     text: {
       en: {
@@ -363,15 +457,24 @@ export const STEPS: StepContent[] = [
         ],
         simple: "अपने U.S. विश्वविद्यालय से आधिकारिक I-20 दस्तावेज़ आने की प्रतीक्षा करें।",
       },
+      es: {
+        title: "Reciba su Formulario I-20",
+        what: [
+          "Una vez aceptado, la oficina internacional de su universidad en EE. UU. le emitirá un Formulario I-20.",
+          "Revise que su nombre y fecha de nacimiento coincidan exactamente con su pasaporte.",
+          "Debe tener este documento antes de poder pagar la tarifa SEVIS o solicitar la visa.",
+        ],
+        simple: "Espere a que su universidad en EE. UU. le envíe su documento I-20 oficial.",
+      },
     },
   },
   {
     id: "sevis",
-    documents: [],
+    documents: ["sevisReceipt"],
     links: [
       { 
         url: "https://www.fmjfee.com/i901fee/index.html", 
-        label: { en: "Pay SEVIS Fee (Official)", hi: "SEVIS शुल्क भरें (आधिकारिक)" } 
+        label: { en: "Pay SEVIS Fee (Official)", hi: "SEVIS शुल्क भरें (आधिकारिक)", es: "Pague la tarifa SEVIS (oficial)" } 
       }
     ],
     text: {
@@ -397,11 +500,21 @@ export const STEPS: StepContent[] = [
         ],
         simple: "U.S. सरकार को अपना अनिवार्य छात्र ट्रैकिंग शुल्क भरें।",
       },
+      es: {
+        title: "Pague la tarifa SEVIS I-901",
+        cost: ["$350 para estudiantes F-1"],
+        what: [
+          "Debe pagar la tarifa SEVIS antes de solicitar su visa.",
+          "Vaya al sitio web oficial de FMJfee para hacer su pago.",
+          "Guarde el recibo del pago e imprímalo, porque debe llevarlo a su entrevista.",
+        ],
+        simple: "Pague al gobierno de EE. UU. la tarifa obligatoria de seguimiento de estudiantes.",
+      },
     },
   },
   {
     id: "petition",
-    documents: [],
+    documents: ["i797Notice"],
     links: [],
     text: {
       en: {
@@ -423,6 +536,15 @@ export const STEPS: StepContent[] = [
           "अपडेट के लिए अपने नियोक्ता के इमिग्रेशन वकील से संपर्क में रहें।",
         ],
         simple: "USCIS द्वारा आपके नियोक्ता की याचिका स्वीकृत होने की प्रतीक्षा करें।",
+      },
+      es: {
+        title: "Espere la aprobación del I-797",
+        what: [
+          "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
+          "No puede solicitar su visa ni programar una entrevista hasta recibir el Aviso de Acción I-797 aprobado.",
+          "Hable con el abogado de inmigración de su empleador para recibir novedades.",
+        ],
+        simple: "Espere a que USCIS apruebe la petición de su empleador.",
       },
     },
   },

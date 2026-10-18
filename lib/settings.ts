@@ -1,7 +1,7 @@
 import { createPersistedStore, useStore } from "./store";
 import { SETTINGS_KEY } from "./settingsScript";
 
-export type Lang = "en" | "hi";
+export type Lang = "en" | "hi" | "es";
 
 export interface Settings {
   lang: Lang;

@@ -9,10 +9,12 @@ import { useHome } from "@/lib/homeCountry";
 import { plainText, RichText } from "./Glossary";
 import { SpeakButton } from "./SpeakButton";
 import { CloseIcon, ExternalIcon } from "./Icons";
+import type { Lang } from "@/lib/settings";
 
-const EXAMPLES: Record<"en" | "hi", string[]> = {
+const EXAMPLES: Record<Lang, string[]> = {
   en: ["DS-160", "Passport photo", "Visa fee receipt", "Invitation letter"],
   hi: ["DS-160", "पासपोर्ट फ़ोटो", "शुल्क रसीद", "निमंत्रण पत्र"],
+  es: ["DS-160", "Foto del pasaporte", "Recibo de la tarifa", "Carta de invitación"],
 };
 
 type Turn = AskTurn & { sources: AskAnswer["sources"] };

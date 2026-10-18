@@ -73,6 +73,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It asks you to pay by gift card, UPI, wire transfer, crypto or cash to a person. Visa fees are never paid this way.",
       hi: "इसमें गिफ्ट कार्ड, UPI, वायर ट्रांसफर, क्रिप्टो या किसी व्यक्ति को नकद देने को कहा गया है। वीज़ा शुल्क कभी इस तरह नहीं दिया जाता।",
+      es: "Le pide pagar con tarjeta de regalo, UPI, transferencia bancaria, criptomonedas o efectivo a una persona. Las tarifas de la visa nunca se pagan así.",
     },
     match: (v) => [
       ...find(v, [near(PAY_METHOD, PAY_VERB, 40), near(PAY_METHOD, AMOUNT, 30)], {
@@ -89,6 +90,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It promises a guaranteed visa or interview slot. No one can promise this. Only the officer at your interview decides.",
       hi: "इसमें पक्का वीज़ा या पक्के इंटरव्यू स्लॉट का वादा है। ऐसा वादा कोई नहीं कर सकता। फ़ैसला सिर्फ़ इंटरव्यू वाले अधिकारी करते हैं।",
+      es: "Promete una visa o una cita de entrevista garantizada. Nadie puede prometer eso. Solo decide el oficial en su entrevista.",
     },
     match: (v) =>
       find(
@@ -116,6 +118,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It offers to speed up or fast-track your appointment for money. Earlier dates cannot be bought.",
       hi: "इसमें पैसे लेकर अपॉइंटमेंट जल्दी दिलाने की बात है। जल्दी की तारीख खरीदी नहीं जा सकती।",
+      es: "Ofrece adelantar su cita a cambio de dinero. Las fechas más tempranas no se pueden comprar.",
     },
     match: (v) => {
       const slot = "appointment|slot|date|interview|visa|अपॉइंटमेंट|स्लॉट|तारीख|डेट|इंटरव्यू|वीजा";
@@ -142,6 +145,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "Someone says they are from the U.S. Embassy or Consulate but wants you on WhatsApp, Telegram or a personal number. Real officials do not do this.",
       hi: "कोई खुद को U.S. Embassy या कांसुलेट का बताता है, पर WhatsApp, Telegram या निजी नंबर पर बात करना चाहता है। असली अधिकारी ऐसा नहीं करते।",
+      es: "Alguien dice ser de la Embajada o el Consulado de EE. UU., pero quiere hablar con usted por WhatsApp, Telegram o un número personal. Los funcionarios reales no hacen esto.",
     },
     match: (v) => {
       const office = "embassy|consulate|state department|uscis|visa (?:office|department|section)|immigration (?:office|department)|दूतावास|एम्बेसी|कांसुलेट";
@@ -174,6 +178,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It threatens you with arrest, deportation, a police case or a cancelled visa. Scammers use fear to rush you.",
       hi: "इसमें गिरफ्तारी, देश से निकालने, पुलिस केस या वीज़ा रद्द होने की धमकी है। धोखेबाज़ डर दिखाकर जल्दबाज़ी कराते हैं।",
+      es: "Lo amenaza con arresto, deportación, un caso policial o la cancelación de su visa. Los estafadores usan el miedo para apurarlo.",
     },
     match: (v) =>
       find(
@@ -197,6 +202,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It pushes you to act right now (\"last chance\", \"today only\"). Real visa steps give you time.",
       hi: "इसमें तुरंत कुछ करने का दबाव है (\"आखिरी मौका\", \"सिर्फ़ आज\")। असली वीज़ा प्रक्रिया में समय मिलता है।",
+      es: "Lo presiona para actuar ya mismo (\"última oportunidad\", \"solo hoy\"). Los trámites reales de visa le dan tiempo.",
     },
     match: (v) =>
       find(v, [
@@ -218,6 +224,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It asks for an OTP, PIN, password or bank details. Never share these with anyone, even someone who says they are an official.",
       hi: "इसमें OTP, PIN, पासवर्ड या बैंक की जानकारी माँगी गई है। ये किसी को न दें, चाहे वह खुद को अधिकारी बताए।",
+      es: "Le pide un OTP, un PIN, una contraseña o datos bancarios. Nunca los comparta con nadie, ni siquiera con alguien que diga ser funcionario.",
     },
     match: (v) => {
       const secret = [
@@ -235,6 +242,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It asks you to send your passport, passport photos or Aadhaar over chat. Only share these with family you know, or on the official .gov site.",
       hi: "इसमें चैट पर पासपोर्ट, पासपोर्ट फ़ोटो या आधार भेजने को कहा गया है। इन्हें सिर्फ़ जाने-पहचाने परिवार वालों को या आधिकारिक .gov साइट पर ही दें।",
+      es: "Le pide enviar su pasaporte, fotos de pasaporte o Aadhaar por chat. Solo compártalos con familiares que conozca o en el sitio oficial .gov.",
     },
     match: (v) => {
       const doc = [
@@ -251,6 +259,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It has a link that is not a U.S. government website. U.S. government sites end in .gov. Do not type your details on other sites.",
       hi: "इसमें ऐसा लिंक है जो U.S. सरकार की वेबसाइट नहीं है। U.S. सरकारी साइटें .gov पर खत्म होती हैं। दूसरी साइटों पर अपनी जानकारी न डालें।",
+      es: "Tiene un enlace que no es de un sitio web del gobierno de EE. UU. Los sitios del gobierno de EE. UU. terminan en .gov. No escriba sus datos en otros sitios.",
     },
     match: (v) => findLinks(v).filter((l) => !l.host.endsWith(".gov")).map((l) => l.phrase),
   },
@@ -261,6 +270,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It has a shortened link (like bit.ly) that hides where it really goes.",
       hi: "इसमें छोटा किया हुआ लिंक (जैसे bit.ly) है, जो छिपा देता है कि वह असल में कहाँ ले जाता है।",
+      es: "Tiene un enlace acortado (como bit.ly) que oculta a dónde lleva realmente.",
     },
     match: (v) =>
       findLinks(v)
@@ -275,6 +285,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It has odd spelling or grammar and also pressures you. Official messages are carefully written.",
       hi: "इसमें अजीब वर्तनी या व्याकरण है और साथ में दबाव भी है। आधिकारिक संदेश ध्यान से लिखे जाते हैं।",
+      es: "Tiene ortografía o gramática extraña y además lo presiona. Los mensajes oficiales están bien escritos.",
     },
     match: (v) => {
       const markers = find(v, [
@@ -299,6 +310,7 @@ export const SIGNALS: Signal[] = [
     explanation: {
       en: "It ties your visa to a job offer, lottery or prize. A visitor visa never comes with a job or a prize.",
       hi: "इसमें वीज़ा को नौकरी, लॉटरी या इनाम से जोड़ा गया है। आगंतुक वीज़ा के साथ कभी नौकरी या इनाम नहीं मिलता।",
+      es: "Relaciona su visa con una oferta de trabajo, una lotería o un premio. Una visa de visitante nunca viene con un trabajo ni un premio.",
     },
     match: (v) =>
       find(

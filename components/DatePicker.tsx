@@ -4,6 +4,7 @@ import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/journey";
 import { ArrowIcon, ChevronIcon } from "./Icons";
+import { INTL_LOCALE } from "@/lib/locale";
 
 interface Props {
   id: string;
@@ -39,7 +40,7 @@ const daysIn = (y: number, m: number) => new Date(Date.UTC(y, m + 1, 0)).getUTCD
  */
 export function DatePicker({ id, value, min, onChange, labelledBy, describedBy, invalid, focusRef }: Props) {
   const { t, lang } = useT();
-  const locale = lang === "hi" ? "hi-IN" : "en-IN";
+  const locale = INTL_LOCALE[lang];
 
   // The day that holds keyboard focus inside the grid.
   const [active, setActive] = useState(value && value >= min ? value : min);

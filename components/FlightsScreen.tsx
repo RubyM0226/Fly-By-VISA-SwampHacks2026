@@ -10,6 +10,7 @@ import { addDays, diffDays, formatDate } from "@/lib/journey";
 import { tripStore, useTrip, type SelectedFlight } from "@/lib/trip";
 import { AlertIcon, ArrowIcon, CheckIcon, ChevronIcon, ExternalIcon, PlaneIcon } from "./Icons";
 import { BACK } from "./ScreenTransition";
+import { INTL_LOCALE } from "@/lib/locale";
 
 interface Result {
   options: FlightOption[];
@@ -187,7 +188,7 @@ function FlightCard({
   const { t, lang } = useT();
   const [trip] = useTrip();
   const selected = trip.selectedFlight?.key === o.key && trip.selectedFlight.date === date;
-  const money = new Intl.NumberFormat(lang === "hi" ? "hi-IN" : "en-IN", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const money = new Intl.NumberFormat(INTL_LOCALE[lang], { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const dur = (min: number) => t("flights.duration", { h: Math.floor(min / 60), m: min % 60 });
   const stops = o.stops === 0 ? t("flights.nonstop") : o.stops === 1 ? t("flights.oneStop") : t("flights.manyStops", { n: o.stops });
   const warn = warningsFor(o);
@@ -231,7 +232,7 @@ function FlightCard({
 
       {o.layovers.map((l) => {
         const info = l.country ? COUNTRY_INFO[l.country] : undefined;
-        const place = lang === "en" ? `${l.name} (${l.airport})` : `${info?.name.hi ?? l.name} (${l.airport})`;
+        const place = lang === "en" ? `${l.name} (${l.airport})` : `${info?.name[lang] ?? l.name} (${l.airport})`;
         return (
           <div key={l.airport} className="space-y-1 rounded-xl border-2 border-line p-3">
             <p className="text-lg font-semibold">{t("flights.via", { place, time: dur(l.minutes) })}</p>

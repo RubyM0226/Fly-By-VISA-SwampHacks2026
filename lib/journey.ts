@@ -1,3 +1,5 @@
+import { INTL_LOCALE } from "./locale";
+import type { Lang } from "./settings";
 // The journey engine: pure functions, no React, no imports.
 // Facts live in code and data (here and in content/steps.ts). AI should only
 // ever explain these results, never invent them.
@@ -123,8 +125,8 @@ export function diffDays(fromIso: string, toIso: string): number {
 
 const maxIso = (a: string, b: string) => (a >= b ? a : b);
 
-export function formatDate(iso: string, lang: "en" | "hi"): string {
-  return new Intl.DateTimeFormat(lang === "hi" ? "hi-IN" : "en-IN", {
+export function formatDate(iso: string, lang: Lang): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[lang], {
     day: "numeric",
     month: "short",
     year: "numeric",

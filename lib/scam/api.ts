@@ -2,6 +2,7 @@ import type { Lang } from "../settings";
 import { checkMessage } from "./check";
 import { MAX_MESSAGE_CHARS, validateMessage } from "./text";
 import type { ScamCheckResult, Verdict } from "./types";
+import { isLang } from "../locale";
 
 // What the browser and POST /api/scam-check send each other, plus the
 // rules-only answer both sides can build with no network.
@@ -71,7 +72,7 @@ export function parseRequest(body: unknown): ParsedRequest {
   const valid = validateMessage(b.text);
   if (!valid.ok) return { ok: false, error: valid.error };
 
-  const lang: Lang = b.lang === "hi" ? "hi" : "en";
+  const lang: Lang = isLang(b.lang) ? b.lang : "en";
   const rawHistory = Array.isArray(b.history) ? b.history : [];
   if (rawHistory.length > MAX_FOLLOW_UPS) return { ok: false, error: "too-many-follow-ups" };
   const history: Turn[] = [];

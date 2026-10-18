@@ -5,6 +5,7 @@ import { hasGeminiKey, searchCorpus, withGemini } from "./corpusSearch";
 import { redact } from "./scam/redact";
 import { FORBIDDEN, GEN_MODEL } from "./scam/service";
 import type { Lang } from "./settings";
+import { AI_REPLY_LANGUAGE } from "./locale";
 
 // Information Lookup's answer: one plain-language reply from the official
 // pages (same Gemini client and corpus search as Scam Check). Server only.
@@ -71,7 +72,7 @@ export async function askInformation(question: string, history: AskTurn[], lang:
   }
   const sources = [...FIXED_SOURCES, ...passages.filter((p) => !FIXED_SOURCES.some((f) => f.url === p.url))];
   const prompt = [
-    `Reply language: ${lang === "hi" ? "Hindi in Devanagari script (simple everyday Hindi)" : "simple English"}.`,
+    `Reply language: ${AI_REPLY_LANGUAGE[lang]}.`,
     `SOURCES (cite only these URLs):\n${sources.map((s) => `- ${s.title}: ${s.url}`).join("\n")}`,
     passages.length
       ? `OFFICIAL EXCERPTS:\n${passages.map((p) => `[${p.url}] ${p.title}: ${p.text.replace(/\s+/g, " ").slice(0, 700)}`).join("\n")}`

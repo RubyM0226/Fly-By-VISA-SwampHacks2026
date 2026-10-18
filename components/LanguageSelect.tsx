@@ -10,8 +10,8 @@ import { ChevronIcon } from "./Icons";
 const OPTIONS: { code: string; label: string; lang?: Lang }[] = [
   { code: "en", label: "English", lang: "en" },
   { code: "hi", label: "हिन्दी", lang: "hi" },
+  { code: "es", label: "Español", lang: "es" },
   { code: "fr", label: "Français" },
-  { code: "es", label: "Español" },
   { code: "sw", label: "Kiswahili" },
   { code: "ur", label: "اردو" },
   { code: "zh-Hans", label: "普通话" },

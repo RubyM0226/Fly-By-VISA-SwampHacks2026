@@ -1,4 +1,5 @@
 import { useSettings, type Lang } from "./settings";
+import { es } from "./i18n.es";
 
 // UI strings. Write English first, then Hindi.
 // NOTE FOR TEAM: the Hindi below is a first draft and must be read by a fluent
@@ -1177,7 +1178,7 @@ const hi: Record<UiKey, string> = {
   "journey.stay": "ठहरना",
 };
 
-export const DICTIONARY: Record<Lang, Record<UiKey, string>> = { en, hi };
+export const DICTIONARY: Record<Lang, Record<UiKey, string>> = { en, hi, es };
 
 export type Vars = Record<string, string | number>;
 
