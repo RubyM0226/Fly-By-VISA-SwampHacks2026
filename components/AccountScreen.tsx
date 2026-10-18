@@ -141,7 +141,7 @@ export function AccountScreen() {
               <div className="space-y-1">
                 <p className="text-sm font-bold uppercase tracking-wide text-muted">Duration of Stay</p>
                 <p className="text-lg font-medium text-slate-800">
-                  {trip.stayMonths ? `${trip.stayMonths} months` : "Not selected"}
+                  {trip.stayMonths ? (trip.stayMonths === 1 ? t("start.month") : t("start.months", { n: trip.stayMonths })) : "Not selected"}
                 </p>
               </div>
 
@@ -156,12 +156,12 @@ export function AccountScreen() {
             <div className="space-y-2">
               <p className="text-sm font-bold uppercase tracking-wide text-muted">Current Roadmap Status</p>
               <div className="flex items-center gap-3 rounded-lg border-2 border-accent/20 bg-accent-soft p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-ink">
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <p className="text-xl font-bold text-accent-ink">{currentStepTitle}</p>
+                <p className="text-xl font-bold text-ink">{currentStepTitle}</p>
               </div>
             </div>
           </div>

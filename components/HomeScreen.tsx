@@ -28,7 +28,7 @@ export function HomeScreen() {
         ) : user ? (
           /* LOGGED IN VIEW: Welcome Back Shortcut */
           <div className="space-y-4 rounded-2xl border-2 border-accent bg-accent-soft p-6 shadow-lg">
-            <h1 className="text-2xl font-bold text-accent-ink">
+            <h1 className="text-2xl font-bold text-accent">
               {t("home.welcomeBack", { name: user.given_name || user.nickname || t("home.traveler") })}
             </h1>
             <p className="text-lg text-ink">
@@ -44,7 +44,7 @@ export function HomeScreen() {
               </Link>
               <Link
                 href="/account"
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-accent px-6 py-2 text-lg font-bold text-accent-ink hover:bg-accent/10"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-accent px-6 py-2 text-lg font-bold text-accent hover:bg-accent/10"
               >
                 {t("home.viewProfile")}
               </Link>
