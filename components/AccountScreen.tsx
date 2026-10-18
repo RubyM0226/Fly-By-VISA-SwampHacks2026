@@ -9,7 +9,7 @@ import { STEPS_BY_PURPOSE, type VisaCategory } from "@/lib/journey";
 import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
-import { tripFromProfile } from "@/lib/tripProfile";
+import { doneFromStatus, tripFromProfile } from "@/lib/tripProfile";
 import { TripDetailsCard } from "./TripDetailsCard";
 import { YourFilesCard } from "./YourFilesCard";
 
@@ -38,7 +38,7 @@ export function AccountScreen() {
 
         const data = await getUserJourney();
         if (data) {
-          tripStore.set({ ...tripFromProfile(data.profile), done: data.stop_status || {} });
+          tripStore.set({ ...tripFromProfile(data.profile), done: doneFromStatus(data.stop_status) });
         }
       };
 

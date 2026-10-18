@@ -1,7 +1,7 @@
 // Checks the trip-answer validation and the saved-profile mapping. No database needed.
 // Run: npx tsx scripts/test-trip-profile.ts
 import assert from "node:assert/strict";
-import { cleanProfile, tripFromProfile } from "../lib/tripProfile";
+import { cleanProfile, doneFromStatus, tripFromProfile } from "../lib/tripProfile";
 
 const today = "2026-10-18";
 import type { VisaPurpose } from "../lib/tripProfile";
@@ -100,5 +100,14 @@ assert.deepEqual(tripFromProfile(null), {
   firstName: "",
   lastName: "",
 });
+
+// Saved step status: "pending" (an unmarked step) is not done, though it is a truthy string.
+assert.deepEqual(doneFromStatus({ ready: "completed", ds160: "pending", book: true, documents: false }), {
+  ready: true,
+  ds160: false,
+  book: true,
+  documents: false,
+});
+assert.deepEqual(doneFromStatus(null), {});
 
 console.log("trip profile checks passed");

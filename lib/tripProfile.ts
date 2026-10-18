@@ -53,6 +53,15 @@ export interface JourneyProfile {
   lastName?: string;
 }
 
+/**
+ * journeys.stop_status as tripStore's `done`. Marking a step saves "completed"
+ * and unmarking saves "pending" (older rows may hold true / false), so only
+ * "completed" or true count as done; "pending" is a truthy string.
+ */
+export function doneFromStatus(status: Record<string, unknown> | null | undefined): Record<string, boolean> {
+  return Object.fromEntries(Object.entries(status ?? {}).map(([id, v]) => [id, v === true || v === "completed"]));
+}
+
 /** Rows saved before the key fix used homeCity / destCity, so read both. */
 type StoredProfile = Partial<JourneyProfile> & { homeCity?: string; destCity?: string };
 

@@ -10,7 +10,7 @@ import { useToday } from "@/lib/clock";
 import { useT } from "@/lib/i18n";
 import { buildJourney, formatDate, STEPS_BY_PURPOSE, WAIT_TIMES_BY_COUNTRY, type StepId, type VisaCategory } from "@/lib/journey";
 import { tripStore, useTrip, type Trip } from "@/lib/trip";
-import { tripFromProfile } from "@/lib/tripProfile";
+import { doneFromStatus, tripFromProfile } from "@/lib/tripProfile";
 import { COUNTRY_BY_CODE, isOrigin } from "@/lib/countries";
 import { useSettings } from "@/lib/settings";
 import { useHome } from "@/lib/homeCountry";
@@ -52,7 +52,7 @@ export function JourneyScreen() {
         const data = await getUserJourney();
         if (data) {
           // Restore their complete profile, cities, airports AND their checkmarks
-          tripStore.set({ ...tripFromProfile(data.profile), done: data.stop_status || {} });
+          tripStore.set({ ...tripFromProfile(data.profile), done: doneFromStatus(data.stop_status) });
         }
       };
 

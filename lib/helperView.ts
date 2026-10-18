@@ -1,5 +1,5 @@
 import { DEFAULT_TRIP, type Trip } from "./trip";
-import { tripFromProfile, type JourneyProfile } from "./tripProfile";
+import { doneFromStatus, tripFromProfile, type JourneyProfile } from "./tripProfile";
 
 /** What a valid helper link shares: the traveler's saved answers and checked-off steps. */
 export interface SharedJourney {
@@ -12,10 +12,7 @@ export interface SharedJourney {
  * from the shared journey, never from this browser's own trip.
  */
 export function sharedTrip(journey: SharedJourney): Trip {
-  const done: Record<string, boolean> = {};
-  // The traveler's saves store "completed" / "pending"; older helper saves stored true / false.
-  for (const [id, value] of Object.entries(journey.stop_status ?? {})) done[id] = value === true || value === "completed";
-  return { ...DEFAULT_TRIP, ...tripFromProfile(journey.profile), done };
+  return { ...DEFAULT_TRIP, ...tripFromProfile(journey.profile), done: doneFromStatus(journey.stop_status) };
 }
 
 /** "First Last", or "" when the traveler gave no name. */
