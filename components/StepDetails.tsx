@@ -57,8 +57,8 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
     `${text.title}.`,
     ...text.what.map(plainText),
     `${t("journey.documents")}: ${documents.map((d) => plainText(d.name[lang])).join(", ")}.`,
-    text.cost && `${t("journey.cost")}: ${plainText(text.cost)}`,
-    text.time && `${t("journey.time")}: ${plainText(text.time)}.`,
+    text.cost && `${t("journey.cost")}: ${text.cost.map(plainText).join(" ")}`,
+    text.time && `${t("journey.time")}: ${text.time.map(plainText).join(" ")}`,
   ]
     .filter(Boolean)
     .join(" ");
@@ -66,7 +66,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
   return (
     <article
       aria-labelledby={`step-title-${step.id}`}
-      className={`rounded-2xl border-2 bg-surface ${status === "current" ? "border-accent" : "border-line-strong"}`}
+      className={`@container rounded-2xl border-2 bg-surface ${status === "current" ? "border-accent" : "border-line-strong"}`}
     >
       <div className="space-y-3 border-b-2 border-line p-4">
         <div className="space-y-1">
@@ -92,14 +92,15 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
         </div>
       </div>
 
-      <div className="space-y-5 p-4">
+      {/* Container rem breakpoints grow with the text size, so larger text falls back to fewer columns. */}
+      <div className="grid items-start gap-x-8 gap-y-5 p-4 @3xl:grid-cols-2 @6xl:grid-cols-3">
         {plan.showsInterview && (
-          <p className="rounded-xl bg-warm p-3 text-lg font-semibold text-warm-ink">
+          <p className="col-span-full rounded-xl bg-warm p-3 text-lg font-semibold text-warm-ink">
             {t("journey.interviewSlot", { date: formatDate(interviewDate, lang) })}
           </p>
         )}
         {(step.action || hasUploads) && (
-          <div className="flex flex-wrap gap-3">
+          <div className="col-span-full flex flex-wrap gap-3">
             {step.action && (
               <Link
                 href={step.action.href}
@@ -120,7 +121,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
           </div>
         )}
 
-        <div>
+        <div className="min-w-0 @3xl:row-span-2 @6xl:row-span-1">
           <h4 className="mb-1 text-lg font-bold">{t("journey.whatToDo")}</h4>
           <ul className="list-disc space-y-1 pl-6 text-lg">
             {text.what.map((line) => (
@@ -131,7 +132,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
           </ul>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h4 className="mb-1 text-lg font-bold">{t("journey.documents")}</h4>
           <ul className="list-disc space-y-1 pl-6 text-lg">
             {step.documents.map((id) => (
@@ -143,36 +144,40 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
         </div>
 
         {(text.cost || text.time) && (
-          <dl className="grid gap-3 text-lg sm:grid-cols-2">
-            {text.cost && (
-              <div>
-                <dt className="font-bold">{t("journey.cost")}</dt>
-                <dd>
-                  <RichText text={text.cost} />
-                </dd>
-              </div>
+          <div className="min-w-0 space-y-5">
+            {(
+              [
+                ["journey.cost", text.cost],
+                ["journey.time", text.time],
+              ] as const
+            ).map(
+              ([heading, lines]) =>
+                lines && (
+                  <div key={heading}>
+                    <h4 className="mb-1 text-lg font-bold">{t(heading)}</h4>
+                    <ul className="list-disc space-y-1 pl-6 text-lg">
+                      {lines.map((line) => (
+                        <li key={line}>
+                          <RichText text={line} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ),
             )}
-            {text.time && (
-              <div>
-                <dt className="font-bold">{t("journey.time")}</dt>
-                <dd>
-                  <RichText text={text.time} />
-                </dd>
-              </div>
-            )}
-          </dl>
+          </div>
         )}
 
-        <div>
+        <div className="col-span-full min-w-0">
           <h4 className="mb-1 text-lg font-bold">{t("journey.links")}</h4>
-          <ul className="space-y-1">
+          <ul className="flex flex-wrap gap-x-8 gap-y-1">
             {step.links.map((l) => (
               <li key={l.url}>
                 <a
                   href={l.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center gap-1 text-lg font-semibold text-accent underline"
+                  className="inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline"
                 >
                   {l.label[lang]}
                   <ExternalIcon className="h-4 w-4" />
@@ -183,7 +188,7 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
           </ul>
         </div>
 
-        <div className="flex flex-wrap gap-3 border-t-2 border-line pt-4">
+        <div className="col-span-full flex flex-wrap gap-3 border-t-2 border-line pt-4">
           <button
             type="button"
             onClick={toggleDone}

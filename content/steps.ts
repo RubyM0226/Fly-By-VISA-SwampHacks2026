@@ -18,9 +18,9 @@ export interface StepText {
   title: string;
   /** What to do, one short sentence per bullet. */
   what: string[];
-  /** Leave out when there is nothing useful to say; the field is then hidden. */
-  cost?: string;
-  time?: string;
+  /** One short fact per bullet. Leave out when there is nothing useful to say; the section is then hidden. */
+  cost?: string[];
+  time?: string[];
   /** One-line summary, shown in the "Your next step" card. */
   simple: string;
 }
@@ -53,7 +53,7 @@ export const STEPS: StepContent[] = [
           "Know why you are going.",
           "Know how long you will stay.",
         ],
-        time: "About 1 week",
+        time: ["About 1 week."],
         simple: "Make sure your passport will not expire soon. Know why you are going.",
       },
       hi: {
@@ -64,7 +64,7 @@ export const STEPS: StepContent[] = [
           "जानें कि आप क्यों जा रहे हैं।",
           "जानें कि आप कितने समय रुकेंगे।",
         ],
-        time: "लगभग 1 सप्ताह",
+        time: ["लगभग 1 सप्ताह।"],
         simple: "देखिए कि पासपोर्ट जल्दी खत्म न हो रहा हो। जानिए कि आप क्यों जा रहे हैं।",
       },
     },
@@ -92,8 +92,8 @@ export const STEPS: StepContent[] = [
           "At the end, print the page with the barcode.",
           "Take this page to your interview.",
         ],
-        cost: "Free. The visa fee is the next step.",
-        time: "A few hours",
+        cost: ["The form is free.", "You pay the visa fee in the next step."],
+        time: ["A few hours.", "You can save the form and finish it later."],
         simple: "Answer every question honestly. Print the confirmation page at the end.",
       },
       hi: {
@@ -105,8 +105,8 @@ export const STEPS: StepContent[] = [
           "अंत में बारकोड वाला पृष्ठ प्रिंट करें।",
           "यह पृष्ठ इंटरव्यू में ले जाएँ।",
         ],
-        cost: "मुफ़्त। वीज़ा शुल्क अगले कदम में है।",
-        time: "कुछ घंटे",
+        cost: ["फ़ॉर्म मुफ़्त है।", "वीज़ा शुल्क आप अगले कदम में भरते हैं।"],
+        time: ["कुछ घंटे।", "आप फ़ॉर्म सेव करके बाद में पूरा कर सकते हैं।"],
         simple: "हर सवाल का जवाब सच्चाई से दें। अंत में पुष्टि पृष्ठ प्रिंट करें।",
       },
     },
@@ -128,8 +128,8 @@ export const STEPS: StepContent[] = [
           "Book as early as you can. The wait is long.",
           "Follow the U.S. Embassy website. The steps can change.",
         ],
-        cost: "$185. Other fees may apply.",
-        time: "Booking: about 1 day. Waiting for the interview: usually months.",
+        cost: ["Visa fee: $185.", "Other fees may apply."],
+        time: ["Booking: about 1 day.", "Waiting for the interview: usually months."],
         simple: "Pay, then book. Book as early as you can.",
       },
       hi: {
@@ -141,8 +141,8 @@ export const STEPS: StepContent[] = [
           "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
           "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
         ],
-        cost: "$185। दूसरे शुल्क भी लग सकते हैं।",
-        time: "बुकिंग: लगभग 1 दिन। इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।",
+        cost: ["वीज़ा शुल्क: $185।", "दूसरे शुल्क भी लग सकते हैं।"],
+        time: ["बुकिंग: लगभग 1 दिन।", "इंटरव्यू की प्रतीक्षा: आमतौर पर कई महीने।"],
         simple: "पहले भुगतान करें, फिर बुक करें। जितना जल्दी हो सके बुक करें।",
       },
     },
@@ -168,7 +168,7 @@ export const STEPS: StepContent[] = [
           "Show how the trip will be paid for.",
           "A letter from family in the U.S. is not needed.",
         ],
-        time: "1 to 2 weeks",
+        time: ["1 to 2 weeks."],
         simple: "Gather papers that show your life is in India and that you will go home after the trip.",
       },
       hi: {
@@ -180,7 +180,7 @@ export const STEPS: StepContent[] = [
           "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
           "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
         ],
-        time: "1 से 2 सप्ताह",
+        time: ["1 से 2 सप्ताह।"],
         simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
       },
     },
@@ -201,7 +201,7 @@ export const STEPS: StepContent[] = [
           "Why will you come home?",
           "Answer honestly, in your own words. Keep it short.",
         ],
-        time: "A few evenings",
+        time: ["A few evenings."],
         simple: "Practice saying your answers out loud.",
       },
       hi: {
@@ -213,7 +213,7 @@ export const STEPS: StepContent[] = [
           "आप घर क्यों लौटेंगे?",
           "सच्चाई से, अपने शब्दों में, छोटा जवाब दें।",
         ],
-        time: "कुछ शामें",
+        time: ["कुछ शामें।"],
         simple: "अपने जवाब ज़ोर से बोलकर अभ्यास करें।",
       },
     },
@@ -298,7 +298,7 @@ export const STEPS: StepContent[] = [
           "Staying too long can cancel your visa.",
           "Want to stay longer? Read the rules before that date.",
         ],
-        cost: "Asking to stay longer may cost a fee. Ask [[uscis|USCIS]].",
+        cost: ["Asking to stay longer may cost a fee.", "Ask [[uscis|USCIS]] about the fee."],
         simple: "Go home on time. Do not work.",
       },
       hi: {
@@ -309,7 +309,7 @@ export const STEPS: StepContent[] = [
           "ज़्यादा रुकने से वीज़ा रद्द हो सकता है।",
           "ज़्यादा रुकना है? उस तारीख से पहले नियम पढ़ें।",
         ],
-        cost: "ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है। [[uscis|USCIS]] से पूछें।",
+        cost: ["ज़्यादा रुकने के आवेदन पर शुल्क लग सकता है।", "शुल्क के बारे में [[uscis|USCIS]] से पूछें।"],
         simple: "समय पर घर लौटें। काम न करें।",
       },
     },
