@@ -7,7 +7,7 @@ import type { StepContent } from "@/content/steps";
 import { formatDate, type StepPlan } from "@/lib/journey";
 import { useT } from "@/lib/i18n";
 import { plainText, RichText } from "./Glossary";
-import { ArrowIcon, CheckIcon, DocumentIcon, ExternalIcon, PinIcon } from "./Icons";
+import { ArrowIcon, CheckIcon, ExternalIcon, PinIcon } from "./Icons";
 import { SpeakButton } from "./SpeakButton";
 
 export type StepStatus = "done" | "current" | "upcoming";
@@ -112,10 +112,9 @@ export function StepDetails({ step, plan, status, interviewDate, onToggleDone, a
             {hasUploads && (
               <Link
                 href={`/documents#docs-${step.id}`}
-                className="inline-flex min-h-14 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-6 py-3 text-xl font-bold hover:bg-accent-soft"
+                className="inline-flex min-h-14 items-center text-xl font-semibold text-accent underline"
               >
-                <DocumentIcon className="h-6 w-6 shrink-0" />
-                {t("journey.goToDocuments")}
+                {t("journey.viewDocuments")}
               </Link>
             )}
           </div>

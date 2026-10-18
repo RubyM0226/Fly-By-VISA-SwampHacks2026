@@ -11,7 +11,7 @@ import { STEP_BY_ID } from "@/content/steps";
 import { getUserJourney, claimAnonymousJourney } from "@/app/actions/journey";
 import { createHelperLink, revokeHelperLink } from "@/app/actions/helper";
 import { tripFromProfile } from "@/lib/tripProfile";
-import { DocumentIcon } from "./Icons";
+import { useSavedConsent } from "./DocumentsScreen";
 import { TripDetailsCard } from "./TripDetailsCard";
 
 export function AccountScreen() {
@@ -19,6 +19,7 @@ export function AccountScreen() {
   const user = useProfile();
   const { user: auth0User } = useUser();
   const [trip] = useTrip();
+  const consent = useSavedConsent();
   const [helperUrl, setHelperUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -212,19 +213,30 @@ export function AccountScreen() {
             )}
           </div>
 
-          {/* Private file uploads now live on the Documents tab. */}
-          <div className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-6">
-            <p className="text-lg">{t("myPlan.filesMoved")}</p>
-            <Link
-              href="/documents"
-              className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft"
-            >
-              <DocumentIcon className="h-6 w-6 shrink-0" />
-              {t("journey.goToDocuments")}
-            </Link>
-          </div>
+          <Link href="/documents" className="inline-flex min-h-12 items-center text-lg font-semibold text-accent underline">
+            {t("journey.viewDocuments")}
+          </Link>
 
-          {/* Phase 3: "Your acknowledgement" (documents consent) goes here. */}
+          {/* The Documents consent, read from the same localStorage keys the Documents page writes. */}
+          {consent.agreed !== null && (
+            <div className="space-y-2 rounded-xl border-2 border-line-strong bg-surface p-6">
+              <h2 className="text-2xl font-bold text-accent">{t("account.ack.title")}</h2>
+              {consent.agreed ? (
+                <p className="text-lg">
+                  {consent.date
+                    ? t("account.ack.agreedOn", { date: formatDate(consent.date, lang) })
+                    : t("account.ack.agreed")}
+                </p>
+              ) : (
+                <p className="text-lg">
+                  {t("account.ack.notYet")}{" "}
+                  <Link href="/documents" className="font-semibold text-accent underline">
+                    {t("account.ack.link")}
+                  </Link>
+                </p>
+              )}
+            </div>
+          )}
 
         </>
       )}

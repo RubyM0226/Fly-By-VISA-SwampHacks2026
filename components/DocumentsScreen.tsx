@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { DOC_GROUPS, DOCUMENTS, UPLOAD_DOC_IDS, type Blank, type DocId } from "@/content/documents";
 import { STEP_BY_ID } from "@/content/steps";
 import { useT, type UiKey } from "@/lib/i18n";
+import { todayISO } from "@/lib/clock";
 import { formatDate } from "@/lib/journey";
 import {
   ACCEPT_ATTRIBUTE,
@@ -11,7 +12,6 @@ import {
   MAX_FILES_PER_USER,
   MAX_UPLOAD_BYTES,
   UPLOAD_ERRORS,
-  UPLOAD_KINDS,
   formatBytes,
   type UploadError,
   type UploadKind,
@@ -23,12 +23,16 @@ import { SpeakButton } from "./SpeakButton";
 
 // The Documents tab: private uploads for signed-in people, kept in a private
 // Vercel Blob store (see app/api/uploads). Files are grouped by the roadmap
-// step that needs them; files with no document (older ones, possible scams)
-// show under "Other files". Only mount this behind the sign-in gate, or with a
+// step that needs them; files with no document show under "Other files" (this
+// includes older "scam_evidence" uploads, kept viewable; Scam Check handles
+// scam messages now). Until the person ticks the consent box, only the
+// disclaimer shows. Only mount this behind the sign-in gate, or with a
 // helperToken for a caregiver: then it uses the token routes (app/api/helper),
 // and can view and add files but never replace or delete them.
 
-const CONSENT_KEY = "flybyvisa-files-consent";
+export const CONSENT_KEY = "flybyvisa-files-consent";
+/** When they agreed (YYYY-MM-DD), for the Account page. Ticks from before this have none. */
+export const CONSENT_DATE_KEY = "flybyvisa-files-consent-date";
 const MB = Math.round(MAX_UPLOAD_BYTES / (1024 * 1024));
 const ALLOWED_EXTENSIONS: string[] = Object.values(ALLOWED_TYPES).flatMap((exts) => [...exts]);
 /** Where a status message shows: a document row ("<step>-<doc>") or "other". */
@@ -66,13 +70,19 @@ async function fetchFiles(base: string): Promise<UploadedFile[] | null> {
 
 const noopSubscribe = () => () => {};
 
-/** The saved consent tick. The server render has none, so it starts unticked there. */
-function readConsent(): boolean {
+function readKey(key: string): string | null {
   try {
-    return localStorage.getItem(CONSENT_KEY) === "yes";
+    return localStorage.getItem(key);
   } catch {
-    return false; // private mode: start unticked
+    return null; // private mode: nothing saved
   }
+}
+
+/** The saved consent tick and its date. `agreed` is null on the server, where it is unknown. */
+export function useSavedConsent(): { agreed: boolean | null; date: string | null } {
+  const agreed = useSyncExternalStore(noopSubscribe, () => readKey(CONSENT_KEY) === "yes", () => null);
+  const date = useSyncExternalStore(noopSubscribe, () => readKey(CONSENT_DATE_KEY), () => null);
+  return { agreed, date };
 }
 
 const outlineButton =
@@ -87,10 +97,10 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   const base = caregiver ? `/api/helper/${encodeURIComponent(helperToken)}/uploads` : "/api/uploads";
   const [files, setFiles] = useState<UploadedFile[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [kind, setKind] = useState<UploadKind>("immigration");
-  const savedConsent = useSyncExternalStore(noopSubscribe, readConsent, () => false);
+  const savedConsent = useSavedConsent().agreed;
   const [consentChoice, setConsentChoice] = useState<boolean | null>(null);
   // The consent tick is the traveler's own; a caregiver sees a note instead.
+  // null: not read yet (server render), so show nothing rather than flash the disclaimer.
   const consent = caregiver || (consentChoice ?? savedConsent);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>({ where: "", text: "", problem: false });
@@ -100,6 +110,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   // Which document row the shared file picker is for.
   const pickRef = useRef<{ where: Where; docId: DocId; replaces?: string } | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   const say = (where: Where, text: string, problem = false) => setMessage({ where, text, problem });
   const errorText = (code: UploadError) =>
@@ -127,15 +138,21 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
     };
   }, [apply, base]);
 
-  // "Go to my documents" links to #docs-<step>. This screen streams in after the
-  // sign-in check, so the browser's own jump can miss: scroll and focus once here.
+  // "View my documents" links to #docs-<step>. This screen streams in after the
+  // sign-in check (and the consent read), so the browser's own jump can miss:
+  // scroll and focus here once the sections exist.
   useEffect(() => {
+    if (!consent) return;
     const id = window.location.hash.slice(1);
-    if (!id.startsWith("docs-")) return;
+    if (!id.startsWith("docs-")) {
+      // Just ticked: the checkbox is gone, so keep keyboard focus on the page.
+      if (consentChoice) titleRef.current?.focus();
+      return;
+    }
     const heading = document.getElementById(id === "docs-other" ? "doc-other" : `docs-title-${id.slice(5)}`);
     heading?.closest("section")?.scrollIntoView();
     heading?.focus({ preventScroll: true });
-  }, []);
+  }, [consent, consentChoice]);
 
   // Open and close the native dialog together with `target`.
   useEffect(() => {
@@ -149,6 +166,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
     setConsentChoice(checked);
     try {
       localStorage.setItem(CONSENT_KEY, checked ? "yes" : "no");
+      if (checked) localStorage.setItem(CONSENT_DATE_KEY, todayISO());
     } catch {
       /* ignore */
     }
@@ -198,7 +216,6 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
 
   /** "Add my copy" and "Replace": open the file picker for one document. */
   function pickFor(where: Where, docId: DocId, replaces?: string) {
-    if (!consent) return say(where, t("files.consentNeeded"), true);
     pickRef.current = { where, docId, replaces };
     docInputRef.current?.click();
   }
@@ -215,9 +232,8 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   async function onOtherUpload(e: React.FormEvent) {
     e.preventDefault();
     const file = otherInputRef.current?.files?.[0];
-    if (!consent) return say("other", t("files.consentNeeded"), true);
     if (!file) return say("other", t("files.noFile"), true);
-    if ((await send(file, { where: "other", kind })) && otherInputRef.current) otherInputRef.current.value = "";
+    if ((await send(file, { where: "other", kind: "immigration" })) && otherInputRef.current) otherInputRef.current.value = "";
   }
 
   async function confirmDelete() {
@@ -252,7 +268,6 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
   const otherFiles = (files ?? []).filter((f) => f.docId === null);
   const addedCount = UPLOAD_DOC_IDS.filter((id) => filesFor(id).length > 0).length;
   const count = files?.length ?? 0;
-  const kindLabel = (k: UploadKind) => t(k === "immigration" ? "files.kind.short.immigration" : "files.kind.short.scam");
   const docName = (id: DocId) => DOCUMENTS[id].name[lang];
 
   const statusMessage = (where: Where) => (
@@ -304,7 +319,7 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
     if (blank.type === "template") {
       return (
         <div className="space-y-1">
-          <a href={blank.file} download className={linkClass}>
+          <a href={`/api/templates/${blank.id}?lang=${lang}`} download className={linkClass}>
             <DocumentIcon className="h-5 w-5 shrink-0" />
             {t("documents.blank.template")}
           </a>
@@ -328,30 +343,42 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{t(caregiver ? "helperDocs.title" : "nav.documents")}</h1>
-        <p className="text-lg text-muted">{t(caregiver ? "helperDocs.lead" : "documents.lead")}</p>
-      </div>
+  const header = (
+    <div className="space-y-2">
+      <h1 ref={titleRef} tabIndex={-1} className="text-3xl font-bold outline-none">{t(caregiver ? "helperDocs.title" : "nav.documents")}</h1>
+      <p className="text-lg text-muted">{t(caregiver ? "helperDocs.lead" : "documents.lead")}</p>
+    </div>
+  );
 
-      <section aria-label={t("files.title")} className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6">
-        {caregiver ? (
-          <p className="text-lg font-semibold">{t("helperDocs.note")}</p>
-        ) : (
-          <>
+  // Until the box is ticked, the page is only the disclaimer (nothing while it is still being read).
+  if (!consent) {
+    return (
+      <div className="space-y-6">
+        {header}
+        {consent === false && (
+          <section aria-label={t("files.title")} className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6">
             <p className="text-lg">{t("files.lead")}</p>
             <label className="flex cursor-pointer items-start gap-3 text-lg">
               <input
                 type="checkbox"
-                checked={consent}
+                checked={false}
                 onChange={(e) => onConsent(e.target.checked)}
                 className="mt-1 h-6 w-6 shrink-0 accent-[var(--accent)]"
               />
               <span>{t("files.consent")}</span>
             </label>
-          </>
+          </section>
         )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {header}
+
+      <section aria-label={t("files.title")} className="space-y-3 rounded-xl border-2 border-line-strong bg-surface p-4 sm:p-6">
+        {caregiver && <p className="text-lg font-semibold">{t("helperDocs.note")}</p>}
         <p className="text-base text-muted">{t("files.formats", { mb: MB, n: MAX_FILES_PER_USER })}</p>
         {files === null && <p className="text-lg text-muted">{t("files.loading")}</p>}
         {loadFailed && <p className="text-lg font-semibold text-danger">{t("files.loadError")}</p>}
@@ -468,25 +495,6 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
         </div>
 
         <form onSubmit={onOtherUpload} className="space-y-5" noValidate>
-          <fieldset className="space-y-2">
-            <legend className="mb-1 text-lg font-bold">{t("files.kind")}</legend>
-            {UPLOAD_KINDS.map((k) => (
-              <label key={k} className="block cursor-pointer">
-                <input
-                  type="radio"
-                  name="file-kind"
-                  value={k}
-                  checked={kind === k}
-                  onChange={() => setKind(k)}
-                  className="peer sr-only"
-                />
-                <span className="flex min-h-14 items-center rounded-xl border-2 border-line-strong bg-surface px-4 py-3 text-lg peer-checked:border-accent peer-checked:bg-accent-soft peer-checked:font-semibold peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--focus)]">
-                  {t(k === "immigration" ? "files.kind.immigration" : "files.kind.scam")}
-                </span>
-              </label>
-            ))}
-          </fieldset>
-
           <div className="space-y-2">
             <label htmlFor="file-input" className="block text-lg font-bold">
               {t("files.choose")}
@@ -515,9 +523,6 @@ export function DocumentsScreen({ helperToken }: { helperToken?: string } = {}) 
           <ul className="space-y-3 border-t-2 border-line pt-5">
             {otherFiles.map((f) => (
               <li key={f.pathname} className="space-y-3 rounded-xl border-2 border-line p-3 sm:p-4">
-                <p className="inline-block rounded-lg border-2 border-line-strong px-3 py-0.5 text-sm font-bold">
-                  {kindLabel(f.kind)}
-                </p>
                 {fileDetails(f)}
                 <div className="flex flex-wrap gap-3">
                   {openLink(f)}
