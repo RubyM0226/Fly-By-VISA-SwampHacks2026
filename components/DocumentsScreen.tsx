@@ -89,9 +89,9 @@ export function useSavedConsent(): { agreed: boolean | null; date: string | null
 }
 
 const outlineButton =
-  "inline-flex min-h-12 w-full items-center justify-center gap-1 text-center sm:w-auto rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-accent-soft disabled:opacity-60";
+  "inline-flex min-h-12 w-full items-center justify-center gap-1 text-center sm:w-auto rounded-xl border-2 border-line-strong bg-surface px-5 py-2 text-lg font-semibold hover:bg-hover disabled:opacity-60";
 const dangerButton =
-  "inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-5 py-2 text-lg font-semibold text-danger hover:bg-danger-soft disabled:opacity-60";
+  "inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-5 py-2 text-lg font-semibold text-danger hover:bg-hover-danger disabled:opacity-60";
 const linkClass = "inline-flex min-h-12 items-center gap-1 text-lg font-semibold text-accent underline";
 
 /** `home` is the traveler's home country when a caregiver views it (their own trip is not in this browser). */
@@ -581,7 +581,7 @@ export function DocumentsScreen({ helperToken, home }: { helperToken?: string; h
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-6 py-2 text-lg font-semibold text-danger hover:bg-danger-soft"
+                className="inline-flex min-h-12 w-full items-center justify-center text-center sm:w-auto rounded-xl border-2 border-danger bg-surface px-6 py-2 text-lg font-semibold text-danger hover:bg-hover-danger"
               >
                 {t("files.confirmDelete")}
               </button>

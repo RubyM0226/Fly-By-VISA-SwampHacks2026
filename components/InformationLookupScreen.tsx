@@ -5,6 +5,7 @@ import { DOC_FAQ, searchDocs, type DocAnswer } from "@/content/documentsFaq";
 import type { AskAnswer, AskTurn } from "@/lib/ask";
 import type { CorpusHit } from "@/lib/corpusSearch";
 import { useT } from "@/lib/i18n";
+import { useHome } from "@/lib/homeCountry";
 import { plainText, RichText } from "./Glossary";
 import { SpeakButton } from "./SpeakButton";
 import { CloseIcon, ExternalIcon } from "./Icons";
@@ -27,6 +28,7 @@ const MAX_TURNS = 3;
  */
 export function InformationLookupScreen() {
   const { t, lang } = useT();
+  const { loc } = useHome();
   const [query, setQuery] = useState("");
   // A question picked from a list shows directly, without typing.
   const [picked, setPicked] = useState<DocAnswer | null>(null);
@@ -57,11 +59,11 @@ export function InformationLookupScreen() {
   }
 
   const results = useMemo(() => searchDocs(query), [query]);
-  const answer = picked ?? results[0] ?? null;
-  const related = picked ? [] : results.slice(1, 4);
+  const answer = loc(picked ?? results[0] ?? null);
+  const related = loc(picked ? [] : results.slice(1, 4));
   const searching = query.trim().length > 0 && !picked;
   // Also look through the official pages. A picked question searches by its text.
-  const corpus = useCorpusSearch(picked ? picked.question[lang] : query);
+  const corpus = useCorpusSearch(picked ? loc(picked.question[lang]) : query);
 
   const pickExample = (text: string) => {
     setPicked(null);
@@ -106,7 +108,7 @@ export function InformationLookupScreen() {
               type="button"
               onClick={() => pickExample("")}
               aria-label={t("docs.clear")}
-              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-accent-soft"
+              className="absolute right-1.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-hover"
             >
               <CloseIcon className="h-5 w-5" />
             </button>
@@ -127,7 +129,7 @@ export function InformationLookupScreen() {
               key={ex}
               type="button"
               onClick={() => pickExample(ex)}
-              className="min-h-11 rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-accent-soft"
+              className="min-h-11 rounded-full border-2 border-line-strong bg-surface px-4 py-1.5 text-base font-semibold hover:bg-hover"
             >
               {ex}
             </button>
@@ -170,7 +172,7 @@ export function InformationLookupScreen() {
           <button
             type="button"
             onClick={() => setTurns([])}
-            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-accent-soft"
+            className="min-h-12 rounded-xl border-2 border-line-strong bg-surface px-4 py-2 text-base font-semibold hover:bg-hover"
           >
             {t("docs.start")}
           </button>
@@ -214,11 +216,11 @@ export function InformationLookupScreen() {
       {corpus.status === "error" && (
         <p className="rounded-xl border-2 border-warm-ink bg-warm p-4 text-lg text-warm-ink">{t("docs.searchError")}</p>
       )}
-      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} query={picked ? picked.question.en : query} />}
+      {corpus.hits.length > 0 && <OfficialExcerpts hits={corpus.hits} query={picked ? loc(picked.question).en : query} />}
 
       {related.length > 0 && <QuestionList title={t("docs.related")} items={related} onPick={setPicked} />}
 
-      {!searching && <QuestionList title={t("docs.common")} items={DOC_FAQ} onPick={setPicked} current={answer?.id} />}
+      {!searching && <QuestionList title={t("docs.common")} items={loc(DOC_FAQ)} onPick={setPicked} current={answer?.id} />}
     </div>
   );
 }
@@ -245,7 +247,7 @@ function QuestionList({
               type="button"
               onClick={() => onPick(d)}
               aria-current={current === d.id ? "true" : undefined}
-              className={`min-h-12 w-full rounded-xl border-2 px-4 py-2 text-left text-lg font-semibold hover:bg-accent-soft ${
+              className={`min-h-12 w-full rounded-xl border-2 px-4 py-2 text-left text-lg font-semibold hover:bg-hover ${
                 current === d.id ? "border-accent bg-accent-soft" : "border-line-strong bg-surface"
               }`}
             >

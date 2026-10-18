@@ -30,7 +30,7 @@ export function LanguageSelect() {
       <select
         value={settings.lang}
         onChange={(e) => update({ lang: e.target.value as Lang })}
-        className="min-h-12 w-32 appearance-none truncate rounded-xl border-2 border-line-strong bg-surface py-2 pl-4 pr-10 font-semibold text-ink hover:bg-accent-soft sm:w-40"
+        className="min-h-12 w-32 appearance-none truncate rounded-xl border-2 border-line-strong bg-surface py-2 pl-4 pr-10 font-semibold text-ink hover:bg-hover sm:w-40"
       >
         {OPTIONS.map((o) => (
           <option key={o.code} value={o.code} lang={o.code} disabled={!o.lang}>

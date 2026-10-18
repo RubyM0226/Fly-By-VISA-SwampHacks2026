@@ -197,7 +197,7 @@ export function StepDetails({ step: rawStep, plan, status, interviewDate, onTogg
             onClick={toggleDone}
             className={`inline-flex min-h-12 items-center gap-2 rounded-xl px-5 py-2 text-lg font-bold ${
               status === "done"
-                ? "border-2 border-line-strong bg-surface text-ink hover:bg-accent-soft"
+                ? "border-2 border-line-strong bg-surface text-ink hover:bg-hover"
                 : "bg-accent text-accent-ink"
             }`}
           >

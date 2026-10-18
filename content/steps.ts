@@ -3,7 +3,9 @@ import type { DocId } from "./documents";
 import type { StepId } from "@/lib/journey";
 import type { Lang } from "@/lib/settings";
 
-// Step content for the India -> U.S. B-2 visitor visa journey.
+// Step content for the U.S. visa journey (visit, study or work), from India, the UK or Mexico.
+// Written once with home-country tokens ({home}, {vac}) and India's links; see
+// lib/homeCountry.ts. Render through useHome().loc, never raw.
 //
 // Sources for the facts: the U.S. State Department visitor visa page
 // (travel.state.gov) unless marked otherwise. Anything marked VERIFY came from
@@ -147,8 +149,8 @@ export const STEPS: StepContent[] = [
         title: "Pay the fee and book your appointments",
         what: [
           "Pay the visa fee.",
-          "Then book your interview at a U.S. office in India.",
-          "You may also need to visit a [[vac|VAC]] first, for fingerprints.",
+          "Then book your interview at a U.S. office in {home}.",
+          "You may also need to visit a [[vac|{vac}]] first, for fingerprints.",
           "Book as early as you can. The wait is long.",
           "Follow the U.S. Embassy website. The steps can change.",
         ],
@@ -160,8 +162,8 @@ export const STEPS: StepContent[] = [
         title: "शुल्क भरें और अपॉइंटमेंट बुक करें",
         what: [
           "वीज़ा शुल्क भरें।",
-          "फिर भारत में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
-          "शायद पहले उंगलियों के निशान के लिए [[vac|VAC]] भी जाना पड़े।",
+          "फिर {home} में किसी अमेरिकी कार्यालय में इंटरव्यू बुक करें।",
+          "शायद पहले उंगलियों के निशान के लिए [[vac|{vac}]] भी जाना पड़े।",
           "जितना जल्दी हो सके बुक करें। प्रतीक्षा लंबी होती है।",
           "अमेरिकी दूतावास की वेबसाइट देखें। तरीके बदल सकते हैं।",
         ],
@@ -174,7 +176,7 @@ export const STEPS: StepContent[] = [
         what: [
           "Pague la tarifa de la visa.",
           "Luego reserve su entrevista en una oficina de EE. UU. en India.",
-          "Quizás deba ir primero a un [[vac|VAC]], para las huellas digitales.",
+          "Quizás deba ir primero a un [[vac|{vac}]], para las huellas digitales.",
           "Reserve lo antes posible. La espera es larga.",
           "Siga el sitio web de la Embajada de EE. UU. Los pasos pueden cambiar.",
         ],
@@ -188,7 +190,7 @@ export const STEPS: StepContent[] = [
     // embassy page before the demo.
     links: [
       { label: { en: "Official fee page", hi: "आधिकारिक शुल्क पृष्ठ", es: "Página oficial de tarifas" }, url: LINKS.fees },
-      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
       { label: { en: "Official wait times", hi: "आधिकारिक प्रतीक्षा समय", es: "Tiempos de espera oficiales" }, url: LINKS.waitTimes },
     ],
   },
@@ -200,37 +202,37 @@ export const STEPS: StepContent[] = [
         title: "Gather your documents",
         what: [
           "Collect the papers the officer may ask for.",
-          "Show that your life is in India: family, home or pension.",
+          "Show that your life is in {home}: family, home or pension.",
           "Show that you will come home.",
           "Show how the trip will be paid for.",
           "A letter from family in the U.S. is not needed.",
         ],
         time: ["1 to 2 weeks."],
-        simple: "Gather papers that show your life is in India and that you will go home after the trip.",
+        simple: "Gather papers that show your life is in {home} and that you will go home after the trip.",
       },
       hi: {
         title: "अपने कागज़ात इकट्ठा करें",
         what: [
           "अधिकारी जो कागज़ माँग सकते हैं, वे इकट्ठा करें।",
-          "दिखाएँ कि आपका जीवन भारत में है: परिवार, घर या पेंशन।",
+          "दिखाएँ कि आपका जीवन {home} में है: परिवार, घर या पेंशन।",
           "दिखाएँ कि आप वापस लौटेंगे।",
           "दिखाएँ कि यात्रा का खर्च कैसे उठाया जाएगा।",
           "अमेरिका में परिवार का पत्र ज़रूरी नहीं है।",
         ],
         time: ["1 से 2 सप्ताह।"],
-        simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन भारत में है और आप यात्रा के बाद लौटेंगे।",
+        simple: "ऐसे कागज़ात जुटाइए जो दिखाएँ कि आपका जीवन {home} में है और आप यात्रा के बाद लौटेंगे।",
       },
       es: {
         title: "Reúna sus documentos",
         what: [
           "Reúna los papeles que el oficial puede pedir.",
-          "Demuestre que su vida está en India: familia, vivienda o pensión.",
+          "Demuestre que su vida está en {home}: familia, vivienda o pensión.",
           "Demuestre que va a regresar a casa.",
           "Demuestre cómo se pagará el viaje.",
           "No hace falta una carta de familiares en EE. UU.",
         ],
         time: ["De 1 a 2 semanas."],
-        simple: "Reúna papeles que muestren que su vida está en India y que volverá a casa después del viaje.",
+        simple: "Reúna papeles que muestren que su vida está en {home} y que volverá a casa después del viaje.",
       },
     },
     links: [
@@ -279,7 +281,7 @@ export const STEPS: StepContent[] = [
       },
     },
     links: [
-      { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+      { label: { en: "U.S. Embassy in {home}: visas", hi: "{home} में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en {home}: visas" }, url: LINKS.embassyIndia },
     ],
   },
   {
@@ -413,7 +415,7 @@ export const STEPS: StepContent[] = [
     ],
   }, {
     id: "i20",
-    documents: ["i20Form"], 
+    documents: ["i20Form"],
     links: [],
     text: {
       en: {
@@ -437,11 +439,11 @@ export const STEPS: StepContent[] = [
       es: {
         title: "Reciba su Formulario I-20",
         what: [
-          "Una vez aceptado, la oficina internacional de su universidad en EE. UU. emitirá un Formulario I-20.",
-          "Revise que su nombre y su fecha de nacimiento coincidan exactamente con su pasaporte.",
-          "Debe tener este documento antes de poder pagar la tarifa SEVIS o solicitar una visa.",
+          "Una vez aceptado, la oficina internacional de su universidad en EE. UU. le emitirá un Formulario I-20.",
+          "Revise que su nombre y fecha de nacimiento coincidan exactamente con su pasaporte.",
+          "Debe tener este documento antes de poder pagar la tarifa SEVIS o solicitar la visa.",
         ],
-        simple: "Espere a que su universidad en EE. UU. le envíe su documento I-20 oficial.",
+        simple: "Espere a que su universidad en EE. UU. le envíe su documento I-20 oficial.",
       },
     },
   },
@@ -451,7 +453,7 @@ export const STEPS: StepContent[] = [
     links: [
       { 
         url: "https://www.fmjfee.com/i901fee/index.html", 
-        label: { en: "Pay SEVIS Fee (Official)", hi: "SEVIS शुल्क भरें (आधिकारिक)", es: "Pagar la tarifa SEVIS (oficial)" } 
+        label: { en: "Pay SEVIS Fee (Official)", hi: "SEVIS शुल्क भरें (आधिकारिक)", es: "Pague la tarifa SEVIS (oficial)" } 
       }
     ],
     text: {
@@ -481,9 +483,9 @@ export const STEPS: StepContent[] = [
         what: [
           "Debe pagar la tarifa SEVIS antes de solicitar su visa.",
           "Vaya al sitio web oficial de FMJfee para hacer su pago.",
-          "Guarde el recibo de pago e imprímalo, porque debe llevarlo a su entrevista.",
+          "Guarde el recibo del pago e imprímalo, porque debe llevarlo a su entrevista.",
         ],
-        simple: "Pague al gobierno de EE. UU. la tarifa obligatoria de seguimiento de estudiantes.",
+        simple: "Pague al gobierno de EE. UU. la tarifa obligatoria de seguimiento de estudiantes.",
       },
     },
   },
@@ -513,9 +515,9 @@ export const STEPS: StepContent[] = [
       es: {
         title: "Espere la aprobación del I-797",
         what: [
-          "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
-          "No puede solicitar su visa ni programar una entrevista hasta recibir el Formulario I-797 (Notificación de Acción) aprobado.",
-          "Coordine con el abogado de inmigración de su empleador para recibir novedades.",
+          "Su empleador en EE. UU. debe presentar una petición I-129 ante USCIS en su nombre.",
+          "No puede solicitar su visa ni programar una entrevista hasta recibir el Aviso de Acción I-797 aprobado.",
+          "Hable con el abogado de inmigración de su empleador para recibir novedades.",
         ],
         simple: "Espere a que USCIS apruebe la petición de su empleador.",
       },

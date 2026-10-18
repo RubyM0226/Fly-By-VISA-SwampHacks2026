@@ -35,7 +35,7 @@ export function InfoTip({ label, children }: { label: string; children: React.Re
           setFocus(false);
           setPinned(false);
         }}
-        className="inline-flex h-12 w-12 cursor-help items-center justify-center rounded-full text-accent hover:bg-accent-soft"
+        className="inline-flex h-12 w-12 cursor-help items-center justify-center rounded-full text-accent hover:bg-hover"
       >
         <InfoIcon className="h-7 w-7" />
       </button>

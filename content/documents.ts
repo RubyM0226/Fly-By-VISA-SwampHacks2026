@@ -13,7 +13,8 @@ import type { TemplateId } from "./templates";
 // `blank` says how to get an empty version. Never invent an "official" form:
 // "template" is a FlyByVisa Word file from content/templates.ts, labelled as ours.
 // Names use [[term|Shown text]] glossary chips like steps.ts. Hindi is a first
-// draft: have a fluent reader check it.
+// draft: have a fluent reader check it. Names use the home-country tokens and
+// India's links from lib/homeCountry.ts; render through useHome().loc.
 
 export type Blank =
   | { type: "online"; url: string }
@@ -58,7 +59,7 @@ const ENTRIES = {
     blank: { type: "none", url: LINKS.embassyIndia },
   },
   lifeInIndia: {
-    name: { en: "Proof of your life in India", hi: "भारत में आपके जीवन का प्रमाण", es: "Pruebas de su vida en India" },
+    name: { en: "Proof of your life in {home}", hi: "{home} में आपके जीवन का प्रमाण", es: "Pruebas de su vida en {home}" },
     upload: true,
     blank: { type: "none" },
   },
@@ -97,18 +98,19 @@ const ENTRIES = {
     name: { en: "Your [[i94|I-94]] record", hi: "आपका [[i94|I-94]] रिकॉर्ड", es: "Su registro [[i94|I-94]]" },
     upload: true,
     blank: { type: "online", url: LINKS.i94 },
-  },i20Form: {
-    name: { en: "Form I-20 (Signed)", hi: "फॉर्म I-20 (हस्ताक्षरित)" },
+  },
+  i20Form: {
+    name: { en: "Form I-20 (Signed)", hi: "फॉर्म I-20 (हस्ताक्षरित)", es: "Formulario I-20 (firmado)" },
     upload: true,
     blank: { type: "none" },
   },
   sevisReceipt: {
-    name: { en: "SEVIS I-901 Fee Receipt", hi: "SEVIS I-901 शुल्क रसीद" },
+    name: { en: "SEVIS I-901 Fee Receipt", hi: "SEVIS I-901 शुल्क रसीद", es: "Recibo de la tarifa SEVIS I-901" },
     upload: true,
     blank: { type: "online", url: "https://www.fmjfee.com/i901fee/index.html" },
   },
   i797Notice: {
-    name: { en: "I-797 Approval Notice", hi: "I-797 स्वीकृति नोटिस" },
+    name: { en: "I-797 Approval Notice", hi: "I-797 स्वीकृति नोटिस", es: "Aviso de aprobación I-797" },
     upload: true,
     blank: { type: "none" },
   },

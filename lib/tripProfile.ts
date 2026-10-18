@@ -32,6 +32,7 @@ export const CITIES_BY_COUNTRY: Record<string, { city: string; airport: string }
     { city: "Chicago", airport: "ORD" },
     { city: "Los Angeles", airport: "LAX" },
     { city: "Seattle", airport: "SEA" },
+    { city: "Orlando", airport: "MCO" },
   ],
 };
 

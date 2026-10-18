@@ -152,7 +152,9 @@ export const VERDICT_TEXT: Record<Verdict, { label: Record<Lang, string>; nextSt
 
 /** Official pages to check against. Shown with every verdict, and required for "cant-tell". */
 export const OFFICIAL_LINKS: { label: Record<Lang, string>; url: string }[] = [
-  { label: { en: "Visa fraud warning (U.S. State Department)", hi: "वीज़ा धोखाधड़ी की चेतावनी (अमेरिकी विदेश विभाग)", es: "Advertencia sobre fraude de visas (Departamento de Estado de EE. UU.)" }, url: LINKS.fraudWarning },
-  { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+  { label: { en: "Visa fraud warning (U.S. State Department)", hi: "वीज़ा धोखाधड़ी की चेतावनी (अमेरिकी विदेश विभाग)", es: "Advertencia sobre fraude de visas (Departamento de Estado de EE. UU.)" }, url: LINKS.fraudWarning },
+  { label: { en: "U.S. Embassy in India: visas", hi: "भारत में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en India: visas" }, url: LINKS.embassyIndia },
+  { label: { en: "U.S. Embassy in the United Kingdom: visas", hi: "United Kingdom में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en el Reino Unido: visas" }, url: LINKS.embassyUK },
+  { label: { en: "U.S. Embassy in Mexico: visas", hi: "Mexico में अमेरिकी दूतावास: वीज़ा", es: "Embajada de EE. UU. en México: visas" }, url: LINKS.embassyMexico },
   { label: { en: "Visitor visa (official page)", hi: "आगंतुक वीज़ा (आधिकारिक पृष्ठ)", es: "Visa de visitante (página oficial)" }, url: LINKS.visitorVisa },
 ];
